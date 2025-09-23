@@ -1,0 +1,53 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./backend
+    container_name: fitnessapp-backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/fitnessdb
+      SPRING_DATASOURCE_USERNAME: fitnessuser
+      SPRING_DATASOURCE_PASSWORD: fitnesspass
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      JWT_SECRET: supersecretkey123
+      JWT_EXPIRATION: 86400000
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    container_name: fitnessapp-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+  db:
+    image: postgres:15
+    container_name: fitnessapp-db
+    restart: always
+    environment:
+      POSTGRES_DB: fitnessdb
+      POSTGRES_USER: disanmad
+      POSTGRES_PASSWORD: fitness
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432" # Optional: expose to host if needed
+
+  pgadmin:
+    image: dpage/pgadmin4:8
+    container_name: fitnessapp-pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@fitnessapp.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:

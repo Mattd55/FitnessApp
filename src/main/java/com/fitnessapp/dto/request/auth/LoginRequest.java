@@ -1,4 +1,4 @@
-package com.fitnessapp.dto;
+package com.fitnessapp.dto.request.auth;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

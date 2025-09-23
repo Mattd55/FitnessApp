@@ -1,13 +1,12 @@
-package com.fitnessapp.config;
+package com.fitnessapp.controller;
 
-import com.fitnessapp.dto.LoginRequest;
-import com.fitnessapp.dto.LoginResponse;
-import com.fitnessapp.security.JwtService;
+import com.fitnessapp.service.UserService;
+import com.fitnessapp.dto.request.auth.LoginRequest;
+import com.fitnessapp.dto.response.auth.LoginResponse;
+import com.fitnessapp.dto.request.auth.RegisterRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,30 +14,26 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final AuthenticationManager authManager;
-    private final JwtService jwtService;
+    private final UserService userService;
 
-    public AuthController(AuthenticationManager authManager, JwtService jwtService) {
-        this.authManager = authManager;
-        this.jwtService = jwtService;
+    public AuthController(UserService userService) {
+        this.userService = userService;
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         try {
-            Authentication auth = authManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
-            );
-
-            String token = jwtService.generateToken(loginRequest.getUsername());
-            LoginResponse response = new LoginResponse(token, "Login successful", loginRequest.getUsername());
-
+            LoginResponse response = userService.authenticateUser(loginRequest);
             return ResponseEntity.ok(response);
-
         } catch (AuthenticationException e) {
-            LoginResponse errorResponse = new LoginResponse(null, "Invalid credentials", null);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+            throw e;
         }
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<LoginResponse> register(@Valid @RequestBody RegisterRequest registerRequest) {
+        LoginResponse response = userService.registerUser(registerRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }
 

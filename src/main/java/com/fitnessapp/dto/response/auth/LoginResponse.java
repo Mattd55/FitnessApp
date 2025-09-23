@@ -1,4 +1,4 @@
-package com.fitnessapp.dto;
+package com.fitnessapp.dto.response.auth;
 
 public class LoginResponse {
     private String token;

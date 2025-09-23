@@ -1,0 +1,150 @@
+### Test Registration - Success Case
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "email": "test@example.com",
+  "password": "testpass123",
+  "firstName": "John",
+  "lastName": "Doe"
+}
+
+### Test Registration - Duplicate Username
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "email": "another@example.com",
+  "password": "testpass123",
+  "firstName": "Jane",
+  "lastName": "Smith"
+}
+
+### Test Registration - Duplicate Email
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "anotheruser",
+  "email": "test@example.com",
+  "password": "testpass123",
+  "firstName": "Bob",
+  "lastName": "Wilson"
+}
+
+### Test Registration - Invalid Email
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "newuser",
+  "email": "invalid-email",
+  "password": "testpass123",
+  "firstName": "Alice",
+  "lastName": "Brown"
+}
+
+### Test Registration - Short Password
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "shortpass",
+  "email": "short@example.com",
+  "password": "123",
+  "firstName": "Short",
+  "lastName": "Pass"
+}
+
+### Test Registration - Missing Fields
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "incomplete",
+  "email": "incomplete@example.com"
+}
+
+### Test Login - Success Case
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "testpass123"
+}
+
+### Test Login - Invalid Credentials
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "wronguser",
+  "password": "wrongpass"
+}
+
+### Test Login - Missing Fields
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser"
+}
+
+### Test Protected Endpoint (add token from login response)
+GET http://localhost:8080/api/protected
+Authorization: Bearer your-jwt-token-here
+
+### Register Admin User
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "email": "admin@fitnessapp.com",
+  "password": "adminpass123",
+  "firstName": "Admin",
+  "lastName": "User"
+}
+
+### Register Trainer User
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "trainer1",
+  "email": "trainer@fitnessapp.com",
+  "password": "trainerpass123",
+  "firstName": "Trainer",
+  "lastName": "One"
+}
+
+### Test Admin - Get All Users (requires ADMIN role)
+GET http://localhost:8080/api/admin/users
+Authorization: Bearer your-admin-jwt-token-here
+
+### Test Admin - Update User Role (requires ADMIN role)
+PUT http://localhost:8080/api/admin/users/1/role?role=TRAINER
+Authorization: Bearer your-admin-jwt-token-here
+
+### Test Admin - Update User Status (requires ADMIN role)
+PUT http://localhost:8080/api/admin/users/2/status?enabled=false&accountNonLocked=true
+Authorization: Bearer your-admin-jwt-token-here
+
+### Test Trainer - Get Clients (requires TRAINER or ADMIN role)
+GET http://localhost:8080/api/trainer/clients
+Authorization: Bearer your-trainer-jwt-token-here
+
+### Test Trainer - Get Profile (requires TRAINER or ADMIN role)
+GET http://localhost:8080/api/trainer/profile
+Authorization: Bearer your-trainer-jwt-token-here
+
+### Test User Access to Admin Endpoint (should fail with 403)
+GET http://localhost:8080/api/admin/users
+Authorization: Bearer your-user-jwt-token-here
+
+### Test User Access to Trainer Endpoint (should fail with 403)
+GET http://localhost:8080/api/trainer/clients
+Authorization: Bearer your-user-jwt-token-here
