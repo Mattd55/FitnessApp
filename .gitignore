@@ -31,3 +31,14 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Claude Code ###
+.claude
+
+### Application specific ###
+application-local.properties
+logs/
+*.log
+*.tmp
+*.swp
+*.bak
