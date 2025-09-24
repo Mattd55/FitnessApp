@@ -46,7 +46,14 @@ logs/
 ### Frontend ###
 fitness-frontend/node_modules/
 fitness-frontend/build/
+fitness-frontend/coverage/
 fitness-frontend/.env.local
 fitness-frontend/.env.production.local
 fitness-frontend/.env.development.local
 fitness-frontend/.env.test.local
+fitness-frontend/.DS_Store
+fitness-frontend/.pnp
+fitness-frontend/.pnp.js
+fitness-frontend/npm-debug.log*
+fitness-frontend/yarn-debug.log*
+fitness-frontend/yarn-error.log*
