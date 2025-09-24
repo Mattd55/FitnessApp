@@ -60,9 +60,14 @@ public class GlobalExceptionHandler {
             .map(FieldError::getDefaultMessage)
             .collect(Collectors.toList());
 
+        // Create user-friendly validation message
+        String userMessage = details.isEmpty() ?
+            "Invalid request data" :
+            "Please fix the following: " + String.join("; ", details);
+
         ErrorResponse error = new ErrorResponse(
             "VALIDATION_ERROR",
-            "Invalid request data",
+            userMessage,
             request.getRequestURI(),
             details
         );

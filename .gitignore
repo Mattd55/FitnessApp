@@ -42,3 +42,11 @@ logs/
 *.tmp
 *.swp
 *.bak
+
+### Frontend ###
+fitness-frontend/node_modules/
+fitness-frontend/build/
+fitness-frontend/.env.local
+fitness-frontend/.env.production.local
+fitness-frontend/.env.development.local
+fitness-frontend/.env.test.local
