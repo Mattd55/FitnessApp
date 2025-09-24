@@ -22,7 +22,7 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({ exercise, onClose }) =>
     }
   };
 
-  const getCategoryIcon = (category: string): JSX.Element => {
+  const getCategoryIcon = (category: string): React.JSX.Element => {
     switch (category) {
       case 'STRENGTH':
         return (
