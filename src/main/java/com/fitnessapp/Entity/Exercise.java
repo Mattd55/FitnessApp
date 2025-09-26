@@ -1,5 +1,10 @@
 package com.fitnessapp.entity;
 
+import com.fitnessapp.enums.ExerciseCategory;
+import com.fitnessapp.enums.ExerciseEquipment;
+import com.fitnessapp.enums.ExerciseDifficulty;
+import com.fitnessapp.enums.MuscleGroup;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,15 +32,15 @@ public class Exercise {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Category category;
+    private ExerciseCategory category;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Equipment equipment;
+    private ExerciseEquipment equipment;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Difficulty difficulty;
+    private ExerciseDifficulty difficulty;
 
     @ElementCollection
     @CollectionTable(name = "exercise_muscle_groups")
@@ -61,24 +66,6 @@ public class Exercise {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")
+    @JsonIgnore
     private User createdBy;
-
-    public enum Category {
-        STRENGTH, CARDIO, FLEXIBILITY, SPORTS, REHABILITATION
-    }
-
-    public enum Equipment {
-        NONE, BARBELL, DUMBBELL, KETTLEBELL, RESISTANCE_BAND,
-        PULL_UP_BAR, MACHINE, CABLE, MEDICINE_BALL, FOAM_ROLLER
-    }
-
-    public enum Difficulty {
-        BEGINNER, INTERMEDIATE, ADVANCED, EXPERT
-    }
-
-    public enum MuscleGroup {
-        CHEST, BACK, SHOULDERS, BICEPS, TRICEPS, FOREARMS,
-        CORE, GLUTES, QUADRICEPS, HAMSTRINGS, CALVES,
-        FULL_BODY, CARDIO
-    }
 }

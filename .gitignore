@@ -37,6 +37,8 @@ build/
 
 ### Application specific ###
 application-local.properties
+.env
+.env.local
 logs/
 *.log
 *.tmp

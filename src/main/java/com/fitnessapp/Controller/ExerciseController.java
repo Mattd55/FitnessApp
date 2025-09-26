@@ -1,6 +1,10 @@
 package com.fitnessapp.controller;
 
 import com.fitnessapp.entity.Exercise;
+import com.fitnessapp.enums.ExerciseCategory;
+import com.fitnessapp.enums.ExerciseEquipment;
+import com.fitnessapp.enums.ExerciseDifficulty;
+import com.fitnessapp.enums.MuscleGroup;
 import com.fitnessapp.service.ExerciseService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -25,9 +29,9 @@ public class ExerciseController {
 
     @GetMapping
     public ResponseEntity<Page<Exercise>> getAllExercises(
-            @RequestParam(required = false) Exercise.Category category,
-            @RequestParam(required = false) Exercise.Equipment equipment,
-            @RequestParam(required = false) Exercise.Difficulty difficulty,
+            @RequestParam(required = false) ExerciseCategory category,
+            @RequestParam(required = false) ExerciseEquipment equipment,
+            @RequestParam(required = false) ExerciseDifficulty difficulty,
             @RequestParam(required = false) String search,
             Pageable pageable) {
 
@@ -83,22 +87,22 @@ public class ExerciseController {
     }
 
     @GetMapping("/categories")
-    public ResponseEntity<Exercise.Category[]> getCategories() {
-        return ResponseEntity.ok(Exercise.Category.values());
+    public ResponseEntity<ExerciseCategory[]> getCategories() {
+        return ResponseEntity.ok(ExerciseCategory.values());
     }
 
     @GetMapping("/equipment")
-    public ResponseEntity<Exercise.Equipment[]> getEquipment() {
-        return ResponseEntity.ok(Exercise.Equipment.values());
+    public ResponseEntity<ExerciseEquipment[]> getEquipment() {
+        return ResponseEntity.ok(ExerciseEquipment.values());
     }
 
     @GetMapping("/difficulties")
-    public ResponseEntity<Exercise.Difficulty[]> getDifficulties() {
-        return ResponseEntity.ok(Exercise.Difficulty.values());
+    public ResponseEntity<ExerciseDifficulty[]> getDifficulties() {
+        return ResponseEntity.ok(ExerciseDifficulty.values());
     }
 
     @GetMapping("/muscle-groups")
-    public ResponseEntity<Exercise.MuscleGroup[]> getMuscleGroups() {
-        return ResponseEntity.ok(Exercise.MuscleGroup.values());
+    public ResponseEntity<MuscleGroup[]> getMuscleGroups() {
+        return ResponseEntity.ok(MuscleGroup.values());
     }
 }

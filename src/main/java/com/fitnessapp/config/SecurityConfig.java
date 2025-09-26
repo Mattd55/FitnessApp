@@ -42,6 +42,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll() // login/register allowed
+                        .requestMatchers("/api/exercises/**").permitAll() // exercises are public for browsing
                         .requestMatchers("/api/admin/**").hasRole("ADMIN") // admin endpoints
                         .requestMatchers("/api/trainer/**").hasAnyRole("TRAINER", "ADMIN") // trainer endpoints
                         .requestMatchers("/", "/static/**", "/favicon.ico", "/manifest.json").permitAll() // React static files

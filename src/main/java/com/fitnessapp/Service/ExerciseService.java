@@ -2,6 +2,9 @@ package com.fitnessapp.service;
 
 import com.fitnessapp.entity.Exercise;
 import com.fitnessapp.entity.User;
+import com.fitnessapp.enums.ExerciseCategory;
+import com.fitnessapp.enums.ExerciseEquipment;
+import com.fitnessapp.enums.ExerciseDifficulty;
 import com.fitnessapp.repository.ExerciseRepository;
 import com.fitnessapp.repository.UserRepository;
 import org.springframework.cache.annotation.CacheEvict;
@@ -32,17 +35,17 @@ public class ExerciseService {
     }
 
     @Cacheable(value = "exercises", key = "#category.name() + '_' + #pageable.pageNumber")
-    public Page<Exercise> getExercisesByCategory(Exercise.Category category, Pageable pageable) {
+    public Page<Exercise> getExercisesByCategory(ExerciseCategory category, Pageable pageable) {
         return exerciseRepository.findByActiveTrueAndCategory(category, pageable);
     }
 
     @Cacheable(value = "exercises", key = "#equipment.name() + '_' + #pageable.pageNumber")
-    public Page<Exercise> getExercisesByEquipment(Exercise.Equipment equipment, Pageable pageable) {
+    public Page<Exercise> getExercisesByEquipment(ExerciseEquipment equipment, Pageable pageable) {
         return exerciseRepository.findByActiveTrueAndEquipment(equipment, pageable);
     }
 
     @Cacheable(value = "exercises", key = "#difficulty.name() + '_' + #pageable.pageNumber")
-    public Page<Exercise> getExercisesByDifficulty(Exercise.Difficulty difficulty, Pageable pageable) {
+    public Page<Exercise> getExercisesByDifficulty(ExerciseDifficulty difficulty, Pageable pageable) {
         return exerciseRepository.findByActiveTrueAndDifficulty(difficulty, pageable);
     }
 
