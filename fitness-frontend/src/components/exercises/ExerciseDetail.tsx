@@ -22,7 +22,7 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({ exercise, onClose }) =>
     }
   };
 
-  const getCategoryIcon = (category: string): React.JSX.Element => {
+  const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'STRENGTH':
         return (
@@ -85,7 +85,10 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({ exercise, onClose }) =>
   };
 
   // Handle escape key to close modal
+  // Prevent body scroll when modal is open
   React.useEffect(() => {
+    document.body.style.overflow = 'hidden';
+
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose();
@@ -93,17 +96,22 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({ exercise, onClose }) =>
     };
 
     document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [onClose]);
+
+    return () => {
+      document.body.style.overflow = 'unset';
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const instructionSteps = formatInstructions(exercise.instructions);
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4"
+      style={{ zIndex: 9999 }}
       onClick={handleBackdropClick}
     >
-      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-lg">
           <div className="flex justify-between items-start">

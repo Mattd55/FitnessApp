@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { exerciseApi } from '../services/api';
 import { Exercise, PageResponse } from '../types/api';
 import ExerciseCard from '../components/exercises/ExerciseCard';
-import ExerciseDetail from '../components/exercises/ExerciseDetail';
+import ExerciseDetailSimple from '../components/exercises/ExerciseDetailSimple';
 import FilterBar from '../components/exercises/FilterBar';
 
 const ExerciseLibrary: React.FC = () => {
-  console.log('ExerciseLibrary component is loading!');
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +22,7 @@ const ExerciseLibrary: React.FC = () => {
 
   const pageSize = 12;
 
-  const loadExercises = async (page: number = 0) => {
+  const loadExercises = useCallback(async (page: number = 0) => {
     try {
       setLoading(true);
       const params = {
@@ -46,17 +45,18 @@ const ExerciseLibrary: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchTerm, selectedCategory, selectedEquipment, selectedDifficulty]);
 
   useEffect(() => {
     loadExercises(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm, selectedCategory, selectedEquipment, selectedDifficulty]);
 
   const handlePageChange = (page: number) => {
     loadExercises(page);
   };
 
-  const handleFilterChange = (filters: {
+  const handleFilterChange = useCallback((filters: {
     search: string;
     category: string;
     equipment: string;
@@ -66,7 +66,7 @@ const ExerciseLibrary: React.FC = () => {
     setSelectedCategory(filters.category);
     setSelectedEquipment(filters.equipment);
     setSelectedDifficulty(filters.difficulty);
-  };
+  }, []);
 
   const handleExerciseClick = (exercise: Exercise) => {
     setSelectedExercise(exercise);
@@ -146,7 +146,7 @@ const ExerciseLibrary: React.FC = () => {
       )}
 
       {selectedExercise && (
-        <ExerciseDetail
+        <ExerciseDetailSimple
           exercise={selectedExercise}
           onClose={handleCloseModal}
         />

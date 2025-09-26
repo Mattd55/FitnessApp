@@ -64,7 +64,8 @@ const FilterBar: React.FC<FilterBarProps> = ({ onFilterChange, initialFilters })
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [searchTerm, selectedCategory, selectedEquipment, selectedDifficulty, onFilterChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchTerm, selectedCategory, selectedEquipment, selectedDifficulty]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);

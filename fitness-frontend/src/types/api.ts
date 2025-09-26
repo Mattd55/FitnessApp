@@ -53,7 +53,7 @@ export type MuscleGroup = 'CHEST' | 'BACK' | 'SHOULDERS' | 'BICEPS' | 'TRICEPS' 
 export interface Workout {
   id: number;
   name: string;
-  description: string;
+  description?: string;
   status: 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | 'SKIPPED';
   scheduledDate?: string;
   startedAt?: string;
