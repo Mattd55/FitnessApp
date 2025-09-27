@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard';
 import ExerciseLibrary from './pages/ExerciseLibrary';
 import Workouts from './pages/Workouts';
 import ProgressPage from './pages/ProgressPage';
+import ProfilePage from './pages/ProfilePage';
 import './App.css';
 
 function App() {
@@ -74,10 +75,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Layout>
-                    <div className="text-center py-12">
-                      <h2 className="text-2xl font-bold text-gray-900">User Profile</h2>
-                      <p className="mt-4 text-gray-600">Coming soon...</p>
-                    </div>
+                    <ProfilePage />
                   </Layout>
                 </ProtectedRoute>
               }

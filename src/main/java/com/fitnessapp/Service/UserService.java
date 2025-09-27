@@ -117,9 +117,20 @@ public class UserService {
         User user = userRepository.findByUsername(username)
             .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
 
+        // Update profile fields
         user.setFirstName(updatedProfile.getFirstName());
         user.setLastName(updatedProfile.getLastName());
         user.setEmail(updatedProfile.getEmail());
+
+        // Update username if provided and different from current
+        if (updatedProfile.getUsername() != null && !updatedProfile.getUsername().equals(username)) {
+            // Check if new username already exists
+            if (userRepository.findByUsername(updatedProfile.getUsername()).isPresent()) {
+                throw new IllegalArgumentException("Username already exists: " + updatedProfile.getUsername());
+            }
+            user.setUsername(updatedProfile.getUsername());
+        }
+
         user.setUpdatedAt(LocalDateTime.now());
 
         return userRepository.save(user);
