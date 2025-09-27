@@ -1,5 +1,7 @@
 package com.fitnessapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,13 +29,16 @@ public class Workout {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"workouts", "password", "accountNonExpired", "accountNonLocked", "credentialsNonExpired", "enabled", "authorities"})
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "trainer_id")
+    @JsonIgnoreProperties({"workouts", "password", "accountNonExpired", "accountNonLocked", "credentialsNonExpired", "enabled", "authorities"})
     private User trainer;
 
     @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<WorkoutExercise> exercises;
 
     @Enumerated(EnumType.STRING)

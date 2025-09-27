@@ -19,6 +19,20 @@ const CreateWorkoutModal: React.FC<CreateWorkoutModalProps> = ({ onClose, onWork
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+
+    // Validate datetime-local input only when complete
+    if (name === 'scheduledDate' && value) {
+      // Only validate if the datetime string is complete (has the full format)
+      const dateTimeRegex = /^(\d{4})-\d{2}-\d{2}T\d{2}:\d{2}$/;
+      if (dateTimeRegex.test(value)) {
+        const year = parseInt(value.substring(0, 4));
+        if (year < 1900 || year > 2099) {
+          return; // Don't update if year is out of valid range
+        }
+      }
+      // If it's not a complete datetime string yet, allow it (user is still typing)
+    }
+
     setFormData(prev => ({
       ...prev,
       [name]: value,
@@ -218,7 +232,7 @@ const CreateWorkoutModal: React.FC<CreateWorkoutModalProps> = ({ onClose, onWork
                 marginBottom: '4px'
               }}
             >
-              Scheduled Date & Time
+              Scheduled Date & Time (Optional)
             </label>
             <input
               type="datetime-local"

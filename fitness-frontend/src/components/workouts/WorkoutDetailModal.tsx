@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { workoutApi } from '../../services/api';
-import { Workout } from '../../types/api';
+import { Workout, WorkoutExercise, ExerciseSet } from '../../types/api';
+import AddExerciseModal from './AddExerciseModal';
+import SetTrackerModal from './SetTrackerModal';
 
 interface WorkoutDetailModalProps {
   workout: Workout;
@@ -17,11 +19,135 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [exercises, setExercises] = useState<WorkoutExercise[]>([]);
+  const [exercisesLoading, setExercisesLoading] = useState(true);
+  const [showAddExerciseModal, setShowAddExerciseModal] = useState(false);
+  const [activeExerciseId, setActiveExerciseId] = useState<number | null>(null);
+  const [showSetTrackerModal, setShowSetTrackerModal] = useState(false);
+  const [editingExerciseId, setEditingExerciseId] = useState<number | null>(null);
+  const [editFormData, setEditFormData] = useState<Partial<WorkoutExercise>>({});
+
+  const loadWorkoutExercises = async () => {
+    try {
+      setExercisesLoading(true);
+      const workoutExercises = await workoutApi.getWorkoutExercises(workout.id);
+      setExercises(workoutExercises);
+    } catch (err) {
+      console.error('Error loading workout exercises:', err);
+      setError('Failed to load workout exercises');
+    } finally {
+      setExercisesLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadWorkoutExercises();
+  }, [workout.id]);
 
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
       onClose();
     }
+  };
+
+  const handleAddExercise = () => {
+    setShowAddExerciseModal(true);
+  };
+
+  const handleCloseAddExerciseModal = () => {
+    setShowAddExerciseModal(false);
+  };
+
+  const handleExerciseAdded = () => {
+    loadWorkoutExercises(); // Reload exercises after adding
+    setShowAddExerciseModal(false);
+  };
+
+  const handleStartExercise = async (exerciseId: number) => {
+    try {
+      setLoading(true);
+      await workoutApi.startExercise(workout.id, exerciseId);
+      setActiveExerciseId(exerciseId);
+      setShowSetTrackerModal(true);
+      loadWorkoutExercises(); // Reload to get updated status
+    } catch (err: any) {
+      console.error('Error starting exercise:', err);
+      setError(err.response?.data?.message || 'Failed to start exercise');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSetCompleted = (set: ExerciseSet) => {
+    // Could add any additional logic here for set completion
+    console.log('Set completed:', set);
+  };
+
+  const handleExerciseCompleted = () => {
+    setActiveExerciseId(null);
+    setShowSetTrackerModal(false);
+    loadWorkoutExercises(); // Reload to get updated exercise status
+  };
+
+  const handleCloseSetTracker = () => {
+    setShowSetTrackerModal(false);
+  };
+
+  const handleContinueExercise = (exerciseId: number) => {
+    setActiveExerciseId(exerciseId);
+    setShowSetTrackerModal(true);
+  };
+
+  const handleStartEdit = (exercise: WorkoutExercise) => {
+    setEditingExerciseId(exercise.id);
+    setEditFormData({
+      plannedSets: exercise.plannedSets,
+      plannedReps: exercise.plannedReps,
+      plannedWeight: exercise.plannedWeight,
+      restTimeSeconds: exercise.restTimeSeconds,
+      notes: exercise.notes,
+      orderIndex: exercise.orderIndex,
+    });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingExerciseId(null);
+    setEditFormData({});
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingExerciseId) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const updatedExercise = await workoutApi.updateWorkoutExercise(
+        workout.id,
+        editingExerciseId,
+        editFormData as Omit<WorkoutExercise, 'id' | 'createdAt' | 'updatedAt' | 'exercise' | 'workout' | 'status'>
+      );
+
+      // Update the exercises list with the updated exercise
+      setExercises(prevExercises =>
+        prevExercises.map(ex => ex.id === editingExerciseId ? updatedExercise : ex)
+      );
+
+      setEditingExerciseId(null);
+      setEditFormData({});
+    } catch (err: any) {
+      console.error('Error updating exercise:', err);
+      setError(err.response?.data?.message || 'Failed to update exercise');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditFormChange = (field: keyof WorkoutExercise, value: any) => {
+    setEditFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   const handleStartWorkout = async () => {
@@ -254,21 +380,322 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
             </div>
           )}
 
-          {/* Exercises Section - Placeholder */}
+          {/* Exercises Section */}
           <div style={{ marginBottom: '24px' }}>
-            <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#374151', margin: '0 0 12px 0' }}>Exercises</h4>
-            <div style={{
-              padding: '24px',
-              textAlign: 'center',
-              backgroundColor: '#f9fafb',
-              borderRadius: '6px',
-              border: '2px dashed #d1d5db'
-            }}>
-              <p style={{ margin: 0, color: '#6b7280' }}>Exercise management coming soon...</p>
-              <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#9ca3af' }}>
-                You'll be able to add and track exercises here
-              </p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#374151', margin: 0 }}>
+                Exercises ({exercises.length})
+              </h4>
+              {workout.status === 'PLANNED' && (
+                <button
+                  onClick={handleAddExercise}
+                  style={{
+                    padding: '6px 12px',
+                    backgroundColor: '#4f46e5',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                    fontWeight: '500',
+                  }}
+                >
+                  + Add Exercise
+                </button>
+              )}
             </div>
+
+            {exercisesLoading ? (
+              <div style={{ textAlign: 'center', padding: '20px', color: '#6b7280' }}>
+                Loading exercises...
+              </div>
+            ) : exercises.length === 0 ? (
+              <div style={{
+                padding: '24px',
+                textAlign: 'center',
+                backgroundColor: '#f9fafb',
+                borderRadius: '6px',
+                border: '2px dashed #d1d5db'
+              }}>
+                <p style={{ margin: 0, color: '#6b7280' }}>No exercises added yet</p>
+                <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#9ca3af' }}>
+                  Click "Add Exercise" to build your workout
+                </p>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {exercises.map((exercise, index) => (
+                  <div key={exercise.id}>
+                    {/* Regular exercise card */}
+                    <div
+                      style={{
+                        padding: '16px',
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '8px',
+                        backgroundColor: '#ffffff',
+                      }}
+                    >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                          <div style={{ flex: 1 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                              <span style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '24px',
+                                height: '24px',
+                                borderRadius: '50%',
+                                backgroundColor: '#4f46e5',
+                                color: 'white',
+                                fontSize: '12px',
+                                fontWeight: '600',
+                              }}>
+                                {index + 1}
+                              </span>
+                              <h5 style={{ margin: 0, fontSize: '16px', fontWeight: '600' }}>
+                                {exercise.exercise.name}
+                              </h5>
+                              <span style={{
+                                padding: '2px 8px',
+                                backgroundColor: exercise.status === 'COMPLETED' ? '#dcfce7' :
+                                                exercise.status === 'IN_PROGRESS' ? '#fef3c7' : '#f3f4f6',
+                                color: exercise.status === 'COMPLETED' ? '#166534' :
+                                       exercise.status === 'IN_PROGRESS' ? '#92400e' : '#374151',
+                                borderRadius: '12px',
+                                fontSize: '10px',
+                                fontWeight: '500',
+                              }}>
+                                {exercise.status.charAt(0) + exercise.status.slice(1).toLowerCase().replace('_', ' ')}
+                              </span>
+                            </div>
+
+                            {editingExerciseId === exercise.id ? (
+                              // Edit form
+                              <div style={{ marginBottom: '8px' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', marginBottom: '12px' }}>
+                                  <div>
+                                    <label style={{ display: 'block', fontSize: '12px', color: '#6b7280', fontWeight: '500', marginBottom: '4px' }}>
+                                      Sets:
+                                    </label>
+                                    <input
+                                      type="number"
+                                      value={editFormData.plannedSets || ''}
+                                      onChange={(e) => handleEditFormChange('plannedSets', parseInt(e.target.value) || 0)}
+                                      min="1"
+                                      style={{
+                                        width: '100%',
+                                        padding: '6px 8px',
+                                        border: '1px solid #d1d5db',
+                                        borderRadius: '4px',
+                                        fontSize: '12px',
+                                      }}
+                                    />
+                                  </div>
+                                  <div>
+                                    <label style={{ display: 'block', fontSize: '12px', color: '#6b7280', fontWeight: '500', marginBottom: '4px' }}>
+                                      Reps:
+                                    </label>
+                                    <input
+                                      type="number"
+                                      value={editFormData.plannedReps || ''}
+                                      onChange={(e) => handleEditFormChange('plannedReps', parseInt(e.target.value) || 0)}
+                                      min="1"
+                                      style={{
+                                        width: '100%',
+                                        padding: '6px 8px',
+                                        border: '1px solid #d1d5db',
+                                        borderRadius: '4px',
+                                        fontSize: '12px',
+                                      }}
+                                    />
+                                  </div>
+                                  <div>
+                                    <label style={{ display: 'block', fontSize: '12px', color: '#6b7280', fontWeight: '500', marginBottom: '4px' }}>
+                                      Weight (kg):
+                                    </label>
+                                    <input
+                                      type="number"
+                                      value={editFormData.plannedWeight || ''}
+                                      onChange={(e) => handleEditFormChange('plannedWeight', parseFloat(e.target.value) || null)}
+                                      min="0"
+                                      step="0.5"
+                                      style={{
+                                        width: '100%',
+                                        padding: '6px 8px',
+                                        border: '1px solid #d1d5db',
+                                        borderRadius: '4px',
+                                        fontSize: '12px',
+                                      }}
+                                    />
+                                  </div>
+                                  <div>
+                                    <label style={{ display: 'block', fontSize: '12px', color: '#6b7280', fontWeight: '500', marginBottom: '4px' }}>
+                                      Rest (seconds):
+                                    </label>
+                                    <input
+                                      type="number"
+                                      value={editFormData.restTimeSeconds || ''}
+                                      onChange={(e) => handleEditFormChange('restTimeSeconds', parseInt(e.target.value) || 0)}
+                                      min="0"
+                                      step="30"
+                                      style={{
+                                        width: '100%',
+                                        padding: '6px 8px',
+                                        border: '1px solid #d1d5db',
+                                        borderRadius: '4px',
+                                        fontSize: '12px',
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                                <div style={{ marginBottom: '12px' }}>
+                                  <label style={{ display: 'block', fontSize: '12px', color: '#6b7280', fontWeight: '500', marginBottom: '4px' }}>
+                                    Notes:
+                                  </label>
+                                  <textarea
+                                    value={editFormData.notes || ''}
+                                    onChange={(e) => handleEditFormChange('notes', e.target.value)}
+                                    rows={2}
+                                    style={{
+                                      width: '100%',
+                                      padding: '6px 8px',
+                                      border: '1px solid #d1d5db',
+                                      borderRadius: '4px',
+                                      fontSize: '12px',
+                                      resize: 'vertical',
+                                    }}
+                                    placeholder="Optional notes..."
+                                  />
+                                </div>
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                  <button
+                                    onClick={handleSaveEdit}
+                                    disabled={loading}
+                                    style={{
+                                      padding: '6px 12px',
+                                      backgroundColor: loading ? '#9ca3af' : '#10b981',
+                                      color: 'white',
+                                      border: 'none',
+                                      borderRadius: '4px',
+                                      cursor: loading ? 'not-allowed' : 'pointer',
+                                      fontSize: '12px',
+                                    }}
+                                  >
+                                    {loading ? 'Saving...' : 'Save'}
+                                  </button>
+                                  <button
+                                    onClick={handleCancelEdit}
+                                    style={{
+                                      padding: '6px 12px',
+                                      backgroundColor: '#f3f4f6',
+                                      color: '#374151',
+                                      border: 'none',
+                                      borderRadius: '4px',
+                                      cursor: 'pointer',
+                                      fontSize: '12px',
+                                    }}
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              // Display view
+                              <>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '8px' }}>
+                                  <div>
+                                    <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>Sets:</span>
+                                    <span style={{ marginLeft: '4px', fontWeight: '600' }}>{exercise.plannedSets}</span>
+                                  </div>
+                                  <div>
+                                    <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>Reps:</span>
+                                    <span style={{ marginLeft: '4px', fontWeight: '600' }}>{exercise.plannedReps}</span>
+                                  </div>
+                                  {exercise.plannedWeight && (
+                                    <div>
+                                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>Weight:</span>
+                                      <span style={{ marginLeft: '4px', fontWeight: '600' }}>{exercise.plannedWeight}kg</span>
+                                    </div>
+                                  )}
+                                  <div>
+                                    <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>Rest:</span>
+                                    <span style={{ marginLeft: '4px', fontWeight: '600' }}>
+                                      {exercise.restTimeSeconds ? `${Math.floor(exercise.restTimeSeconds / 60)}:${(exercise.restTimeSeconds % 60).toString().padStart(2, '0')}` : '0:00'}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                {exercise.notes && (
+                                  <p style={{ margin: '0', fontSize: '12px', color: '#6b7280', fontStyle: 'italic' }}>
+                                    {exercise.notes}
+                                  </p>
+                                )}
+                              </>
+                            )}
+                          </div>
+
+                          {workout.status === 'IN_PROGRESS' && exercise.status === 'PENDING' && (
+                            <button
+                              onClick={() => handleStartExercise(exercise.id)}
+                              disabled={loading}
+                              style={{
+                                padding: '6px 12px',
+                                backgroundColor: loading ? '#9ca3af' : '#10b981',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: loading ? 'not-allowed' : 'pointer',
+                                fontSize: '12px',
+                                marginLeft: '12px',
+                                opacity: loading ? 0.5 : 1
+                              }}
+                            >
+                              {loading ? 'Starting...' : 'Start Exercise'}
+                            </button>
+                          )}
+
+                          {workout.status === 'IN_PROGRESS' && exercise.status === 'IN_PROGRESS' && (
+                            <button
+                              onClick={() => handleContinueExercise(exercise.id)}
+                              style={{
+                                padding: '6px 12px',
+                                backgroundColor: '#f59e0b',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '12px',
+                                marginLeft: '12px',
+                              }}
+                            >
+                              Continue Exercise
+                            </button>
+                          )}
+
+                          {/* Edit button - show for all statuses except when editing */}
+                          {exercise.status === 'PENDING' && editingExerciseId !== exercise.id && (
+                            <button
+                              onClick={() => handleStartEdit(exercise)}
+                              style={{
+                                padding: '6px 12px',
+                                backgroundColor: '#6366f1',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '12px',
+                                marginLeft: '12px',
+                              }}
+                            >
+                              Edit
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Action Buttons */}
@@ -345,6 +772,25 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Add Exercise Modal */}
+      {showAddExerciseModal && (
+        <AddExerciseModal
+          workoutId={workout.id}
+          onClose={handleCloseAddExerciseModal}
+          onExerciseAdded={handleExerciseAdded}
+        />
+      )}
+
+      {/* Set Tracker Modal */}
+      {showSetTrackerModal && activeExerciseId && (
+        <SetTrackerModal
+          workoutExercise={exercises.find(ex => ex.id === activeExerciseId)!}
+          onSetCompleted={handleSetCompleted}
+          onExerciseCompleted={handleExerciseCompleted}
+          onClose={handleCloseSetTracker}
+        />
+      )}
     </div>
   );
 };

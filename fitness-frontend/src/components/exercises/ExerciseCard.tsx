@@ -90,27 +90,29 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onClick }) => {
 
       {/* Primary Muscles */}
       <div className="px-4 py-3">
-        <div className="mb-2">
-          <h4 className="text-xs font-medium text-gray-700 mb-1">Primary Muscles</h4>
-          <div className="flex flex-wrap gap-1">
-            {exercise.primaryMuscles.slice(0, 3).map((muscle, index) => (
-              <span
-                key={index}
-                className="inline-flex items-center px-2 py-1 rounded-md bg-indigo-100 text-indigo-800 text-xs font-medium"
-              >
-                {formatMuscleGroup(muscle)}
-              </span>
-            ))}
-            {exercise.primaryMuscles.length > 3 && (
-              <span className="inline-flex items-center px-2 py-1 rounded-md bg-gray-100 text-gray-600 text-xs font-medium">
-                +{exercise.primaryMuscles.length - 3}
-              </span>
-            )}
+        {exercise.primaryMuscles && exercise.primaryMuscles.length > 0 && (
+          <div className="mb-2">
+            <h4 className="text-xs font-medium text-gray-700 mb-1">Primary Muscles</h4>
+            <div className="flex flex-wrap gap-1">
+              {exercise.primaryMuscles.slice(0, 3).map((muscle, index) => (
+                <span
+                  key={index}
+                  className="inline-flex items-center px-2 py-1 rounded-md bg-indigo-100 text-indigo-800 text-xs font-medium"
+                >
+                  {formatMuscleGroup(muscle)}
+                </span>
+              ))}
+              {exercise.primaryMuscles.length > 3 && (
+                <span className="inline-flex items-center px-2 py-1 rounded-md bg-gray-100 text-gray-600 text-xs font-medium">
+                  +{exercise.primaryMuscles.length - 3}
+                </span>
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Secondary Muscles */}
-        {exercise.secondaryMuscles.length > 0 && (
+        {exercise.secondaryMuscles && exercise.secondaryMuscles.length > 0 && (
           <div>
             <h4 className="text-xs font-medium text-gray-700 mb-1">Secondary Muscles</h4>
             <div className="flex flex-wrap gap-1">

@@ -172,6 +172,11 @@ export const workoutApi = {
     return response.data as Workout;
   },
 
+  getWorkoutExercises: async (workoutId: number): Promise<WorkoutExercise[]> => {
+    const response = await apiClient.get(`/workouts/${workoutId}/exercises`);
+    return response.data as WorkoutExercise[];
+  },
+
   createWorkout: async (workoutData: Omit<Workout, 'id' | 'createdAt' | 'updatedAt' | 'user' | 'trainer'>): Promise<Workout> => {
     const response = await apiClient.post('/workouts', workoutData);
     return response.data as Workout;
@@ -203,6 +208,28 @@ export const workoutApi = {
     return response.data as WorkoutExercise;
   },
 
+  updateWorkoutExercise: async (
+    workoutId: number,
+    workoutExerciseId: number,
+    exerciseData: Omit<WorkoutExercise, 'id' | 'createdAt' | 'updatedAt' | 'exercise' | 'workout' | 'status'>
+  ): Promise<WorkoutExercise> => {
+    const response = await apiClient.put(
+      `/workouts/${workoutId}/exercises/${workoutExerciseId}`,
+      exerciseData
+    );
+    return response.data as WorkoutExercise;
+  },
+
+  startExercise: async (workoutId: number, workoutExerciseId: number): Promise<WorkoutExercise> => {
+    const response = await apiClient.post(`/workouts/${workoutId}/exercises/${workoutExerciseId}/start`);
+    return response.data as WorkoutExercise;
+  },
+
+  completeExercise: async (workoutId: number, workoutExerciseId: number): Promise<WorkoutExercise> => {
+    const response = await apiClient.post(`/workouts/${workoutId}/exercises/${workoutExerciseId}/complete`);
+    return response.data as WorkoutExercise;
+  },
+
   logSet: async (
     workoutExerciseId: number,
     setData: Omit<ExerciseSet, 'id' | 'createdAt' | 'workoutExercise' | 'status'>
@@ -217,6 +244,11 @@ export const workoutApi = {
   completeSet: async (setId: number): Promise<ExerciseSet> => {
     const response = await apiClient.post(`/workouts/sets/${setId}/complete`);
     return response.data as ExerciseSet;
+  },
+
+  getExerciseSets: async (workoutExerciseId: number): Promise<ExerciseSet[]> => {
+    const response = await apiClient.get(`/workouts/exercises/${workoutExerciseId}/sets`);
+    return response.data as ExerciseSet[];
   },
 };
 

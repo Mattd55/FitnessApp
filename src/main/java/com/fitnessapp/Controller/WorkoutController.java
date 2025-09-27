@@ -1,9 +1,12 @@
 package com.fitnessapp.controller;
 
+import com.fitnessapp.dto.WorkoutExerciseDTO;
 import com.fitnessapp.entity.ExerciseSet;
 import com.fitnessapp.entity.Workout;
 import com.fitnessapp.entity.WorkoutExercise;
 import com.fitnessapp.service.WorkoutService;
+
+import java.util.stream.Collectors;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -47,6 +51,16 @@ public class WorkoutController {
                      .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/{id}/exercises")
+    public ResponseEntity<List<WorkoutExerciseDTO>> getWorkoutExercises(@PathVariable Long id, Authentication authentication) {
+        String username = authentication.getName();
+        List<WorkoutExercise> exercises = workoutService.getWorkoutExercises(username, id);
+        List<WorkoutExerciseDTO> exerciseDTOs = exercises.stream()
+                .map(WorkoutExerciseDTO::fromEntity)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(exerciseDTOs);
+    }
+
     @PostMapping("/{id}/start")
     public ResponseEntity<Workout> startWorkout(@PathVariable Long id, Authentication authentication) {
         String username = authentication.getName();
@@ -69,6 +83,16 @@ public class WorkoutController {
         String username = authentication.getName();
         WorkoutExercise created = workoutService.addExerciseToWorkout(username, workoutId, exerciseId, workoutExercise);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+
+    @PutMapping("/{workoutId}/exercises/{workoutExerciseId}")
+    public ResponseEntity<WorkoutExerciseDTO> updateWorkoutExercise(@PathVariable Long workoutId,
+                                                                  @PathVariable Long workoutExerciseId,
+                                                                  @Valid @RequestBody WorkoutExercise workoutExercise,
+                                                                  Authentication authentication) {
+        String username = authentication.getName();
+        WorkoutExercise updated = workoutService.updateWorkoutExercise(username, workoutId, workoutExerciseId, workoutExercise);
+        return ResponseEntity.ok(WorkoutExerciseDTO.fromEntity(updated));
     }
 
     @PostMapping("/{workoutId}/exercises/{workoutExerciseId}/start")
@@ -96,10 +120,33 @@ public class WorkoutController {
         return ResponseEntity.ok(completed);
     }
 
+    @GetMapping("/exercises/{workoutExerciseId}/sets")
+    public ResponseEntity<List<ExerciseSet>> getExerciseSets(@PathVariable Long workoutExerciseId, Authentication authentication) {
+        String username = authentication.getName();
+        List<ExerciseSet> sets = workoutService.getExerciseSets(username, workoutExerciseId);
+        return ResponseEntity.ok(sets);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteWorkout(@PathVariable Long id, Authentication authentication) {
         String username = authentication.getName();
         workoutService.deleteWorkout(username, id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{workoutId}/exercises/{workoutExerciseId}/complete")
+    public ResponseEntity<WorkoutExercise> completeExercise(@PathVariable Long workoutId,
+                                                          @PathVariable Long workoutExerciseId,
+                                                          Authentication authentication) {
+        String username = authentication.getName();
+        WorkoutExercise completed = workoutService.completeExercise(username, workoutId, workoutExerciseId);
+        return ResponseEntity.ok(completed);
+    }
+
+    @PostMapping("/{id}/fix-status")
+    public ResponseEntity<String> fixWorkoutStatus(@PathVariable Long id, Authentication authentication) {
+        String username = authentication.getName();
+        workoutService.fixWorkoutStatusInconsistency(username, id);
+        return ResponseEntity.ok("Workout status fixed");
     }
 }

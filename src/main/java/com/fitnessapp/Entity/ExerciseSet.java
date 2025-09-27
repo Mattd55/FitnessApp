@@ -1,5 +1,6 @@
 package com.fitnessapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,6 +21,7 @@ public class ExerciseSet {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workout_exercise_id", nullable = false)
+    @JsonBackReference
     private WorkoutExercise workoutExercise;
 
     @Column(name = "set_number", nullable = false)

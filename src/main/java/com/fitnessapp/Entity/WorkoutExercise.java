@@ -1,5 +1,7 @@
 package com.fitnessapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,6 +23,7 @@ public class WorkoutExercise {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workout_id", nullable = false)
+    @JsonBackReference
     private Workout workout;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -49,6 +52,7 @@ public class WorkoutExercise {
     private Integer restTimeSeconds;
 
     @OneToMany(mappedBy = "workoutExercise", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<ExerciseSet> actualSets;
 
     @Column(columnDefinition = "TEXT")
