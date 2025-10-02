@@ -101,95 +101,56 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ userProfile, onProfil
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    <div className="space-y-6">
       {/* Account Security */}
-      <div style={{
-        backgroundColor: 'white',
-        padding: '24px',
-        borderRadius: '12px',
-        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-      }}>
-        <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: '600', color: '#374151' }}>
+      <div className="card hover-lift" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)' }}>
+        <h3 className="text-h4 text-white mb-4">
           Account Security
         </h3>
 
         {passwordSuccess && (
-          <div style={{
-            backgroundColor: '#f0f9ff',
-            border: '1px solid #bae6fd',
-            color: '#0284c7',
-            padding: '12px',
-            borderRadius: '6px',
-            marginBottom: '16px',
-            fontSize: '14px'
-          }}>
-            ✅ Password changed successfully!
+          <div className="card card-compact mb-4" style={{ backgroundColor: '#d1fae5', border: '1.5px solid rgba(16, 185, 129, 0.3)' }}>
+            <p className="text-body text-success">✅ Password changed successfully!</p>
           </div>
         )}
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div className="space-y-4">
           {/* Password Section */}
-          <div style={{
-            padding: '16px',
-            border: '1px solid #e5e7eb',
-            borderRadius: '8px'
-          }}>
+          <div className="card card-compact" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)' }}>
             <div style={{
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              marginBottom: showPasswordSection ? '16px' : '0'
+              marginBottom: showPasswordSection ? 'var(--space-md)' : '0'
             }}>
-              <div>
-                <div style={{ fontSize: '16px', fontWeight: '600', color: '#1f2937' }}>
+              <div style={{ textAlign: 'left' }}>
+                <div className="text-body font-semibold text-white">
                   Password
                 </div>
-                <div style={{ fontSize: '14px', color: '#6b7280' }}>
+                <div className="text-body-sm text-light">
                   Last updated: {formatDate(userProfile.updatedAt)}
                 </div>
               </div>
               <button
                 onClick={() => setShowPasswordSection(!showPasswordSection)}
-                style={{
-                  padding: '8px 16px',
-                  backgroundColor: showPasswordSection ? '#6b7280' : '#4f46e5',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: '600'
-                }}
+                className={`btn ${showPasswordSection ? 'btn-ghost' : 'btn-primary'}`}
+                style={{ width: '160px' }}
               >
                 {showPasswordSection ? 'Cancel' : 'Change Password'}
               </button>
             </div>
 
             {showPasswordSection && (
-              <form onSubmit={handlePasswordSubmit}>
+              <form onSubmit={handlePasswordSubmit} className="space-y-4">
                 {passwordError && (
-                  <div style={{
-                    backgroundColor: '#fef2f2',
-                    border: '1px solid #fecaca',
-                    color: '#dc2626',
-                    padding: '12px',
-                    borderRadius: '6px',
-                    marginBottom: '16px',
-                    fontSize: '14px'
-                  }}>
-                    {passwordError}
+                  <div className="card card-compact" style={{ backgroundColor: '#fee2e2', border: '1.5px solid rgba(239, 68, 68, 0.3)' }}>
+                    <p className="text-body text-error">{passwordError}</p>
                   </div>
                 )}
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div className="space-y-4">
                   <div>
-                    <label style={{
-                      display: 'block',
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      color: '#374151',
-                      marginBottom: '6px'
-                    }}>
+                    <label className="text-body-sm font-semibold text-white mb-2" style={{ display: 'block' }}>
                       Current Password
                     </label>
                     <input
@@ -198,25 +159,20 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ userProfile, onProfil
                       value={passwordForm.currentPassword}
                       onChange={handlePasswordChange}
                       required
+                      className="w-full"
                       style={{
-                        width: '100%',
-                        padding: '10px 12px',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '6px',
-                        fontSize: '14px',
-                        boxSizing: 'border-box'
+                        padding: 'var(--space-sm) var(--space-md)',
+                        border: '1.5px solid rgba(178, 190, 195, 0.3)',
+                        borderRadius: 'var(--radius-md)',
+                        fontSize: 'var(--font-size-sm)',
+                        backgroundColor: 'var(--color-background-card)',
+                        color: 'var(--color-text-white)'
                       }}
                     />
                   </div>
 
                   <div>
-                    <label style={{
-                      display: 'block',
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      color: '#374151',
-                      marginBottom: '6px'
-                    }}>
+                    <label className="text-body-sm font-semibold text-white mb-2" style={{ display: 'block' }}>
                       New Password
                     </label>
                     <input
@@ -226,25 +182,20 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ userProfile, onProfil
                       onChange={handlePasswordChange}
                       required
                       minLength={8}
+                      className="w-full"
                       style={{
-                        width: '100%',
-                        padding: '10px 12px',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '6px',
-                        fontSize: '14px',
-                        boxSizing: 'border-box'
+                        padding: 'var(--space-sm) var(--space-md)',
+                        border: '1.5px solid rgba(178, 190, 195, 0.3)',
+                        borderRadius: 'var(--radius-md)',
+                        fontSize: 'var(--font-size-sm)',
+                        backgroundColor: 'var(--color-background-card)',
+                        color: 'var(--color-text-white)'
                       }}
                     />
                   </div>
 
                   <div>
-                    <label style={{
-                      display: 'block',
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      color: '#374151',
-                      marginBottom: '6px'
-                    }}>
+                    <label className="text-body-sm font-semibold text-white mb-2" style={{ display: 'block' }}>
                       Confirm New Password
                     </label>
                     <input
@@ -253,13 +204,14 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ userProfile, onProfil
                       value={passwordForm.confirmPassword}
                       onChange={handlePasswordChange}
                       required
+                      className="w-full"
                       style={{
-                        width: '100%',
-                        padding: '10px 12px',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '6px',
-                        fontSize: '14px',
-                        boxSizing: 'border-box'
+                        padding: 'var(--space-sm) var(--space-md)',
+                        border: '1.5px solid rgba(178, 190, 195, 0.3)',
+                        borderRadius: 'var(--radius-md)',
+                        fontSize: 'var(--font-size-sm)',
+                        backgroundColor: 'var(--color-background-card)',
+                        color: 'var(--color-text-white)'
                       }}
                     />
                   </div>
@@ -267,17 +219,8 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ userProfile, onProfil
                   <button
                     type="submit"
                     disabled={passwordLoading}
-                    style={{
-                      padding: '10px 20px',
-                      backgroundColor: passwordLoading ? '#9ca3af' : '#10b981',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '6px',
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      cursor: passwordLoading ? 'not-allowed' : 'pointer',
-                      alignSelf: 'flex-start'
-                    }}
+                    className={`btn ${passwordLoading ? 'btn-ghost' : 'btn-primary'}`}
+                    style={{ cursor: passwordLoading ? 'not-allowed' : 'pointer', minWidth: '160px' }}
                   >
                     {passwordLoading ? 'Changing...' : 'Change Password'}
                   </button>
@@ -287,36 +230,24 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ userProfile, onProfil
           </div>
 
           {/* Session Management */}
-          <div style={{
-            padding: '16px',
-            border: '1px solid #e5e7eb',
-            borderRadius: '8px'
-          }}>
+          <div className="card card-compact" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)' }}>
             <div style={{
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center'
             }}>
-              <div>
-                <div style={{ fontSize: '16px', fontWeight: '600', color: '#1f2937' }}>
+              <div style={{ textAlign: 'left' }}>
+                <div className="text-body font-semibold text-white">
                   Session Management
                 </div>
-                <div style={{ fontSize: '14px', color: '#6b7280' }}>
+                <div className="text-body-sm text-light">
                   Log out of this device and clear stored session data
                 </div>
               </div>
               <button
                 onClick={logout}
-                style={{
-                  padding: '8px 16px',
-                  backgroundColor: '#f59e0b',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: '600'
-                }}
+                className="btn btn-primary"
+                style={{ width: '160px' }}
               >
                 Sign Out
               </button>
@@ -326,47 +257,29 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ userProfile, onProfil
       </div>
 
       {/* Privacy & Data */}
-      <div style={{
-        backgroundColor: 'white',
-        padding: '24px',
-        borderRadius: '12px',
-        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-      }}>
-        <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: '600', color: '#374151' }}>
+      <div className="card hover-lift" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)' }}>
+        <h3 className="text-h4 text-white mb-4">
           Privacy & Data
         </h3>
 
-        <div style={{
-          padding: '16px',
-          border: '1px solid #e5e7eb',
-          borderRadius: '8px'
-        }}>
+        <div className="card card-compact" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)' }}>
           <div style={{
             display: 'flex',
             justifyContent: 'space-between',
-            alignItems: 'flex-start'
+            alignItems: 'center'
           }}>
-            <div style={{ flex: 1, marginRight: '16px' }}>
-              <div style={{ fontSize: '16px', fontWeight: '600', color: '#1f2937', marginBottom: '4px' }}>
+            <div style={{ flex: 1, marginRight: '16px', textAlign: 'left' }}>
+              <div className="text-body font-semibold text-white mb-1">
                 Download Your Data
               </div>
-              <div style={{ fontSize: '14px', color: '#6b7280' }}>
+              <div className="text-body-sm text-light">
                 Export all your workout data, progress measurements, and account information
               </div>
             </div>
             <button
               onClick={() => alert('Data export feature will be implemented soon')}
-              style={{
-                padding: '8px 16px',
-                backgroundColor: '#3b82f6',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: '600',
-                whiteSpace: 'nowrap'
-              }}
+              className="btn btn-primary"
+              style={{ whiteSpace: 'nowrap', width: '160px' }}
             >
               Export Data
             </button>
@@ -375,48 +288,33 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ userProfile, onProfil
       </div>
 
       {/* Danger Zone */}
-      <div style={{
-        backgroundColor: 'white',
-        padding: '24px',
-        borderRadius: '12px',
-        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-        border: '2px solid #fecaca'
-      }}>
-        <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: '600', color: '#dc2626' }}>
+      <div className="card hover-lift" style={{ border: '2px solid rgba(239, 68, 68, 0.5)', backgroundColor: '#2D3436' }}>
+        <h3 className="text-h4 mb-4" style={{ color: 'var(--color-error)' }}>
           Danger Zone
         </h3>
 
-        <div style={{
-          padding: '16px',
-          border: '1px solid #fecaca',
-          borderRadius: '8px',
-          backgroundColor: '#fef2f2'
-        }}>
+        <div className="card card-compact" style={{ border: '1.5px solid rgba(239, 68, 68, 0.3)', backgroundColor: 'rgba(239, 68, 68, 0.05)' }}>
           <div style={{
             display: 'flex',
             justifyContent: 'space-between',
-            alignItems: 'flex-start'
+            alignItems: 'center'
           }}>
-            <div style={{ flex: 1, marginRight: '16px' }}>
-              <div style={{ fontSize: '16px', fontWeight: '600', color: '#dc2626', marginBottom: '4px' }}>
+            <div style={{ flex: 1, marginRight: '16px', textAlign: 'left' }}>
+              <div className="text-body font-semibold text-white mb-1">
                 Delete Account
               </div>
-              <div style={{ fontSize: '14px', color: '#6b7280' }}>
+              <div className="text-body-sm text-light">
                 Permanently delete your account and all associated data. This action cannot be undone.
               </div>
             </div>
             <button
               onClick={handleDeleteAccount}
+              className="btn"
               style={{
-                padding: '8px 16px',
-                backgroundColor: '#dc2626',
+                backgroundColor: 'var(--color-error)',
                 color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: '600',
-                whiteSpace: 'nowrap'
+                whiteSpace: 'nowrap',
+                width: '160px'
               }}
             >
               Delete Account

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { workoutApi } from '../../services/api';
 import { Workout, WorkoutExercise, ExerciseSet } from '../../types/api';
 import AddExerciseModal from './AddExerciseModal';
@@ -243,7 +244,7 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
     };
   }, []);
 
-  return (
+  const modalContent = (
     <div
       style={{
         position: 'fixed',
@@ -261,44 +262,41 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
     >
       <div
         style={{
-          backgroundColor: 'white',
+          backgroundColor: 'var(--color-background-elevated)',
           borderRadius: '8px',
           maxWidth: '600px',
           width: '90%',
           maxHeight: '90vh',
           overflow: 'auto',
+          position: 'relative',
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div style={{
           display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
+          justifyContent: 'center',
+          alignItems: 'center',
           padding: '24px',
-          borderBottom: '1px solid #e5e7eb'
+          borderBottom: '1.5px solid rgba(178, 190, 195, 0.3)',
+          position: 'relative'
         }}>
-          <div style={{ flex: 1 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-              <h2 style={{ fontSize: '24px', fontWeight: 'bold', margin: 0 }}>{workout.name}</h2>
-              <span
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  padding: '4px 12px',
-                  borderRadius: '9999px',
-                  fontSize: '12px',
-                  fontWeight: '500',
-                  backgroundColor: `${getStatusColor(workout.status)}20`,
-                  color: getStatusColor(workout.status),
-                }}
-              >
-                {workout.status.charAt(0) + workout.status.slice(1).toLowerCase().replace('_', ' ')}
-              </span>
-            </div>
-            {workout.description && (
-              <p style={{ color: '#6b7280', margin: 0 }}>{workout.description}</p>
-            )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <h2 style={{ fontSize: '24px', fontWeight: 'bold', margin: 0, color: '#000000' }}>{workout.name}</h2>
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '4px 12px',
+                borderRadius: '9999px',
+                fontSize: '12px',
+                fontWeight: '500',
+                backgroundColor: `${getStatusColor(workout.status)}20`,
+                color: getStatusColor(workout.status),
+              }}
+            >
+              {workout.status.charAt(0) + workout.status.slice(1).toLowerCase().replace('_', ' ')}
+            </span>
           </div>
           <button
             onClick={onClose}
@@ -308,7 +306,8 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
               fontSize: '24px',
               cursor: 'pointer',
               color: '#6b7280',
-              marginLeft: '16px',
+              position: 'absolute',
+              right: '24px'
             }}
           >
             ×
@@ -330,36 +329,61 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
             </div>
           )}
 
+          {/* Description */}
+          {workout.description && (
+            <div style={{
+              marginBottom: '20px',
+              padding: '12px 16px',
+              backgroundColor: 'var(--color-background-card)',
+              borderRadius: '6px',
+              border: '1.5px solid rgba(178, 190, 195, 0.3)'
+            }}>
+              <h4 style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-text-light)', margin: '0 0 8px 0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Description</h4>
+              <p style={{ color: 'var(--color-text-white)', margin: 0, fontSize: '14px', lineHeight: '1.5' }}>
+                {workout.description}
+              </p>
+            </div>
+          )}
+
           {/* Workout Info Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+            gap: '12px',
+            marginBottom: '24px',
+            padding: '16px',
+            backgroundColor: 'var(--color-background-card)',
+            borderRadius: '6px',
+            border: '1.5px solid rgba(178, 190, 195, 0.3)'
+          }}>
             <div>
-              <h4 style={{ fontSize: '14px', fontWeight: '500', color: '#6b7280', margin: '0 0 4px 0' }}>Scheduled</h4>
-              <p style={{ margin: 0, fontWeight: '500' }}>{formatDate(workout.scheduledDate)}</p>
+              <h4 style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-text-light)', margin: '0 0 4px 0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Scheduled</h4>
+              <p style={{ margin: 0, fontWeight: '600', color: 'var(--color-text-white)', fontSize: '14px' }}>{formatDate(workout.scheduledDate)}</p>
             </div>
 
             <div>
-              <h4 style={{ fontSize: '14px', fontWeight: '500', color: '#6b7280', margin: '0 0 4px 0' }}>Duration</h4>
-              <p style={{ margin: 0, fontWeight: '500' }}>{formatDuration(workout.durationMinutes)}</p>
+              <h4 style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-text-light)', margin: '0 0 4px 0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Duration</h4>
+              <p style={{ margin: 0, fontWeight: '600', color: 'var(--color-text-white)', fontSize: '14px' }}>{formatDuration(workout.durationMinutes)}</p>
             </div>
 
             {workout.startedAt && (
               <div>
-                <h4 style={{ fontSize: '14px', fontWeight: '500', color: '#6b7280', margin: '0 0 4px 0' }}>Started</h4>
-                <p style={{ margin: 0, fontWeight: '500' }}>{formatDate(workout.startedAt)}</p>
+                <h4 style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-text-light)', margin: '0 0 4px 0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Started</h4>
+                <p style={{ margin: 0, fontWeight: '600', color: 'var(--color-text-white)', fontSize: '14px' }}>{formatDate(workout.startedAt)}</p>
               </div>
             )}
 
             {workout.completedAt && (
               <div>
-                <h4 style={{ fontSize: '14px', fontWeight: '500', color: '#6b7280', margin: '0 0 4px 0' }}>Completed</h4>
-                <p style={{ margin: 0, fontWeight: '500' }}>{formatDate(workout.completedAt)}</p>
+                <h4 style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-text-light)', margin: '0 0 4px 0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Completed</h4>
+                <p style={{ margin: 0, fontWeight: '600', color: 'var(--color-text-white)', fontSize: '14px' }}>{formatDate(workout.completedAt)}</p>
               </div>
             )}
 
             {workout.caloriesBurned && (
               <div>
-                <h4 style={{ fontSize: '14px', fontWeight: '500', color: '#6b7280', margin: '0 0 4px 0' }}>Calories Burned</h4>
-                <p style={{ margin: 0, fontWeight: '500' }}>{workout.caloriesBurned} cal</p>
+                <h4 style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-text-light)', margin: '0 0 4px 0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Calories</h4>
+                <p style={{ margin: 0, fontWeight: '600', color: 'var(--color-text-white)', fontSize: '14px' }}>{workout.caloriesBurned} cal</p>
               </div>
             )}
           </div>
@@ -367,13 +391,15 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
           {/* Notes */}
           {workout.notes && (
             <div style={{ marginBottom: '24px' }}>
-              <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#374151', margin: '0 0 8px 0' }}>Notes</h4>
+              <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#000000', margin: '0 0 8px 0' }}>Notes</h4>
               <p style={{
                 margin: 0,
                 padding: '12px',
-                backgroundColor: '#f9fafb',
+                backgroundColor: 'var(--color-background-card)',
+                border: '1.5px solid rgba(178, 190, 195, 0.5)',
                 borderRadius: '6px',
-                whiteSpace: 'pre-wrap'
+                whiteSpace: 'pre-wrap',
+                color: 'var(--color-text-white)'
               }}>
                 {workout.notes}
               </p>
@@ -383,7 +409,7 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
           {/* Exercises Section */}
           <div style={{ marginBottom: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#374151', margin: 0 }}>
+              <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#000000', margin: 0 }}>
                 Exercises ({exercises.length})
               </h4>
               {workout.status === 'PLANNED' && (
@@ -391,7 +417,7 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
                   onClick={handleAddExercise}
                   style={{
                     padding: '6px 12px',
-                    backgroundColor: '#4f46e5',
+                    backgroundColor: '#FF6B6B',
                     color: 'white',
                     border: 'none',
                     borderRadius: '4px',
@@ -406,19 +432,19 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
             </div>
 
             {exercisesLoading ? (
-              <div style={{ textAlign: 'center', padding: '20px', color: '#6b7280' }}>
+              <div style={{ textAlign: 'center', padding: '20px', color: 'var(--color-text-light)' }}>
                 Loading exercises...
               </div>
             ) : exercises.length === 0 ? (
               <div style={{
                 padding: '24px',
                 textAlign: 'center',
-                backgroundColor: '#f9fafb',
+                backgroundColor: 'var(--color-background-card)',
                 borderRadius: '6px',
-                border: '2px dashed #d1d5db'
+                border: '1.5px dashed rgba(178, 190, 195, 0.5)'
               }}>
-                <p style={{ margin: 0, color: '#6b7280' }}>No exercises added yet</p>
-                <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#9ca3af' }}>
+                <p style={{ margin: 0, color: 'var(--color-text-white)' }}>No exercises added yet</p>
+                <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: 'var(--color-text-light)' }}>
                   Click "Add Exercise" to build your workout
                 </p>
               </div>
@@ -430,9 +456,9 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
                     <div
                       style={{
                         padding: '16px',
-                        border: '1px solid #e5e7eb',
+                        border: '1.5px solid rgba(178, 190, 195, 0.3)',
                         borderRadius: '8px',
-                        backgroundColor: '#ffffff',
+                        backgroundColor: 'var(--color-background-card)',
                       }}
                     >
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -452,7 +478,7 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
                               }}>
                                 {index + 1}
                               </span>
-                              <h5 style={{ margin: 0, fontSize: '16px', fontWeight: '600' }}>
+                              <h5 style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: 'var(--color-text-white)' }}>
                                 {exercise.exercise.name}
                               </h5>
                               <span style={{
@@ -474,7 +500,7 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
                               <div style={{ marginBottom: '8px' }}>
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', marginBottom: '12px' }}>
                                   <div>
-                                    <label style={{ display: 'block', fontSize: '12px', color: '#6b7280', fontWeight: '500', marginBottom: '4px' }}>
+                                    <label style={{ display: 'block', fontSize: '12px', color: '#000000', fontWeight: '500', marginBottom: '4px' }}>
                                       Sets:
                                     </label>
                                     <input
@@ -485,14 +511,16 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
                                       style={{
                                         width: '100%',
                                         padding: '6px 8px',
-                                        border: '1px solid #d1d5db',
+                                        border: '1.5px solid rgba(178, 190, 195, 0.5)',
+                                        backgroundColor: 'var(--color-background-card)',
+                                        color: 'var(--color-text-white)',
                                         borderRadius: '4px',
                                         fontSize: '12px',
                                       }}
                                     />
                                   </div>
                                   <div>
-                                    <label style={{ display: 'block', fontSize: '12px', color: '#6b7280', fontWeight: '500', marginBottom: '4px' }}>
+                                    <label style={{ display: 'block', fontSize: '12px', color: '#000000', fontWeight: '500', marginBottom: '4px' }}>
                                       Reps:
                                     </label>
                                     <input
@@ -503,14 +531,16 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
                                       style={{
                                         width: '100%',
                                         padding: '6px 8px',
-                                        border: '1px solid #d1d5db',
+                                        border: '1.5px solid rgba(178, 190, 195, 0.5)',
+                                        backgroundColor: 'var(--color-background-card)',
+                                        color: 'var(--color-text-white)',
                                         borderRadius: '4px',
                                         fontSize: '12px',
                                       }}
                                     />
                                   </div>
                                   <div>
-                                    <label style={{ display: 'block', fontSize: '12px', color: '#6b7280', fontWeight: '500', marginBottom: '4px' }}>
+                                    <label style={{ display: 'block', fontSize: '12px', color: '#000000', fontWeight: '500', marginBottom: '4px' }}>
                                       Weight (kg):
                                     </label>
                                     <input
@@ -522,14 +552,16 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
                                       style={{
                                         width: '100%',
                                         padding: '6px 8px',
-                                        border: '1px solid #d1d5db',
+                                        border: '1.5px solid rgba(178, 190, 195, 0.5)',
+                                        backgroundColor: 'var(--color-background-card)',
+                                        color: 'var(--color-text-white)',
                                         borderRadius: '4px',
                                         fontSize: '12px',
                                       }}
                                     />
                                   </div>
                                   <div>
-                                    <label style={{ display: 'block', fontSize: '12px', color: '#6b7280', fontWeight: '500', marginBottom: '4px' }}>
+                                    <label style={{ display: 'block', fontSize: '12px', color: '#000000', fontWeight: '500', marginBottom: '4px' }}>
                                       Rest (seconds):
                                     </label>
                                     <input
@@ -541,7 +573,9 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
                                       style={{
                                         width: '100%',
                                         padding: '6px 8px',
-                                        border: '1px solid #d1d5db',
+                                        border: '1.5px solid rgba(178, 190, 195, 0.5)',
+                                        backgroundColor: 'var(--color-background-card)',
+                                        color: 'var(--color-text-white)',
                                         borderRadius: '4px',
                                         fontSize: '12px',
                                       }}
@@ -549,7 +583,7 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
                                   </div>
                                 </div>
                                 <div style={{ marginBottom: '12px' }}>
-                                  <label style={{ display: 'block', fontSize: '12px', color: '#6b7280', fontWeight: '500', marginBottom: '4px' }}>
+                                  <label style={{ display: 'block', fontSize: '12px', color: '#000000', fontWeight: '500', marginBottom: '4px' }}>
                                     Notes:
                                   </label>
                                   <textarea
@@ -559,7 +593,9 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
                                     style={{
                                       width: '100%',
                                       padding: '6px 8px',
-                                      border: '1px solid #d1d5db',
+                                      border: '1.5px solid rgba(178, 190, 195, 0.5)',
+                                      backgroundColor: 'var(--color-background-card)',
+                                      color: 'var(--color-text-white)',
                                       borderRadius: '4px',
                                       fontSize: '12px',
                                       resize: 'vertical',
@@ -573,7 +609,7 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
                                     disabled={loading}
                                     style={{
                                       padding: '6px 12px',
-                                      backgroundColor: loading ? '#9ca3af' : '#10b981',
+                                      backgroundColor: loading ? '#9ca3af' : '#FF6B6B',
                                       color: 'white',
                                       border: 'none',
                                       borderRadius: '4px',
@@ -587,9 +623,9 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
                                     onClick={handleCancelEdit}
                                     style={{
                                       padding: '6px 12px',
-                                      backgroundColor: '#f3f4f6',
-                                      color: '#374151',
-                                      border: 'none',
+                                      backgroundColor: 'white',
+                                      color: '#FF6B6B',
+                                      border: '1.5px solid #FF6B6B',
                                       borderRadius: '4px',
                                       cursor: 'pointer',
                                       fontSize: '12px',
@@ -604,29 +640,29 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
                               <>
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '8px' }}>
                                   <div>
-                                    <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>Sets:</span>
-                                    <span style={{ marginLeft: '4px', fontWeight: '600' }}>{exercise.plannedSets}</span>
+                                    <span style={{ fontSize: '12px', color: 'var(--color-text-light)', fontWeight: '500' }}>Sets:</span>
+                                    <span style={{ marginLeft: '4px', fontWeight: '600', color: 'var(--color-text-white)' }}>{exercise.plannedSets}</span>
                                   </div>
                                   <div>
-                                    <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>Reps:</span>
-                                    <span style={{ marginLeft: '4px', fontWeight: '600' }}>{exercise.plannedReps}</span>
+                                    <span style={{ fontSize: '12px', color: 'var(--color-text-light)', fontWeight: '500' }}>Reps:</span>
+                                    <span style={{ marginLeft: '4px', fontWeight: '600', color: 'var(--color-text-white)' }}>{exercise.plannedReps}</span>
                                   </div>
                                   {exercise.plannedWeight && (
                                     <div>
-                                      <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>Weight:</span>
-                                      <span style={{ marginLeft: '4px', fontWeight: '600' }}>{exercise.plannedWeight}kg</span>
+                                      <span style={{ fontSize: '12px', color: 'var(--color-text-light)', fontWeight: '500' }}>Weight:</span>
+                                      <span style={{ marginLeft: '4px', fontWeight: '600', color: 'var(--color-text-white)' }}>{exercise.plannedWeight}kg</span>
                                     </div>
                                   )}
                                   <div>
-                                    <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: '500' }}>Rest:</span>
-                                    <span style={{ marginLeft: '4px', fontWeight: '600' }}>
+                                    <span style={{ fontSize: '12px', color: 'var(--color-text-light)', fontWeight: '500' }}>Rest:</span>
+                                    <span style={{ marginLeft: '4px', fontWeight: '600', color: 'var(--color-text-white)' }}>
                                       {exercise.restTimeSeconds ? `${Math.floor(exercise.restTimeSeconds / 60)}:${(exercise.restTimeSeconds % 60).toString().padStart(2, '0')}` : '0:00'}
                                     </span>
                                   </div>
                                 </div>
 
                                 {exercise.notes && (
-                                  <p style={{ margin: '0', fontSize: '12px', color: '#6b7280', fontStyle: 'italic' }}>
+                                  <p style={{ margin: '0', fontSize: '12px', color: 'var(--color-text-light)', fontStyle: 'italic' }}>
                                     {exercise.notes}
                                   </p>
                                 )}
@@ -640,7 +676,7 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
                               disabled={loading}
                               style={{
                                 padding: '6px 12px',
-                                backgroundColor: loading ? '#9ca3af' : '#10b981',
+                                backgroundColor: loading ? '#9ca3af' : '#FF6B6B',
                                 color: 'white',
                                 border: 'none',
                                 borderRadius: '4px',
@@ -678,9 +714,9 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
                               onClick={() => handleStartEdit(exercise)}
                               style={{
                                 padding: '6px 12px',
-                                backgroundColor: '#6366f1',
-                                color: 'white',
-                                border: 'none',
+                                backgroundColor: 'white',
+                                color: '#FF6B6B',
+                                border: '1.5px solid #FF6B6B',
                                 borderRadius: '4px',
                                 cursor: 'pointer',
                                 fontSize: '12px',
@@ -722,9 +758,9 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
                 onClick={onClose}
                 style={{
                   padding: '8px 16px',
-                  backgroundColor: '#f3f4f6',
-                  color: '#374151',
-                  border: 'none',
+                  backgroundColor: 'white',
+                  color: '#FF6B6B',
+                  border: '1.5px solid #FF6B6B',
                   borderRadius: '6px',
                   cursor: 'pointer',
                   fontSize: '14px',
@@ -739,7 +775,7 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
                   disabled={loading}
                   style={{
                     padding: '8px 16px',
-                    backgroundColor: loading ? '#9ca3af' : '#10b981',
+                    backgroundColor: loading ? '#9ca3af' : '#FF6B6B',
                     color: 'white',
                     border: 'none',
                     borderRadius: '6px',
@@ -757,7 +793,7 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
                   disabled={loading}
                   style={{
                     padding: '8px 16px',
-                    backgroundColor: loading ? '#9ca3af' : '#4f46e5',
+                    backgroundColor: loading ? '#9ca3af' : '#FF6B6B',
                     color: 'white',
                     border: 'none',
                     borderRadius: '6px',
@@ -792,6 +828,11 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
         />
       )}
     </div>
+  );
+
+  return ReactDOM.createPortal(
+    modalContent,
+    document.body
   );
 };
 

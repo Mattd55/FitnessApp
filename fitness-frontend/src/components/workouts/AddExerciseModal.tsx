@@ -114,7 +114,7 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ workoutId, onClose,
     >
       <div
         style={{
-          backgroundColor: 'white',
+          backgroundColor: 'var(--color-background-elevated)',
           borderRadius: '8px',
           maxWidth: '800px',
           width: '90%',
@@ -126,12 +126,13 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ workoutId, onClose,
         {/* Header */}
         <div style={{
           display: 'flex',
-          justifyContent: 'space-between',
+          justifyContent: 'center',
           alignItems: 'center',
           padding: '24px',
-          borderBottom: '1px solid #e5e7eb'
+          borderBottom: '1.5px solid rgba(178, 190, 195, 0.3)',
+          position: 'relative'
         }}>
-          <h2 style={{ fontSize: '24px', fontWeight: 'bold', margin: 0 }}>Add Exercise to Workout</h2>
+          <h2 style={{ fontSize: '24px', fontWeight: 'bold', margin: 0, color: '#000000' }}>Add Exercise to Workout</h2>
           <button
             onClick={onClose}
             style={{
@@ -140,6 +141,8 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ workoutId, onClose,
               fontSize: '24px',
               cursor: 'pointer',
               color: '#6b7280',
+              position: 'absolute',
+              right: '24px'
             }}
           >
             ×
@@ -147,12 +150,12 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ workoutId, onClose,
         </div>
 
         {/* Exercise Parameters */}
-        <div style={{ padding: '24px', borderBottom: '1px solid #e5e7eb' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '16px' }}>Exercise Parameters</h3>
+        <div style={{ padding: '24px', borderBottom: '1.5px solid rgba(178, 190, 195, 0.3)' }}>
+          <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '16px', color: '#000000' }}>Exercise Parameters</h3>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '16px' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '4px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '4px', color: '#000000' }}>
                 Sets
               </label>
               <input
@@ -164,15 +167,17 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ workoutId, onClose,
                 style={{
                   width: '100%',
                   padding: '8px 12px',
-                  border: '1px solid #d1d5db',
+                  border: '1.5px solid rgba(178, 190, 195, 0.5)',
                   borderRadius: '6px',
                   fontSize: '14px',
+                  backgroundColor: 'var(--color-background-card)',
+                  color: 'var(--color-text-white)',
                 }}
               />
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '4px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '4px', color: '#000000' }}>
                 Reps
               </label>
               <input
@@ -184,15 +189,17 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ workoutId, onClose,
                 style={{
                   width: '100%',
                   padding: '8px 12px',
-                  border: '1px solid #d1d5db',
+                  border: '1.5px solid rgba(178, 190, 195, 0.5)',
                   borderRadius: '6px',
                   fontSize: '14px',
+                  backgroundColor: 'var(--color-background-card)',
+                  color: 'var(--color-text-white)',
                 }}
               />
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '4px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '4px', color: '#000000' }}>
                 Weight (kg)
               </label>
               <input
@@ -205,9 +212,11 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ workoutId, onClose,
                 style={{
                   width: '100%',
                   padding: '8px 12px',
-                  border: '1px solid #d1d5db',
+                  border: '1.5px solid rgba(178, 190, 195, 0.5)',
                   borderRadius: '6px',
                   fontSize: '14px',
+                  backgroundColor: 'var(--color-background-card)',
+                  color: 'var(--color-text-white)',
                 }}
               />
             </div>
@@ -215,7 +224,7 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ workoutId, onClose,
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '16px' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '4px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '4px', color: '#000000' }}>
                 Rest Time (seconds)
               </label>
               <input
@@ -227,15 +236,17 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ workoutId, onClose,
                 style={{
                   width: '100%',
                   padding: '8px 12px',
-                  border: '1px solid #d1d5db',
+                  border: '1.5px solid rgba(178, 190, 195, 0.5)',
                   borderRadius: '6px',
                   fontSize: '14px',
+                  backgroundColor: 'var(--color-background-card)',
+                  color: 'var(--color-text-white)',
                 }}
               />
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '4px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '4px', color: '#000000' }}>
                 Notes
               </label>
               <input
@@ -246,9 +257,11 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ workoutId, onClose,
                 style={{
                   width: '100%',
                   padding: '8px 12px',
-                  border: '1px solid #d1d5db',
+                  border: '1.5px solid rgba(178, 190, 195, 0.5)',
                   borderRadius: '6px',
                   fontSize: '14px',
+                  backgroundColor: 'var(--color-background-card)',
+                  color: 'var(--color-text-white)',
                 }}
               />
             </div>
@@ -265,9 +278,11 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ workoutId, onClose,
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{
                 padding: '8px 12px',
-                border: '1px solid #d1d5db',
+                border: '1.5px solid rgba(178, 190, 195, 0.5)',
                 borderRadius: '6px',
                 fontSize: '14px',
+                backgroundColor: 'var(--color-background-card)',
+                color: 'var(--color-text-white)',
               }}
             />
 
@@ -276,9 +291,11 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ workoutId, onClose,
               onChange={(e) => setSelectedCategory(e.target.value)}
               style={{
                 padding: '8px 12px',
-                border: '1px solid #d1d5db',
+                border: '1.5px solid rgba(178, 190, 195, 0.5)',
                 borderRadius: '6px',
                 fontSize: '14px',
+                backgroundColor: 'var(--color-background-card)',
+                color: 'var(--color-text-white)',
               }}
             >
               <option value="">All Categories</option>
@@ -295,7 +312,7 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ workoutId, onClose,
           <div style={{
             margin: '0 24px 16px 24px',
             backgroundColor: '#fef2f2',
-            border: '1px solid #fecaca',
+            border: '1.5px solid #fecaca',
             color: '#dc2626',
             padding: '12px',
             borderRadius: '6px',
@@ -330,23 +347,23 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ workoutId, onClose,
                   key={exercise.id}
                   style={{
                     padding: '16px',
-                    border: '1px solid #e5e7eb',
+                    border: '1.5px solid rgba(178, 190, 195, 0.3)',
                     borderRadius: '8px',
                     cursor: 'pointer',
                     transition: 'all 0.2s',
-                    backgroundColor: addingExercise === exercise.id ? '#f3f4f6' : 'white',
+                    backgroundColor: addingExercise === exercise.id ? '#f3f4f6' : 'var(--color-background-card)',
                   }}
                   onClick={() => !addingExercise && handleAddExercise(exercise.id)}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <div style={{ flex: 1 }}>
-                      <h4 style={{ margin: '0 0 8px 0', fontSize: '16px', fontWeight: '600' }}>
+                    <div style={{ flex: 1, textAlign: 'left' }}>
+                      <h4 style={{ margin: '0 0 8px 0', fontSize: '16px', fontWeight: '600', color: 'var(--color-text-white)' }}>
                         {exercise.name}
                       </h4>
                       <p style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#6b7280', lineHeight: '1.4' }}>
                         {exercise.description}
                       </p>
-                      <div style={{ display: 'flex', gap: '12px', fontSize: '12px', color: '#6b7280' }}>
+                      <div style={{ display: 'flex', gap: '12px', fontSize: '12px', color: 'var(--color-text-light)' }}>
                         <span>Category: {exercise.category}</span>
                         <span>Equipment: {exercise.equipment}</span>
                         <span>Difficulty: {exercise.difficulty}</span>
@@ -357,7 +374,7 @@ const AddExerciseModal: React.FC<AddExerciseModalProps> = ({ workoutId, onClose,
                       disabled={addingExercise !== null}
                       style={{
                         padding: '8px 16px',
-                        backgroundColor: addingExercise === exercise.id ? '#9ca3af' : '#4f46e5',
+                        backgroundColor: addingExercise === exercise.id ? '#9ca3af' : '#FF6B6B',
                         color: 'white',
                         border: 'none',
                         borderRadius: '6px',

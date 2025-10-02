@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { User, UserProgress, Workout } from '../../types/api';
 import { userApi, workoutApi } from '../../services/api';
+import { Calendar, Trophy, Activity, Target } from 'lucide-react';
 
 interface ProfileOverviewProps {
   userProfile: User;
@@ -21,16 +22,13 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ userProfile }) => {
 
   const loadOverviewData = async () => {
     try {
-      // Load latest progress
       const progress = await userApi.getLatestProgress().catch(() => null);
       setLatestProgress(progress);
 
-      // Load recent workouts
       const workoutsResponse = await workoutApi.getWorkouts(0, 10);
       const workouts = workoutsResponse.content;
-      setRecentWorkouts(workouts.slice(0, 5)); // Show last 5
+      setRecentWorkouts(workouts.slice(0, 5));
 
-      // Calculate stats
       const completedWorkouts = workouts.filter(w => w.status === 'COMPLETED');
       const currentStreak = calculateWorkoutStreak(workouts);
 
@@ -79,112 +77,36 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ userProfile }) => {
     });
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'COMPLETED': return '#10b981';
-      case 'IN_PROGRESS': return '#f59e0b';
-      case 'PLANNED': return '#3b82f6';
-      case 'CANCELLED': return '#ef4444';
-      case 'SKIPPED': return '#6b7280';
-      default: return '#6b7280';
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'COMPLETED': return '✅';
-      case 'IN_PROGRESS': return '🏃';
-      case 'PLANNED': return '📅';
-      case 'CANCELLED': return '❌';
-      case 'SKIPPED': return '⏭️';
-      default: return '📋';
-    }
-  };
-
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      {/* Account Info */}
-      <div style={{
-        backgroundColor: 'white',
-        padding: '24px',
-        borderRadius: '12px',
-        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-      }}>
-        <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: '600', color: '#374151' }}>
-          Account Information
-        </h3>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '16px'
-        }}>
-          <div>
-            <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px' }}>Member Since</div>
-            <div style={{ fontSize: '16px', fontWeight: '600', color: '#1f2937' }}>
-              {formatDate(userProfile.createdAt)}
-            </div>
-          </div>
-          <div>
-            <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px' }}>Last Updated</div>
-            <div style={{ fontSize: '16px', fontWeight: '600', color: '#1f2937' }}>
-              {formatDate(userProfile.updatedAt)}
-            </div>
-          </div>
-          <div>
-            <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px' }}>Account Status</div>
-            <div style={{
-              fontSize: '16px',
-              fontWeight: '600',
-              color: '#10b981',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px'
-            }}>
-              ✅ Active
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <div className="space-y-6">
       {/* Fitness Stats */}
-      <div style={{
-        backgroundColor: 'white',
-        padding: '24px',
-        borderRadius: '12px',
-        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-      }}>
-        <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: '600', color: '#374151' }}>
-          Fitness Statistics
-        </h3>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-          gap: '20px'
-        }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#3b82f6', marginBottom: '4px' }}>
+      <div className="card card-compact hover-lift">
+        <h3 className="text-h4 text-white mb-4">Fitness Statistics</h3>
+        <div className="grid grid-cols-4 gap-6">
+          <div className="card card-compact text-center" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)' }}>
+            <div className="text-h1 text-white mb-1">
               {stats.totalWorkouts}
             </div>
-            <div style={{ fontSize: '14px', color: '#6b7280' }}>Total Workouts</div>
+            <div className="text-caption text-light">Total Workouts</div>
           </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#10b981', marginBottom: '4px' }}>
+          <div className="card card-compact text-center" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)' }}>
+            <div className="text-h1 text-white mb-1">
               {stats.completedWorkouts}
             </div>
-            <div style={{ fontSize: '14px', color: '#6b7280' }}>Completed</div>
+            <div className="text-caption text-light">Completed</div>
           </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#f59e0b', marginBottom: '4px' }}>
+          <div className="card card-compact text-center" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)' }}>
+            <div className="text-h1 text-white mb-1">
               {stats.currentStreak}
             </div>
-            <div style={{ fontSize: '14px', color: '#6b7280' }}>Current Streak</div>
+            <div className="text-caption text-light">Current Streak</div>
           </div>
           {stats.totalWorkouts > 0 && (
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#ef4444', marginBottom: '4px' }}>
+            <div className="card card-compact text-center" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)' }}>
+              <div className="text-h1 text-white mb-1">
                 {Math.round((stats.completedWorkouts / stats.totalWorkouts) * 100)}%
               </div>
-              <div style={{ fontSize: '14px', color: '#6b7280' }}>Completion Rate</div>
+              <div className="text-caption text-light">Completion Rate</div>
             </div>
           )}
         </div>
@@ -192,110 +114,87 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ userProfile }) => {
 
       {/* Latest Progress */}
       {latestProgress && (
-        <div style={{
-          backgroundColor: 'white',
-          padding: '24px',
-          borderRadius: '12px',
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-        }}>
-          <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: '600', color: '#374151' }}>
-            Latest Progress Entry
-          </h3>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'flex-start',
-            padding: '16px',
-            backgroundColor: '#f9fafb',
-            borderRadius: '8px'
-          }}>
-            <div>
-              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>
-                Recorded on {formatDate(latestProgress.measurementDate)}
-              </div>
-              <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
-                {latestProgress.weightKg && (
-                  <div>
-                    <span style={{ fontSize: '12px', color: '#6b7280' }}>Weight: </span>
-                    <span style={{ fontWeight: '600' }}>{latestProgress.weightKg}kg</span>
-                  </div>
-                )}
-                {latestProgress.bodyFatPercentage && (
-                  <div>
-                    <span style={{ fontSize: '12px', color: '#6b7280' }}>Body Fat: </span>
-                    <span style={{ fontWeight: '600' }}>{latestProgress.bodyFatPercentage}%</span>
-                  </div>
-                )}
-                {latestProgress.muscleMassKg && (
-                  <div>
-                    <span style={{ fontSize: '12px', color: '#6b7280' }}>Muscle Mass: </span>
-                    <span style={{ fontWeight: '600' }}>{latestProgress.muscleMassKg}kg</span>
-                  </div>
-                )}
-              </div>
+        <div className="card card-compact hover-lift">
+          <h3 className="text-h4 text-white mb-4">Latest Progress Entry</h3>
+          <div className="card card-compact" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)' }}>
+            <div className="text-body-sm text-light mb-4">
+              Recorded on {formatDate(latestProgress.measurementDate)}
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
+              {latestProgress.weightKg && (
+                <div>
+                  <div className="text-caption text-light mb-1">Weight</div>
+                  <div className="text-h3 text-white">{latestProgress.weightKg}kg</div>
+                </div>
+              )}
+              {latestProgress.bodyFatPercentage && (
+                <div>
+                  <div className="text-caption text-light mb-1">Body Fat</div>
+                  <div className="text-h3 text-white">{latestProgress.bodyFatPercentage}%</div>
+                </div>
+              )}
+              {latestProgress.muscleMassKg && (
+                <div>
+                  <div className="text-caption text-light mb-1">Muscle Mass</div>
+                  <div className="text-h3 text-white">{latestProgress.muscleMassKg}kg</div>
+                </div>
+              )}
             </div>
           </div>
         </div>
       )}
 
       {/* Recent Workouts */}
-      <div style={{
-        backgroundColor: 'white',
-        padding: '24px',
-        borderRadius: '12px',
-        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-      }}>
-        <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: '600', color: '#374151' }}>
-          Recent Workouts
-        </h3>
+      <div className="card card-compact hover-lift">
+        <h3 className="text-h4 text-white mb-4">Recent Workouts</h3>
         {recentWorkouts.length > 0 ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {recentWorkouts.map((workout) => (
+          <div className="space-y-4">
+            {recentWorkouts.map((workout, index) => (
               <div
                 key={workout.id}
+                className="card hover-lift"
                 style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: '16px',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '8px'
+                  animationDelay: `${index * 0.1}s`,
+                  opacity: 0,
+                  animation: 'fadeIn 0.5s forwards',
+                  border: '1.5px solid rgba(178, 190, 195, 0.3)'
                 }}
               >
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: '16px', fontWeight: '600', color: '#1f2937', marginBottom: '4px' }}>
-                    {workout.name}
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h4 className="text-h4 text-white">{workout.name}</h4>
+                    <div className="flex items-center gap-md mt-2">
+                      {workout.scheduledDate && (
+                        <span className="text-body-sm text-light">
+                          {formatDate(workout.scheduledDate)}
+                        </span>
+                      )}
+                      {workout.durationMinutes && (
+                        <span className="text-body-sm text-light">
+                          {workout.durationMinutes} min
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <div style={{ fontSize: '14px', color: '#6b7280' }}>
-                    {workout.scheduledDate && formatDate(workout.scheduledDate)}
-                    {workout.durationMinutes && ` • ${workout.durationMinutes} min`}
-                  </div>
-                </div>
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '4px 12px',
-                  borderRadius: '16px',
-                  backgroundColor: `${getStatusColor(workout.status)}20`,
-                  color: getStatusColor(workout.status),
-                  fontSize: '14px',
-                  fontWeight: '600'
-                }}>
-                  {getStatusIcon(workout.status)}
-                  {workout.status.toLowerCase().replace('_', ' ')}
+                  <span className={`badge ${
+                    workout.status === 'COMPLETED' ? 'badge-success' :
+                    workout.status === 'IN_PROGRESS' ? 'badge-info' :
+                    'badge-warning'
+                  }`}>
+                    {workout.status.toLowerCase().replace('_', ' ')}
+                  </span>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div style={{
-            textAlign: 'center',
-            color: '#6b7280',
-            padding: '40px 20px',
-            fontStyle: 'italic'
-          }}>
-            No workouts yet. Create your first workout to get started!
+          <div className="flex-col-center py-12 fade-in">
+            <div className="bg-primary p-4 rounded-2xl w-16 h-16 mb-4 flex-center">
+              <Activity className="h-8 w-8 text-white" />
+            </div>
+            <p className="text-body text-secondary text-center">
+              No workouts yet. Create your first workout to get started!
+            </p>
           </div>
         )}
       </div>

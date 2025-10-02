@@ -17,16 +17,10 @@ const WorkoutAnalytics: React.FC<WorkoutAnalyticsProps> = ({
 
   if (completedWorkouts.length === 0) {
     return (
-      <div style={{
-        backgroundColor: 'white',
-        padding: '24px',
-        borderRadius: '12px',
-        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-        textAlign: 'center',
-        color: '#6b7280',
-        fontStyle: 'italic'
-      }}>
-        Complete some workouts to see your performance analytics!
+      <div className="flex-col-center py-12 fade-in">
+        <p className="text-body text-secondary text-center">
+          Complete some workouts to see your performance analytics!
+        </p>
       </div>
     );
   }
@@ -234,92 +228,36 @@ const WorkoutAnalytics: React.FC<WorkoutAnalyticsProps> = ({
   };
 
   return (
-    <div>
-      <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '20px', color: '#374151' }}>
-        Workout Performance Analytics
-      </h3>
-
+    <div className="content-section">
       {/* Key Metrics */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-        gap: '16px',
-        marginBottom: '24px'
-      }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--space-md)', marginBottom: 'var(--space-lg)' }}>
         {/* Total Workouts */}
-        <div style={{
-          backgroundColor: 'white',
-          padding: '20px',
-          borderRadius: '8px',
-          border: '1px solid #e5e7eb',
-          textAlign: 'center'
-        }}>
-          <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#3b82f6', marginBottom: '4px' }}>
+        <div className="card card-compact text-center" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)', padding: 'var(--space-lg)' }}>
+          <div className="text-h1 text-white mb-1">
             {totalWorkouts}
           </div>
-          <div style={{ fontSize: '14px', color: '#6b7280' }}>Completed Workouts</div>
+          <div className="text-caption text-light">Completed Workouts</div>
           {frequencyTrend.change !== 0 && (
-            <div style={{
-              fontSize: '12px',
-              color: frequencyTrend.change > 0 ? '#10b981' : '#ef4444',
-              marginTop: '4px'
-            }}>
+            <div className={`text-caption mt-1 ${frequencyTrend.change > 0 ? 'text-success' : 'text-error'}`}>
               {frequencyTrend.change > 0 ? '+' : ''}{frequencyTrend.change} vs last 4 weeks
             </div>
           )}
         </div>
 
         {/* Average Duration */}
-        <div style={{
-          backgroundColor: 'white',
-          padding: '20px',
-          borderRadius: '8px',
-          border: '1px solid #e5e7eb',
-          textAlign: 'center'
-        }}>
-          <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#10b981', marginBottom: '4px' }}>
+        <div className="card card-compact text-center" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)', padding: 'var(--space-lg)' }}>
+          <div className="text-h1 text-white mb-1">
             {avgDuration.toFixed(0)}
           </div>
-          <div style={{ fontSize: '14px', color: '#6b7280' }}>Avg Duration (min)</div>
+          <div className="text-caption text-light">Avg Duration (min)</div>
         </div>
 
-        {/* Average Intensity */}
-        {avgIntensity > 0 && (
-          <div style={{
-            backgroundColor: 'white',
-            padding: '20px',
-            borderRadius: '8px',
-            border: '1px solid #e5e7eb',
-            textAlign: 'center'
-          }}>
-            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#f59e0b', marginBottom: '4px' }}>
-              {avgIntensity.toFixed(1)}
-            </div>
-            <div style={{ fontSize: '14px', color: '#6b7280' }}>Avg Intensity (RPE)</div>
-            {intensityTrend.trend !== 'stable' && (
-              <div style={{
-                fontSize: '12px',
-                color: getTrendColor(intensityTrend.trend),
-                marginTop: '4px'
-              }}>
-                {getTrendIcon(intensityTrend.trend)} {Math.abs(intensityTrend.change).toFixed(1)}%
-              </div>
-            )}
-          </div>
-        )}
-
         {/* Total Volume */}
-        <div style={{
-          backgroundColor: 'white',
-          padding: '20px',
-          borderRadius: '8px',
-          border: '1px solid #e5e7eb',
-          textAlign: 'center'
-        }}>
-          <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#ef4444', marginBottom: '4px' }}>
+        <div className="card card-compact text-center" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)', padding: 'var(--space-lg)' }}>
+          <div className="text-h1 text-white mb-1">
             {(totalVolume / 1000).toFixed(1)}T
           </div>
-          <div style={{ fontSize: '14px', color: '#6b7280' }}>Total Volume (tonnes)</div>
+          <div className="text-caption text-light">Total Volume (tonnes)</div>
         </div>
       </div>
 
@@ -327,56 +265,47 @@ const WorkoutAnalytics: React.FC<WorkoutAnalyticsProps> = ({
       <VolumeChart />
 
       {/* Recent Performance */}
-      <div style={{
-        backgroundColor: 'white',
-        padding: '20px',
-        borderRadius: '8px',
-        border: '1px solid #e5e7eb',
-        marginTop: '20px'
-      }}>
-        <h4 style={{ margin: '0 0 16px 0', fontSize: '16px', fontWeight: '600', color: '#374151' }}>
+      <div className="mt-6">
+        <h4 className="text-h4 text-white mb-4">
           Recent Workout Performance
         </h4>
 
-        <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+        <div className="space-y-4" style={{ maxHeight: '400px', overflowY: 'auto' }}>
           {sortedWorkouts.slice(-5).reverse().map(workout => {
             const analytics = workoutAnalytics.find(a => a.workout.id === workout.id)!;
             return (
               <div
                 key={workout.id}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: '12px 0',
-                  borderBottom: '1px solid #f3f4f6'
-                }}
+                className="card card-compact"
+                style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)', padding: 'var(--space-lg)' }}
               >
-                <div>
-                  <div style={{ fontWeight: '600', color: '#1f2937' }}>{workout.name}</div>
-                  <div style={{ fontSize: '12px', color: '#6b7280' }}>
-                    {formatDate(analytics.date)}
-                  </div>
-                </div>
-                <div style={{ display: 'flex', gap: '16px', alignItems: 'center', fontSize: '14px' }}>
-                  <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontWeight: '600' }}>{analytics.totalSets}</div>
-                    <div style={{ fontSize: '12px', color: '#6b7280' }}>sets</div>
-                  </div>
-                  <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontWeight: '600' }}>{analytics.totalVolume.toFixed(0)}kg</div>
-                    <div style={{ fontSize: '12px', color: '#6b7280' }}>volume</div>
-                  </div>
-                  <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontWeight: '600' }}>{analytics.duration}min</div>
-                    <div style={{ fontSize: '12px', color: '#6b7280' }}>duration</div>
-                  </div>
-                  {analytics.avgIntensity > 0 && (
-                    <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontWeight: '600' }}>{analytics.avgIntensity.toFixed(1)}</div>
-                      <div style={{ fontSize: '12px', color: '#6b7280' }}>RPE</div>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <div className="text-body font-semibold text-white">{workout.name}</div>
+                    <div className="text-caption text-light">
+                      {formatDate(analytics.date)}
                     </div>
-                  )}
+                  </div>
+                  <div className="flex gap-6 items-center">
+                    <div className="text-center">
+                      <div className="text-body font-semibold text-white">{analytics.totalSets}</div>
+                      <div className="text-caption text-light">sets</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-body font-semibold text-white">{analytics.totalVolume.toFixed(0)}kg</div>
+                      <div className="text-caption text-light">volume</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-body font-semibold text-white">{analytics.duration}min</div>
+                      <div className="text-caption text-light">duration</div>
+                    </div>
+                    {analytics.avgIntensity > 0 && (
+                      <div className="text-center">
+                        <div className="text-body font-semibold text-white">{analytics.avgIntensity.toFixed(1)}</div>
+                        <div className="text-caption text-light">RPE</div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             );

@@ -10,7 +10,8 @@ import {
   LogOut,
   Home,
   Users,
-  Shield
+  Shield,
+  Sparkles
 } from 'lucide-react';
 
 interface LayoutProps {
@@ -49,36 +50,36 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Navigation Header */}
-      <nav className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
+    <div className="min-h-screen bg-background">
+      {/* Modern Navigation Header */}
+      <nav className="nav-modern sticky top-0 z-50">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
             <div className="flex">
               <div className="flex-shrink-0 flex items-center">
-                <Dumbbell className="h-8 w-8 text-indigo-600" />
-                <span className="ml-2 text-xl font-bold text-gray-900">FitnessApp</span>
+                <span className="text-xl font-bold text-primary">FitnessApp</span>
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-700">
+              <span className="text-sm font-medium text-primary">
                 Welcome, {user?.firstName && user?.lastName
                   ? `${user.firstName} ${user.lastName}`
                   : user?.username || 'User'}
               </span>
-              <div className="flex items-center space-x-1">
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+              <div className="flex items-center space-x-2">
+                <span className={`badge ${user?.role === 'ADMIN' ? 'badge-error' : user?.role === 'TRAINER' ? 'badge-secondary' : 'badge-primary'}`}>
                   {user?.role}
                 </span>
                 {user?.role === 'ADMIN' && (
-                  <Shield className="h-4 w-4 text-red-500" />
+                  <Shield className="h-4 w-4 text-primary" />
                 )}
               </div>
               <button
                 onClick={handleLogout}
-                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="btn btn-primary p-2"
+                aria-label="Logout"
               >
-                <LogOut className="h-4 w-4" />
+                <LogOut className="h-5 w-5" />
               </button>
             </div>
           </div>
@@ -86,28 +87,21 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </nav>
 
       <div className="flex">
-        {/* Sidebar */}
-        <div className="w-64 bg-white shadow-sm min-h-screen">
-          <nav className="mt-5 px-2">
-            <div className="space-y-1">
+        {/* Modern Sidebar */}
+        <div className="w-64 glass-effect min-h-screen border-r border-neutral-200">
+          <nav className="p-4">
+            {/* Main Navigation */}
+            <div className="space-y-2">
               {navigationItems.map((item) => {
                 const Icon = item.icon;
                 return (
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`${
-                      isActive(item.path)
-                        ? 'bg-indigo-100 text-indigo-700'
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                    } group flex items-center px-2 py-2 text-sm font-medium rounded-md`}
+                    className={`nav-item ${isActive(item.path) ? 'active' : ''}`}
                   >
-                    <Icon
-                      className={`${
-                        isActive(item.path) ? 'text-indigo-500' : 'text-gray-400'
-                      } mr-3 h-5 w-5`}
-                    />
-                    {item.label}
+                    <Icon className="h-5 w-5 mr-3" />
+                    <span className="font-medium">{item.label}</span>
                   </Link>
                 );
               })}
@@ -116,28 +110,25 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             {/* Trainer Navigation */}
             {(user?.role === 'TRAINER' || user?.role === 'ADMIN') && (
               <div className="mt-8">
-                <h3 className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  Trainer
+                <h3 className="px-3 text-xs font-semibold uppercase tracking-wider mb-3 text-secondary">
+                  Trainer Tools
                 </h3>
-                <div className="mt-1 space-y-1">
+                <div className="space-y-2">
                   {trainerItems.map((item) => {
                     const Icon = item.icon;
                     return (
                       <Link
                         key={item.path}
                         to={item.path}
-                        className={`${
-                          isActive(item.path)
-                            ? 'bg-indigo-100 text-indigo-700'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                        } group flex items-center px-2 py-2 text-sm font-medium rounded-md`}
+                        className={`nav-item ${isActive(item.path) ? 'active' : ''}`}
+                        style={{
+                          background: isActive(item.path)
+                            ? 'linear-gradient(135deg, var(--color-secondary-100), var(--color-secondary-50))'
+                            : 'transparent'
+                        }}
                       >
-                        <Icon
-                          className={`${
-                            isActive(item.path) ? 'text-indigo-500' : 'text-gray-400'
-                          } mr-3 h-5 w-5`}
-                        />
-                        {item.label}
+                        <Icon className="h-5 w-5 mr-3" />
+                        <span className="font-medium">{item.label}</span>
                       </Link>
                     );
                   })}
@@ -148,41 +139,59 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             {/* Admin Navigation */}
             {user?.role === 'ADMIN' && (
               <div className="mt-8">
-                <h3 className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <h3 className="px-3 text-xs font-semibold uppercase tracking-wider mb-3 text-primary">
                   Administration
                 </h3>
-                <div className="mt-1 space-y-1">
+                <div className="space-y-2">
                   {adminItems.map((item) => {
                     const Icon = item.icon;
                     return (
                       <Link
                         key={item.path}
                         to={item.path}
-                        className={`${
-                          isActive(item.path)
-                            ? 'bg-red-100 text-red-700'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                        } group flex items-center px-2 py-2 text-sm font-medium rounded-md`}
+                        className={`nav-item ${isActive(item.path) ? 'active' : ''}`}
+                        style={{
+                          background: isActive(item.path)
+                            ? 'linear-gradient(135deg, rgba(255, 107, 107, 0.15), rgba(255, 107, 107, 0.05))'
+                            : 'transparent'
+                        }}
                       >
-                        <Icon
-                          className={`${
-                            isActive(item.path) ? 'text-red-500' : 'text-gray-400'
-                          } mr-3 h-5 w-5`}
-                        />
-                        {item.label}
+                        <Icon className="h-5 w-5 mr-3" />
+                        <span className="font-medium">{item.label}</span>
                       </Link>
                     );
                   })}
                 </div>
               </div>
             )}
+
+            {/* User Profile Section at Bottom */}
+            <div className="mt-8 pt-6 border-t border-neutral-200">
+              <div className="card p-3" style={{ backgroundColor: '#2D3436' }}>
+                <div className="flex items-center space-x-3">
+                  <div className="bg-primary p-2 rounded-full">
+                    <User className="h-4 w-4 text-white" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-white">
+                      {user?.firstName || user?.username || 'User'}
+                    </p>
+                    <p className="text-xs" style={{ color: '#B2BEC3' }}>
+                      Member since {new Date().getFullYear()}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </nav>
         </div>
 
-        {/* Main Content */}
-        <div className="flex-1">
-          <main className="py-6 px-4 sm:px-6 lg:px-8">
-            {children}
+        {/* Main Content Area */}
+        <div className="flex-1 overflow-auto">
+          <main className="w-full h-full">
+            <div className="page-container fade-in">
+              {children}
+            </div>
           </main>
         </div>
       </div>

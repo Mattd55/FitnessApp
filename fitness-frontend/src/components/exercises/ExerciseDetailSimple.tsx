@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { Exercise } from '../../types/api';
 
 interface ExerciseDetailProps {
@@ -35,7 +36,7 @@ const ExerciseDetailSimple: React.FC<ExerciseDetailProps> = ({ exercise, onClose
     }
   };
 
-  return (
+  const modalContent = (
     <div
       style={{
         position: 'fixed',
@@ -102,6 +103,11 @@ const ExerciseDetailSimple: React.FC<ExerciseDetailProps> = ({ exercise, onClose
         </div>
       </div>
     </div>
+  );
+
+  return ReactDOM.createPortal(
+    modalContent,
+    document.body
   );
 };
 

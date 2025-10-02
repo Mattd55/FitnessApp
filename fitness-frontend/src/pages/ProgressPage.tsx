@@ -7,6 +7,7 @@ import ProgressSummary from '../components/progress/ProgressSummary';
 import ProgressHistory from '../components/progress/ProgressHistory';
 import WorkoutAnalytics from '../components/progress/WorkoutAnalytics';
 import PersonalRecords from '../components/progress/PersonalRecords';
+import { Plus, TrendingUp, Target, Calculator, BarChart3, Award } from 'lucide-react';
 
 const ProgressPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -86,156 +87,180 @@ const ProgressPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '400px'
-      }}>
-        <div>Loading progress data...</div>
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style={{ borderBottomColor: 'var(--color-primary)' }}></div>
+          <p style={{ color: 'var(--color-text-light)' }}>Loading progress data...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
-      {/* Header */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '32px'
-      }}>
-        <div>
-          <h1 style={{ margin: 0, fontSize: '32px', fontWeight: 'bold', color: '#1f2937' }}>
-            Progress Tracking
-          </h1>
-          <p style={{ margin: '4px 0 0 0', color: '#6b7280' }}>
-            Track your fitness journey with detailed measurements and analytics
-          </p>
-        </div>
-        <button
-          onClick={() => setShowAddModal(true)}
-          style={{
-            padding: '12px 24px',
-            backgroundColor: '#4f46e5',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            fontSize: '16px',
-            fontWeight: '600',
-          }}
-        >
-          Add Progress Entry
-        </button>
-      </div>
-
-      {error && (
-        <div style={{
-          backgroundColor: '#fef2f2',
-          border: '1px solid #fecaca',
-          color: '#dc2626',
-          padding: '16px',
-          borderRadius: '8px',
-          marginBottom: '24px',
-        }}>
-          {error}
-        </div>
-      )}
-
-      {/* Main Content */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '32px' }}>
-        {/* Progress Summary */}
-        <ProgressSummary latestProgress={latestProgress} />
-
-        {/* Quick Stats */}
-        <div style={{
-          backgroundColor: 'white',
-          padding: '24px',
-          borderRadius: '12px',
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-        }}>
-          <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: '600' }}>
-            Quick Stats
-          </h3>
-          {latestProgress ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
-              {latestProgress.weightKg && (
-                <div>
-                  <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px' }}>BMI</div>
-                  <div style={{ fontSize: '20px', fontWeight: 'bold' }}>
-                    {latestProgress.heightCm && latestProgress.weightKg ?
-                      (latestProgress.weightKg / Math.pow(latestProgress.heightCm / 100, 2)).toFixed(1) : 'N/A'}
-                  </div>
-                </div>
-              )}
-              {latestProgress.bodyFatPercentage && (
-                <div>
-                  <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px' }}>Body Fat</div>
-                  <div style={{ fontSize: '20px', fontWeight: 'bold' }}>
-                    {latestProgress.bodyFatPercentage}%
-                  </div>
-                </div>
-              )}
-              {latestProgress.waistCm && latestProgress.hipCm && (
-                <div>
-                  <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px' }}>Waist/Hip Ratio</div>
-                  <div style={{ fontSize: '20px', fontWeight: 'bold' }}>
-                    {(latestProgress.waistCm / latestProgress.hipCm).toFixed(2)}
-                  </div>
-                </div>
-              )}
-              <div>
-                <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px' }}>Entries</div>
-                <div style={{ fontSize: '20px', fontWeight: 'bold' }}>
-                  {progressHistory.length}
+    <div className="page-container">
+      <div className="content-wrapper fade-in">
+        {/* Header Card */}
+        <div className="card card-elevated hover-lift">
+          <div className="header-section-horizontal">
+            <div className="flex-1">
+              <h1 className="text-h1 text-primary">
+                Progress Tracking
+              </h1>
+              <p className="text-body-lg text-secondary">
+                Track your fitness journey with detailed measurements and analytics
+              </p>
+              <div className="flex items-center justify-center gap-md mt-6">
+                <button
+                  onClick={() => setShowAddModal(true)}
+                  className="btn btn-primary hover-glow"
+                  style={{ padding: 'var(--space-md) var(--space-xl)', fontSize: 'var(--font-size-md)' }}
+                >
+                  <Plus className="h-5 w-5 mr-2" />
+                  Add Progress Entry
+                </button>
+                <div className="flex items-center gap-xl">
+                  <span className="text-body font-medium text-light">
+                    {progressHistory.length} Entries
+                  </span>
                 </div>
               </div>
             </div>
-          ) : (
-            <div style={{ textAlign: 'center', color: '#6b7280', padding: '20px' }}>
-              No progress data yet. Add your first entry to get started!
+          </div>
+        </div>
+
+        {error && (
+          <div className="card border-l-4 border-error bg-red-50">
+            <p className="text-error font-medium">
+              {error}
+            </p>
+          </div>
+        )}
+
+        {/* Main Content Grid */}
+        <div className="grid-2 stagger-in">
+          {/* Progress Summary */}
+          <ProgressSummary latestProgress={latestProgress} />
+
+          {/* Quick Stats Card */}
+          <div className="card hover-lift">
+            <div className="header-section">
+              <h3 className="text-h3 text-white">
+                Quick Stats
+              </h3>
             </div>
-          )}
+            {latestProgress ? (
+              <div className="grid grid-cols-2 gap-md">
+                {latestProgress.weightKg && (
+                  <div className="card card-compact flex-col-center hover-scale" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)', padding: 'var(--space-xl) var(--space-lg)' }}>
+                    <div className="text-caption text-light">
+                      BMI
+                    </div>
+                    <div className="text-h2 text-white">
+                      {latestProgress.heightCm && latestProgress.weightKg ?
+                        (latestProgress.weightKg / Math.pow(latestProgress.heightCm / 100, 2)).toFixed(1) : 'N/A'}
+                    </div>
+                  </div>
+                )}
+                {latestProgress.bodyFatPercentage && (
+                  <div className="card card-compact flex-col-center hover-scale" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)', padding: 'var(--space-xl) var(--space-lg)' }}>
+                    <div className="text-caption text-light">
+                      Body Fat
+                    </div>
+                    <div className="text-h2 text-white">
+                      {latestProgress.bodyFatPercentage}%
+                    </div>
+                  </div>
+                )}
+                {latestProgress.waistCm && latestProgress.hipCm && (
+                  <div className="card card-compact flex-col-center hover-scale" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)', padding: 'var(--space-xl) var(--space-lg)' }}>
+                    <div className="text-caption text-light">
+                      W/H Ratio
+                    </div>
+                    <div className="text-h2 text-white">
+                      {(latestProgress.waistCm / latestProgress.hipCm).toFixed(2)}
+                    </div>
+                  </div>
+                )}
+                <div className="card card-compact flex-col-center hover-scale" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)', padding: 'var(--space-xl) var(--space-lg)' }}>
+                  <div className="text-caption text-light">
+                    Entries
+                  </div>
+                  <div className="text-h2 text-white">
+                    {progressHistory.length}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="flex-col-center py-8 fade-in">
+                <div className="bg-primary p-3 rounded-xl w-12 h-12 mb-3 flex-center">
+                  <TrendingUp className="h-6 w-6 text-white" />
+                </div>
+                <p className="text-body text-secondary">
+                  No progress data yet. Add your first entry to get started!
+                </p>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* Charts */}
-      {progressHistory.length > 0 && (
-        <div style={{ marginBottom: '32px' }}>
-          <ProgressCharts progressHistory={progressHistory} />
+        {/* Charts Section */}
+        {progressHistory.length > 0 && (
+          <div className="card slide-in-right">
+            <div className="header-section">
+              <h3 className="text-h3 text-white">
+                Progress Charts
+              </h3>
+            </div>
+            <ProgressCharts progressHistory={progressHistory} />
+          </div>
+        )}
+
+        {/* Workout Analytics */}
+        <div className="card slide-in-left">
+          <div className="header-section">
+            <h3 className="text-h3 text-white">
+              Workout Analytics
+            </h3>
+          </div>
+          <WorkoutAnalytics
+            workouts={workouts}
+            workoutExercises={workoutExercises}
+            exerciseSets={exerciseSets}
+          />
         </div>
-      )}
 
-      {/* Workout Analytics */}
-      <div style={{ marginBottom: '32px' }}>
-        <WorkoutAnalytics
-          workouts={workouts}
-          workoutExercises={workoutExercises}
-          exerciseSets={exerciseSets}
-        />
+        {/* Personal Records */}
+        <div className="card slide-in-right">
+          <div className="header-section">
+            <h3 className="text-h3 text-white">
+              Personal Records
+            </h3>
+          </div>
+          <PersonalRecords
+            workouts={workouts}
+            workoutExercises={workoutExercises}
+            exerciseSets={exerciseSets}
+          />
+        </div>
+
+        {/* Progress History */}
+        <div className="card slide-in-left">
+          <div className="header-section">
+            <h3 className="text-h3 text-white">
+              Progress History
+            </h3>
+          </div>
+          <ProgressHistory progressHistory={progressHistory} />
+        </div>
+
+        {/* Add Progress Modal */}
+        {showAddModal && (
+          <AddProgressModal
+            onClose={() => setShowAddModal(false)}
+            onProgressAdded={handleProgressAdded}
+          />
+        )}
       </div>
-
-      {/* Personal Records */}
-      <div style={{ marginBottom: '32px' }}>
-        <PersonalRecords
-          workouts={workouts}
-          workoutExercises={workoutExercises}
-          exerciseSets={exerciseSets}
-        />
-      </div>
-
-      {/* Progress History */}
-      <ProgressHistory progressHistory={progressHistory} />
-
-      {/* Add Progress Modal */}
-      {showAddModal && (
-        <AddProgressModal
-          onClose={() => setShowAddModal(false)}
-          onProgressAdded={handleProgressAdded}
-        />
-      )}
     </div>
   );
 };

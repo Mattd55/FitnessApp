@@ -8,7 +8,10 @@ import {
   TrendingUp,
   Clock,
   Target,
-  Zap
+  Flame,
+  Trophy,
+  ArrowUp,
+  PlayCircle
 } from 'lucide-react';
 
 const Dashboard: React.FC = () => {
@@ -66,208 +69,224 @@ const Dashboard: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderBottomColor: 'var(--color-primary)' }}></div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Welcome Header */}
-      <div className="bg-white overflow-hidden shadow rounded-lg">
-        <div className="px-4 py-5 sm:p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
+    <div className="page-container">
+      <div className="content-wrapper fade-in">
+        {/* Welcome Header */}
+        <div className="card card-elevated hover-lift">
+          <div className="header-section-horizontal">
+            <div className="flex-1">
+              <h1 className="text-h1 text-primary">
                 Welcome back, {user?.firstName}!
               </h1>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="text-body-lg text-secondary">
                 Ready to crush your fitness goals today?
               </p>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Zap className="h-8 w-8 text-yellow-500" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <Activity className="h-6 w-6 text-indigo-600" />
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    Total Workouts
-                  </dt>
-                  <dd className="text-lg font-medium text-gray-900">
-                    {recentWorkouts.filter(w => w.status === 'COMPLETED').length}
-                  </dd>
-                </dl>
+              <div className="flex items-center justify-center gap-md mt-6">
+                <button className="btn btn-primary hover-glow" style={{ padding: 'var(--space-md) var(--space-xl)', fontSize: 'var(--font-size-md)' }}>
+                  <PlayCircle className="h-5 w-5 mr-2" />
+                  Start Workout
+                </button>
+                <button className="btn btn-outline hover-lift" style={{ padding: 'var(--space-md) var(--space-xl)', fontSize: 'var(--font-size-md)' }}>
+                  <Target className="h-5 w-5 mr-2" />
+                  Set Goals
+                </button>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <Clock className="h-6 w-6 text-green-600" />
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    This Week
-                  </dt>
-                  <dd className="text-lg font-medium text-gray-900">
-                    {recentWorkouts.filter(w => {
-                      const workoutDate = new Date(w.createdAt);
-                      const weekAgo = new Date();
-                      weekAgo.setDate(weekAgo.getDate() - 7);
-                      return workoutDate > weekAgo && w.status === 'COMPLETED';
-                    }).length} workouts
-                  </dd>
-                </dl>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <TrendingUp className="h-6 w-6 text-purple-600" />
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    Current Weight
-                  </dt>
-                  <dd className="text-lg font-medium text-gray-900">
-                    {latestProgress?.weightKg ? `${latestProgress.weightKg} kg` : 'Not recorded'}
-                  </dd>
-                </dl>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <Target className="h-6 w-6 text-red-600" />
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    Active Plans
-                  </dt>
-                  <dd className="text-lg font-medium text-gray-900">
-                    {recentWorkouts.filter(w => w.status === 'PLANNED').length}
-                  </dd>
-                </dl>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Recent Workouts */}
-      <div className="bg-white shadow rounded-lg">
-        <div className="px-4 py-5 sm:p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg leading-6 font-medium text-gray-900">
-              Recent Workouts
+        {/* Stats Grid */}
+        <div className="grid-4 stagger-in">
+          <div className="card hover-lift" style={{ display: 'flex', flexDirection: 'column', minHeight: '160px' }}>
+            <h3 className="text-caption text-light mb-4">
+              Total Workouts
             </h3>
-            <Calendar className="h-5 w-5 text-gray-400" />
+            <p className="text-h2 text-white" style={{ marginTop: 'auto' }}>
+              {recentWorkouts.filter(w => w.status === 'COMPLETED').length}
+            </p>
+          </div>
+
+          <div className="card hover-lift" style={{ display: 'flex', flexDirection: 'column', minHeight: '160px' }}>
+            <h3 className="text-caption text-light mb-4">
+              This Week
+            </h3>
+            <p className="text-h2 text-white" style={{ marginTop: 'auto' }}>
+              {recentWorkouts.filter(w => {
+                const workoutDate = new Date(w.createdAt);
+                const weekAgo = new Date();
+                weekAgo.setDate(weekAgo.getDate() - 7);
+                return workoutDate > weekAgo && w.status === 'COMPLETED';
+              }).length}
+            </p>
+          </div>
+
+          <div className="card hover-lift" style={{ display: 'flex', flexDirection: 'column', minHeight: '160px' }}>
+            <h3 className="text-caption text-light mb-4">
+              Current Weight
+            </h3>
+            <p className="text-h2 text-white" style={{ marginTop: 'auto' }}>
+              {latestProgress?.weightKg ? `${latestProgress.weightKg} kg` : 'N/A'}
+            </p>
+          </div>
+
+          <div className="card hover-lift" style={{ display: 'flex', flexDirection: 'column', minHeight: '160px' }}>
+            <h3 className="text-caption text-light mb-4">
+              Active Plans
+            </h3>
+            <p className="text-h2 text-white" style={{ marginTop: 'auto' }}>
+              {recentWorkouts.filter(w => w.status === 'PLANNED').length}
+            </p>
+          </div>
+        </div>
+
+        {/* Recent Workouts */}
+        <div className="card slide-in-right">
+          <div className="header-section">
+            <div>
+              <h3 className="text-h3 text-white">
+                Recent Workouts
+              </h3>
+              <p className="text-body-sm text-light">
+                Your latest training sessions
+              </p>
+            </div>
           </div>
 
           {recentWorkouts.length === 0 ? (
-            <div className="text-center py-8">
-              <Activity className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900">No workouts yet</h3>
-              <p className="mt-1 text-sm text-gray-500">
+            <div className="flex-col-center py-12 fade-in">
+              <div className="bg-primary p-4 rounded-2xl w-16 h-16 mb-4 flex-center">
+                <Activity className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-h4 text-primary">No workouts yet</h3>
+              <p className="text-body text-secondary">
                 Get started by creating your first workout!
               </p>
+              <div className="mt-4">
+                <button className="btn btn-primary hover-glow">
+                  <PlayCircle className="h-4 w-4 mr-2" />
+                  Create Workout
+                </button>
+              </div>
             </div>
           ) : (
             <div className="space-y-4">
-              {recentWorkouts.map((workout) => (
-                <div key={workout.id} className="border border-gray-200 rounded-lg p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium text-gray-900">{workout.name}</h4>
-                      <p className="text-sm text-gray-500">
-                        {formatDate(workout.createdAt)}
-                        {workout.durationMinutes && ` • ${workout.durationMinutes} minutes`}
-                      </p>
-                      {workout.description && (
-                        <p className="text-sm text-gray-600 mt-1">{workout.description}</p>
-                      )}
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeColor(workout.status)}`}>
+            {recentWorkouts.map((workout, index) => (
+              <div
+                key={workout.id}
+                className="card hover-lift"
+                style={{
+                  animationDelay: `${index * 0.1}s`,
+                  opacity: 0,
+                  animation: 'fadeIn 0.5s forwards',
+                  border: '1.5px solid rgba(178, 190, 195, 0.3)'
+                }}
+              >
+                <div className="flex items-start gap-md">
+                  {/* Status Icon */}
+                  <div className={`p-3 rounded-xl ${
+                    workout.status === 'COMPLETED' ? 'bg-success' :
+                    workout.status === 'IN_PROGRESS' ? 'bg-info' :
+                    'bg-warning'
+                  }`}>
+                    {workout.status === 'COMPLETED' ? (
+                      <Trophy className="h-5 w-5 text-white" />
+                    ) : workout.status === 'IN_PROGRESS' ? (
+                      <Activity className="h-5 w-5 text-white" />
+                    ) : (
+                      <Target className="h-5 w-5 text-white" />
+                    )}
+                  </div>
+
+                  {/* Workout Info */}
+                  <div className="flex-1">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h4 className="text-h4 text-white">{workout.name}</h4>
+                        {workout.description && (
+                          <p className="text-body-sm text-secondary mt-1">{workout.description}</p>
+                        )}
+                      </div>
+                      <span className={`badge ${
+                        workout.status === 'COMPLETED' ? 'badge-success' :
+                        workout.status === 'IN_PROGRESS' ? 'badge-info' :
+                        'badge-warning'
+                      }`}>
                         {workout.status.replace('_', ' ')}
                       </span>
                     </div>
+
+                    <div className="flex items-center gap-lg mt-3">
+                      <span className="text-body-sm text-light">
+                        {formatDate(workout.createdAt)}
+                      </span>
+                      {workout.durationMinutes && (
+                        <span className="text-body-sm text-light">
+                          {workout.durationMinutes} min
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
+              </div>
               ))}
             </div>
           )}
         </div>
-      </div>
 
-      {/* Progress Summary */}
-      {latestProgress && (
-        <div className="bg-white shadow rounded-lg">
-          <div className="px-4 py-5 sm:p-6">
-            <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-              Latest Progress Entry
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {/* Progress Summary */}
+        {latestProgress && (
+          <div className="card slide-in-left">
+            <div className="header-section">
+              <div>
+                <h3 className="text-h3 text-white">
+                  Latest Progress Entry
+                </h3>
+                <p className="text-body-sm text-light">
+                  Track your fitness journey
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-4 gap-md">
               {latestProgress.weightKg && (
-                <div className="text-center">
-                  <div className="text-2xl font-semibold text-gray-900">
+                <div className="card card-compact flex-col-center hover-scale" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)' }}>
+                  <div className="text-h2 text-white">
                     {latestProgress.weightKg}
                   </div>
-                  <div className="text-sm text-gray-500">Weight (kg)</div>
+                  <div className="text-caption text-light">Weight (kg)</div>
                 </div>
               )}
               {latestProgress.bodyFatPercentage && (
-                <div className="text-center">
-                  <div className="text-2xl font-semibold text-gray-900">
+                <div className="card card-compact flex-col-center hover-scale" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)' }}>
+                  <div className="text-h2 text-white">
                     {latestProgress.bodyFatPercentage}%
                   </div>
-                  <div className="text-sm text-gray-500">Body Fat</div>
+                  <div className="text-caption text-light">Body Fat</div>
                 </div>
               )}
               {latestProgress.muscleMassKg && (
-                <div className="text-center">
-                  <div className="text-2xl font-semibold text-gray-900">
+                <div className="card card-compact flex-col-center hover-scale" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)' }}>
+                  <div className="text-h2 text-white">
                     {latestProgress.muscleMassKg}
                   </div>
-                  <div className="text-sm text-gray-500">Muscle Mass (kg)</div>
+                  <div className="text-caption text-light">Muscle Mass (kg)</div>
                 </div>
               )}
-              <div className="text-center">
-                <div className="text-sm font-medium text-gray-900">
+              <div className="card card-compact flex-col-center hover-scale" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)' }}>
+                <div className="text-h4 text-white">
                   {formatDate(latestProgress.measurementDate)}
                 </div>
-                <div className="text-sm text-gray-500">Last Updated</div>
+                <div className="text-caption text-light">Last Updated</div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

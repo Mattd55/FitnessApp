@@ -2,8 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { exerciseApi } from '../services/api';
 import { Exercise, PageResponse } from '../types/api';
 import ExerciseCard from '../components/exercises/ExerciseCard';
-import ExerciseDetailSimple from '../components/exercises/ExerciseDetailSimple';
+import ExerciseDetail from '../components/exercises/ExerciseDetail';
 import FilterBar from '../components/exercises/FilterBar';
+import { Dumbbell, Search } from 'lucide-react';
 
 const ExerciseLibrary: React.FC = () => {
   const [exercises, setExercises] = useState<Exercise[]>([]);
@@ -78,75 +79,90 @@ const ExerciseLibrary: React.FC = () => {
 
   if (loading && exercises.length === 0) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderBottomColor: 'var(--color-primary)' }}></div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Exercise Library</h1>
-        <p className="text-gray-600">
-          Discover exercises to build your perfect workout routine
-        </p>
-      </div>
-
-      <FilterBar
-        initialFilters={{
-          search: searchTerm,
-          category: selectedCategory,
-          equipment: selectedEquipment,
-          difficulty: selectedDifficulty,
-        }}
-        onFilterChange={handleFilterChange}
-      />
-
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-          {error}
+    <div className="page-container">
+      <div className="content-wrapper fade-in">
+        {/* Header Card */}
+        <div className="card card-elevated hover-lift">
+          <div className="header-section-horizontal">
+            <div className="flex-1">
+              <h1 className="text-h1 text-primary">
+                Exercise Library
+              </h1>
+              <p className="text-body-lg text-secondary">
+                Discover exercises to build your perfect workout routine
+              </p>
+            </div>
+          </div>
         </div>
-      )}
 
-      <div className="mb-6">
-        <p className="text-sm text-gray-600">
-          Showing {exercises.length} of {totalElements} exercises
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-        {exercises.map((exercise) => (
-          <ExerciseCard
-            key={exercise.id}
-            exercise={exercise}
-            onClick={handleExerciseClick}
+        {/* Filter Bar */}
+        <div className="slide-in-right">
+          <FilterBar
+            initialFilters={{
+              search: searchTerm,
+              category: selectedCategory,
+              equipment: selectedEquipment,
+              difficulty: selectedDifficulty,
+            }}
+            onFilterChange={handleFilterChange}
           />
-        ))}
-      </div>
-
-      {totalPages > 1 && (
-        <div className="flex justify-center">
-          <nav className="flex space-x-2">
-            {Array.from({ length: totalPages }, (_, i) => (
-              <button
-                key={i}
-                onClick={() => handlePageChange(i)}
-                className={`px-3 py-2 rounded-md text-sm font-medium ${
-                  currentPage === i
-                    ? 'bg-indigo-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
-                }`}
-              >
-                {i + 1}
-              </button>
-            ))}
-          </nav>
         </div>
-      )}
+
+        {error && (
+          <div className="card" style={{ backgroundColor: '#fee2e2', borderColor: '#f87171', color: '#b91c1c' }}>
+            {error}
+          </div>
+        )}
+
+        {/* Results count */}
+        <div className="slide-in-left">
+          <p className="text-body-sm text-light">
+            Showing {exercises.length} of {totalElements} exercises
+          </p>
+        </div>
+
+        {/* Exercise Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 stagger-in">
+          {exercises.map((exercise) => (
+            <ExerciseCard
+              key={exercise.id}
+              exercise={exercise}
+              onClick={handleExerciseClick}
+            />
+          ))}
+        </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center fade-in">
+            <nav className="flex gap-sm">
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button
+                  key={i}
+                  onClick={() => handlePageChange(i)}
+                  className={`btn hover-lift ${
+                    currentPage === i
+                      ? 'btn-primary'
+                      : 'btn-ghost'
+                  }`}
+                >
+                  {i + 1}
+                </button>
+              ))}
+            </nav>
+          </div>
+        )}
+      </div>
 
       {selectedExercise && (
-        <ExerciseDetailSimple
+        <ExerciseDetail
           exercise={selectedExercise}
           onClose={handleCloseModal}
         />

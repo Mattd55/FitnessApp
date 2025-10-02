@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import ProfileOverview from '../components/profile/ProfileOverview';
 import EditProfileModal from '../components/profile/EditProfileModal';
 import AccountSettings from '../components/profile/AccountSettings';
+import { Edit, User as UserIcon, Settings, RotateCcw, Crown, Dumbbell, Target } from 'lucide-react';
 
 const ProfilePage: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -51,199 +52,162 @@ const ProfilePage: React.FC = () => {
     return 'U';
   };
 
-  const getRoleColor = (role: string) => {
+  const getRoleBadgeClass = (role: string) => {
     switch (role) {
-      case 'ADMIN': return '#ef4444';
-      case 'TRAINER': return '#f59e0b';
-      case 'USER': return '#3b82f6';
-      default: return '#6b7280';
+      case 'ADMIN': return 'badge-error';
+      case 'TRAINER': return 'badge-secondary';
+      case 'USER': return 'badge-primary';
+      default: return 'badge-secondary';
     }
   };
 
-  const getRoleBadge = (role: string) => {
+  const getRoleIcon = (role: string) => {
     switch (role) {
-      case 'ADMIN': return '👑 Admin';
-      case 'TRAINER': return '💪 Trainer';
-      case 'USER': return '🏃 User';
-      default: return role;
+      case 'ADMIN': return Crown;
+      case 'TRAINER': return Dumbbell;
+      case 'USER': return Target;
+      default: return UserIcon;
     }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
   };
 
   if (loading) {
     return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '400px'
-      }}>
-        <div>Loading profile...</div>
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style={{ borderBottomColor: 'var(--color-primary)' }}></div>
+          <p style={{ color: 'var(--color-text-light)' }}>Loading profile...</p>
+        </div>
       </div>
     );
   }
 
   if (error || !userProfile) {
     return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '400px',
-        flexDirection: 'column',
-        gap: '16px'
-      }}>
-        <div style={{ color: '#ef4444', fontSize: '18px' }}>
-          {error || 'Profile not found'}
+      <div className="page-container">
+        <div className="card p-12 text-center">
+          <div className="bg-primary p-4 rounded-2xl w-16 h-16 mx-auto mb-6 flex items-center justify-center">
+            <UserIcon className="h-8 w-8 text-white" />
+          </div>
+          <h3 className="text-xl font-bold mb-3" style={{ color: 'var(--color-primary)' }}>
+            {error || 'Profile not found'}
+          </h3>
+          <p className="text-lg mb-6" style={{ color: 'var(--color-text-light)' }}>
+            There was an issue loading your profile information.
+          </p>
+          <button
+            onClick={loadUserProfile}
+            className="btn btn-primary"
+          >
+            <RotateCcw className="h-4 w-4 mr-2" />
+            Retry
+          </button>
         </div>
-        <button
-          onClick={loadUserProfile}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: '#4f46e5',
-            color: 'white',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: 'pointer'
-          }}
-        >
-          Retry
-        </button>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
-      {/* Header */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '24px',
-        marginBottom: '32px',
-        padding: '24px',
-        backgroundColor: 'white',
-        borderRadius: '12px',
-        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-      }}>
-        {/* Avatar */}
-        <div style={{
-          width: '80px',
-          height: '80px',
-          borderRadius: '50%',
-          backgroundColor: '#4f46e5',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '24px',
-          fontWeight: 'bold',
-          color: 'white'
-        }}>
-          {getInitials(userProfile.firstName, userProfile.lastName, userProfile.username)}
-        </div>
-
-        {/* User Info */}
-        <div style={{ flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-            <h1 style={{ margin: 0, fontSize: '28px', fontWeight: 'bold', color: '#1f2937' }}>
+    <div className="page-container">
+      <div className="content-wrapper fade-in">
+        {/* Profile Header Card */}
+        <div className="card card-elevated hover-lift">
+          {/* User Info - Centered */}
+          <div style={{ textAlign: 'center', marginBottom: 'var(--space-xl)' }}>
+            <h1 className="text-h1 text-primary" style={{ lineHeight: '1', marginBottom: 'var(--space-sm)' }}>
               {userProfile.firstName && userProfile.lastName
                 ? `${userProfile.firstName} ${userProfile.lastName}`
                 : userProfile.username}
             </h1>
-            <span style={{
-              padding: '4px 12px',
-              backgroundColor: getRoleColor(userProfile.role),
-              color: 'white',
-              borderRadius: '16px',
-              fontSize: '12px',
-              fontWeight: '600'
-            }}>
-              {getRoleBadge(userProfile.role)}
-            </span>
+            <p className="text-body-lg text-light" style={{ margin: 0 }}>
+              @{userProfile.username}
+            </p>
+            <p className="text-body text-light" style={{ margin: 0, marginTop: 'var(--space-xs)' }}>
+              {userProfile.email}
+            </p>
           </div>
-          <p style={{ margin: '0 0 4px 0', color: '#6b7280', fontSize: '16px' }}>
-            @{userProfile.username}
-          </p>
-          <p style={{ margin: 0, color: '#6b7280', fontSize: '14px' }}>
-            {userProfile.email}
-          </p>
+
+          {/* Account Information - Horizontal Row */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--space-lg)', marginBottom: 'var(--space-xl)' }}>
+            <div className="card card-compact" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)', padding: 'var(--space-md)', textAlign: 'center' }}>
+              <div className="text-caption text-light mb-2">Member Since</div>
+              <div className="text-body font-semibold text-white">
+                {formatDate(userProfile.createdAt)}
+              </div>
+            </div>
+            <div className="card card-compact" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)', padding: 'var(--space-md)', textAlign: 'center' }}>
+              <div className="text-caption text-light mb-2">Last Updated</div>
+              <div className="text-body font-semibold text-white">
+                {formatDate(userProfile.updatedAt)}
+              </div>
+            </div>
+            <div className="card card-compact" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)', padding: 'var(--space-md)', textAlign: 'center' }}>
+              <div className="text-caption text-light mb-2">Account Status</div>
+              <div className="text-body font-semibold text-white">
+                ✅ Active
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation Tabs and Edit Button - Centered */}
+          <div className="flex items-center justify-center gap-md">
+            <button
+              onClick={() => setActiveTab('overview')}
+              className={`btn hover-lift ${
+                activeTab === 'overview' ? 'btn-primary' : 'btn-outline'
+              } flex items-center gap-xs`}
+            >
+              <UserIcon className="h-4 w-4" />
+              <span>Overview</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('settings')}
+              className={`btn hover-lift ${
+                activeTab === 'settings' ? 'btn-primary' : 'btn-outline'
+              } flex items-center gap-xs`}
+            >
+              <Settings className="h-4 w-4" />
+              <span>Account Settings</span>
+            </button>
+            <button
+              onClick={() => setShowEditModal(true)}
+              className="btn btn-primary hover-glow"
+            >
+              <Edit className="h-4 w-4 mr-2" />
+              Edit Profile
+            </button>
+          </div>
         </div>
 
-        {/* Edit Button */}
-        <button
-          onClick={() => setShowEditModal(true)}
-          style={{
-            padding: '12px 24px',
-            backgroundColor: '#4f46e5',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            fontSize: '16px',
-            fontWeight: '600',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}
-        >
-          ✏️ Edit Profile
-        </button>
+        {/* Tab Content */}
+        {activeTab === 'overview' && (
+          <div className="fade-in">
+            <ProfileOverview userProfile={userProfile} />
+          </div>
+        )}
+
+        {activeTab === 'settings' && (
+          <div className="fade-in">
+            <AccountSettings userProfile={userProfile} onProfileUpdated={handleProfileUpdated} />
+          </div>
+        )}
+
+        {/* Edit Profile Modal */}
+        {showEditModal && (
+          <EditProfileModal
+            userProfile={userProfile}
+            onClose={() => setShowEditModal(false)}
+            onProfileUpdated={handleProfileUpdated}
+          />
+        )}
       </div>
-
-      {/* Navigation Tabs */}
-      <div style={{
-        display: 'flex',
-        borderBottom: '2px solid #e5e7eb',
-        marginBottom: '24px'
-      }}>
-        <button
-          onClick={() => setActiveTab('overview')}
-          style={{
-            padding: '12px 24px',
-            backgroundColor: 'transparent',
-            border: 'none',
-            borderBottom: activeTab === 'overview' ? '2px solid #4f46e5' : '2px solid transparent',
-            color: activeTab === 'overview' ? '#4f46e5' : '#6b7280',
-            fontSize: '16px',
-            fontWeight: '600',
-            cursor: 'pointer'
-          }}
-        >
-          Overview
-        </button>
-        <button
-          onClick={() => setActiveTab('settings')}
-          style={{
-            padding: '12px 24px',
-            backgroundColor: 'transparent',
-            border: 'none',
-            borderBottom: activeTab === 'settings' ? '2px solid #4f46e5' : '2px solid transparent',
-            color: activeTab === 'settings' ? '#4f46e5' : '#6b7280',
-            fontSize: '16px',
-            fontWeight: '600',
-            cursor: 'pointer'
-          }}
-        >
-          Account Settings
-        </button>
-      </div>
-
-      {/* Tab Content */}
-      {activeTab === 'overview' && (
-        <ProfileOverview userProfile={userProfile} />
-      )}
-
-      {activeTab === 'settings' && (
-        <AccountSettings userProfile={userProfile} onProfileUpdated={handleProfileUpdated} />
-      )}
-
-      {/* Edit Profile Modal */}
-      {showEditModal && (
-        <EditProfileModal
-          userProfile={userProfile}
-          onClose={() => setShowEditModal(false)}
-          onProfileUpdated={handleProfileUpdated}
-        />
-      )}
     </div>
   );
 };

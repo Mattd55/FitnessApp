@@ -187,13 +187,13 @@ const ProgressCharts: React.FC<ProgressChartsProps> = ({ progressHistory }) => {
 
   return (
     <div>
-      <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '20px', color: '#374151' }}>
+      <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '20px', color: '#B2BEC3' }}>
         Progress Trends
       </h3>
 
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+        gridTemplateColumns: 'repeat(2, 1fr)',
         gap: '20px'
       }}>
         {/* Weight Chart */}

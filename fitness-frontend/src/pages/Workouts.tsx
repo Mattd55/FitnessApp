@@ -4,6 +4,7 @@ import { Workout, PageResponse } from '../types/api';
 import WorkoutCard from '../components/workouts/WorkoutCard';
 import CreateWorkoutModal from '../components/workouts/CreateWorkoutModal';
 import WorkoutDetailModal from '../components/workouts/WorkoutDetailModal';
+import { Plus, Activity, Target, Clock, Trophy } from 'lucide-react';
 
 const Workouts: React.FC = () => {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -104,146 +105,148 @@ const Workouts: React.FC = () => {
   if (loading && workouts.length === 0) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderBottomColor: 'var(--color-primary)' }}></div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex justify-between items-center mb-2">
-          <h1 className="text-3xl font-bold text-gray-900">My Workouts</h1>
-          <button
-            onClick={handleCreateWorkout}
-            className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center gap-2"
-          >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            Create Workout
-          </button>
-        </div>
-        <p className="text-gray-600">
-          Plan, track, and manage your fitness workouts
-        </p>
-      </div>
-
-      {/* Tabs */}
-      <div className="mb-6">
-        <nav className="flex space-x-8">
-          {[
-            { id: 'all', label: 'All Workouts', count: tabCounts.all },
-            { id: 'planned', label: 'Planned', count: tabCounts.planned },
-            { id: 'in_progress', label: 'In Progress', count: tabCounts.in_progress },
-            { id: 'completed', label: 'Completed', count: tabCounts.completed },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={`pb-2 border-b-2 font-medium text-sm flex items-center gap-2 ${
-                activeTab === tab.id
-                  ? 'border-indigo-500 text-indigo-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              {tab.label}
-              <span
-                className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                  activeTab === tab.id
-                    ? 'bg-indigo-100 text-indigo-800'
-                    : 'bg-gray-100 text-gray-800'
-                }`}
-              >
-                {tab.count}
-              </span>
-            </button>
-          ))}
-        </nav>
-      </div>
-
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-          {error}
-        </div>
-      )}
-
-      {/* Workout Grid */}
-      {filteredWorkouts.length === 0 ? (
-        <div className="text-center py-12">
-          <div className="mb-4">
-            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
+    <div className="page-container">
+      <div className="content-wrapper fade-in">
+        {/* Header Card */}
+        <div className="card card-elevated hover-lift">
+          <div className="header-section-horizontal">
+            <div className="flex-1">
+              <h1 className="text-h1 text-primary">
+                My Workouts
+              </h1>
+              <p className="text-body-lg text-secondary">
+                Plan, track, and manage your workouts
+              </p>
+              <div className="mt-6">
+                <button
+                  onClick={handleCreateWorkout}
+                  className="btn btn-primary hover-glow"
+                  style={{ padding: 'var(--space-md) var(--space-xl)', fontSize: 'var(--font-size-md)' }}
+                >
+                  <Plus className="h-5 w-5 mr-2" />
+                  Create Workout
+                </button>
+              </div>
+            </div>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            {activeTab === 'all' ? 'No workouts yet' : `No ${activeTab.replace('_', ' ')} workouts`}
-          </h3>
-          <p className="text-gray-500 mb-4">
-            {activeTab === 'all'
-              ? 'Get started by creating your first workout plan!'
-              : `You don't have any ${activeTab.replace('_', ' ')} workouts.`
-            }
-          </p>
-          {activeTab === 'all' && (
-            <button
-              onClick={handleCreateWorkout}
-              className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
-            >
-              Create Your First Workout
-            </button>
-          )}
         </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-          {filteredWorkouts.map((workout) => (
-            <WorkoutCard
-              key={workout.id}
-              workout={workout}
-              onClick={handleWorkoutClick}
-            />
-          ))}
-        </div>
-      )}
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center">
-          <nav className="flex space-x-2">
-            {Array.from({ length: totalPages }, (_, i) => (
+        {/* Filter Tabs */}
+        <div className="card slide-in-right">
+          <h3 className="text-h4 text-white mb-4">
+            Filter Workouts
+          </h3>
+          <nav className="grid grid-cols-4 gap-md">
+            {[
+              { id: 'all', label: 'All Workouts', count: tabCounts.all },
+              { id: 'planned', label: 'Planned', count: tabCounts.planned },
+              { id: 'in_progress', label: 'Active', count: tabCounts.in_progress },
+              { id: 'completed', label: 'Completed', count: tabCounts.completed },
+            ].map((tab) => (
               <button
-                key={i}
-                onClick={() => handlePageChange(i)}
-                className={`px-3 py-2 rounded-md text-sm font-medium ${
-                  currentPage === i
-                    ? 'bg-indigo-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
-                }`}
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`btn hover-lift ${
+                  activeTab === tab.id ? 'btn-primary' : 'btn-ghost'
+                } flex items-center justify-center gap-xs`}
               >
-                {i + 1}
+                <span>{tab.label}</span>
+                <span className={`badge ${
+                  activeTab === tab.id ? 'badge-secondary' : 'badge-primary'
+                }`}>
+                  {tab.count}
+                </span>
               </button>
             ))}
           </nav>
         </div>
-      )}
 
-      {/* Modals */}
-      {showCreateModal && (
-        <CreateWorkoutModal
-          onClose={handleCloseCreateModal}
-          onWorkoutCreated={handleWorkoutCreated}
-        />
-      )}
+        {error && (
+          <div className="card border-l-4 border-error bg-red-50">
+            <p className="text-error font-medium">
+              {error}
+            </p>
+          </div>
+        )}
 
-      {selectedWorkout && (
-        <WorkoutDetailModal
-          workout={selectedWorkout}
-          onClose={handleCloseModal}
-          onWorkoutUpdated={handleWorkoutUpdated}
-          onWorkoutDeleted={handleWorkoutDeleted}
-        />
-      )}
+        {/* Workout Grid */}
+        {filteredWorkouts.length === 0 ? (
+          <div className="card card-large flex-col-center fade-in">
+            <h3 className="text-h3 text-white">
+              {activeTab === 'all' ? 'No workouts yet' : `No ${activeTab.replace('_', ' ')} workouts`}
+            </h3>
+            <p className="text-body text-secondary">
+              {activeTab === 'all'
+                ? 'Get started by creating your first workout plan!'
+                : `You don't have any ${activeTab.replace('_', ' ')} workouts.`
+              }
+            </p>
+            {activeTab === 'all' && (
+              <button
+                onClick={handleCreateWorkout}
+                className="btn btn-primary hover-glow mt-6"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Create Your First Workout
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="grid-auto-fit stagger-in">
+            {filteredWorkouts.map((workout) => (
+              <WorkoutCard
+                key={workout.id}
+                workout={workout}
+                onClick={handleWorkoutClick}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="card">
+            <div className="flex-center">
+              <nav className="flex gap-xs">
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => handlePageChange(i)}
+                    className={`btn hover-lift ${
+                      currentPage === i ? 'btn-primary' : 'btn-ghost'
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+              </nav>
+            </div>
+          </div>
+        )}
+
+        {/* Modals */}
+        {showCreateModal && (
+          <CreateWorkoutModal
+            onClose={handleCloseCreateModal}
+            onWorkoutCreated={handleWorkoutCreated}
+          />
+        )}
+
+        {selectedWorkout && (
+          <WorkoutDetailModal
+            workout={selectedWorkout}
+            onClose={handleCloseModal}
+            onWorkoutUpdated={handleWorkoutUpdated}
+            onWorkoutDeleted={handleWorkoutDeleted}
+          />
+        )}
+      </div>
     </div>
   );
 };

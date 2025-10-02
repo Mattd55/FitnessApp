@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
 import { workoutApi } from '../../services/api';
 import { Workout } from '../../types/api';
 
@@ -92,7 +93,7 @@ const CreateWorkoutModal: React.FC<CreateWorkoutModalProps> = ({ onClose, onWork
     };
   }, []);
 
-  return (
+  const modalContent = (
     <div
       style={{
         position: 'fixed',
@@ -110,24 +111,26 @@ const CreateWorkoutModal: React.FC<CreateWorkoutModalProps> = ({ onClose, onWork
     >
       <div
         style={{
-          backgroundColor: 'white',
+          backgroundColor: 'var(--color-background-elevated)',
           borderRadius: '8px',
           maxWidth: '500px',
           width: '90%',
           maxHeight: '90vh',
           overflow: 'auto',
+          position: 'relative',
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div style={{
           display: 'flex',
-          justifyContent: 'space-between',
+          justifyContent: 'center',
           alignItems: 'center',
           padding: '20px',
-          borderBottom: '1px solid #e5e7eb'
+          borderBottom: '1.5px solid rgba(178, 190, 195, 0.3)',
+          position: 'relative'
         }}>
-          <h2 style={{ fontSize: '24px', fontWeight: 'bold', margin: 0 }}>Create New Workout</h2>
+          <h2 style={{ fontSize: '24px', fontWeight: 'bold', margin: 0, color: '#000000' }}>Create New Workout</h2>
           <button
             onClick={onClose}
             style={{
@@ -135,7 +138,9 @@ const CreateWorkoutModal: React.FC<CreateWorkoutModalProps> = ({ onClose, onWork
               border: 'none',
               fontSize: '24px',
               cursor: 'pointer',
-              color: '#6b7280',
+              color: 'var(--color-text-light)',
+              position: 'absolute',
+              right: '20px'
             }}
           >
             ×
@@ -164,7 +169,7 @@ const CreateWorkoutModal: React.FC<CreateWorkoutModalProps> = ({ onClose, onWork
                 display: 'block',
                 fontSize: '14px',
                 fontWeight: '500',
-                color: '#374151',
+                color: '#000000',
                 marginBottom: '4px'
               }}
             >
@@ -180,10 +185,12 @@ const CreateWorkoutModal: React.FC<CreateWorkoutModalProps> = ({ onClose, onWork
               style={{
                 width: '100%',
                 padding: '8px 12px',
-                border: '1px solid #d1d5db',
+                border: '1.5px solid rgba(178, 190, 195, 0.5)',
                 borderRadius: '6px',
                 fontSize: '14px',
                 outline: 'none',
+                backgroundColor: 'var(--color-background-card)',
+                color: 'var(--color-text-white)'
               }}
               placeholder="e.g., Upper Body Strength, Cardio Session"
             />
@@ -196,7 +203,7 @@ const CreateWorkoutModal: React.FC<CreateWorkoutModalProps> = ({ onClose, onWork
                 display: 'block',
                 fontSize: '14px',
                 fontWeight: '500',
-                color: '#374151',
+                color: '#000000',
                 marginBottom: '4px'
               }}
             >
@@ -211,11 +218,13 @@ const CreateWorkoutModal: React.FC<CreateWorkoutModalProps> = ({ onClose, onWork
               style={{
                 width: '100%',
                 padding: '8px 12px',
-                border: '1px solid #d1d5db',
+                border: '1.5px solid rgba(178, 190, 195, 0.5)',
                 borderRadius: '6px',
                 fontSize: '14px',
                 outline: 'none',
                 resize: 'vertical',
+                backgroundColor: 'var(--color-background-card)',
+                color: 'var(--color-text-white)'
               }}
               placeholder="Optional description of your workout..."
             />
@@ -228,7 +237,7 @@ const CreateWorkoutModal: React.FC<CreateWorkoutModalProps> = ({ onClose, onWork
                 display: 'block',
                 fontSize: '14px',
                 fontWeight: '500',
-                color: '#374151',
+                color: '#000000',
                 marginBottom: '4px'
               }}
             >
@@ -245,10 +254,13 @@ const CreateWorkoutModal: React.FC<CreateWorkoutModalProps> = ({ onClose, onWork
               style={{
                 width: '100%',
                 padding: '8px 12px',
-                border: '1px solid #d1d5db',
+                border: '1.5px solid rgba(178, 190, 195, 0.5)',
                 borderRadius: '6px',
                 fontSize: '14px',
                 outline: 'none',
+                backgroundColor: 'var(--color-background-card)',
+                color: 'var(--color-text-white)',
+                colorScheme: 'dark'
               }}
             />
           </div>
@@ -260,7 +272,7 @@ const CreateWorkoutModal: React.FC<CreateWorkoutModalProps> = ({ onClose, onWork
                 display: 'block',
                 fontSize: '14px',
                 fontWeight: '500',
-                color: '#374151',
+                color: '#000000',
                 marginBottom: '4px'
               }}
             >
@@ -275,11 +287,13 @@ const CreateWorkoutModal: React.FC<CreateWorkoutModalProps> = ({ onClose, onWork
               style={{
                 width: '100%',
                 padding: '8px 12px',
-                border: '1px solid #d1d5db',
+                border: '1.5px solid rgba(178, 190, 195, 0.5)',
                 borderRadius: '6px',
                 fontSize: '14px',
                 outline: 'none',
                 resize: 'vertical',
+                backgroundColor: 'var(--color-background-card)',
+                color: 'var(--color-text-white)'
               }}
               placeholder="Any additional notes or goals..."
             />
@@ -292,12 +306,13 @@ const CreateWorkoutModal: React.FC<CreateWorkoutModalProps> = ({ onClose, onWork
               onClick={onClose}
               style={{
                 padding: '8px 16px',
-                backgroundColor: '#f3f4f6',
-                color: '#374151',
-                border: 'none',
+                backgroundColor: 'white',
+                color: 'var(--color-primary)',
+                border: '2px solid var(--color-primary)',
                 borderRadius: '6px',
                 cursor: 'pointer',
                 fontSize: '14px',
+                fontWeight: '500'
               }}
             >
               Cancel
@@ -307,12 +322,13 @@ const CreateWorkoutModal: React.FC<CreateWorkoutModalProps> = ({ onClose, onWork
               disabled={loading}
               style={{
                 padding: '8px 16px',
-                backgroundColor: loading ? '#9ca3af' : '#4f46e5',
+                backgroundColor: loading ? '#9ca3af' : 'var(--color-primary)',
                 color: 'white',
                 border: 'none',
                 borderRadius: '6px',
                 cursor: loading ? 'not-allowed' : 'pointer',
                 fontSize: '14px',
+                fontWeight: '500'
               }}
             >
               {loading ? 'Creating...' : 'Create Workout'}
@@ -321,6 +337,11 @@ const CreateWorkoutModal: React.FC<CreateWorkoutModalProps> = ({ onClose, onWork
         </form>
       </div>
     </div>
+  );
+
+  return ReactDOM.createPortal(
+    modalContent,
+    document.body
   );
 };
 

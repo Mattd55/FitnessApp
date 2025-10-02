@@ -4,8 +4,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 import Login from './components/auth/Login';
-import Register from './components/auth/Register';
-import RegisterNew from './components/auth/RegisterNew';
+import Register from './components/auth/RegisterNew';
 import Dashboard from './pages/Dashboard';
 import ExerciseLibrary from './pages/ExerciseLibrary';
 import Workouts from './pages/Workouts';
@@ -21,8 +20,7 @@ function App() {
           <Routes>
             {/* Public Routes */}
             <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<RegisterNew />} />
-            <Route path="/old-register" element={<Register />} />
+            <Route path="/register" element={<Register />} />
 
             {/* Protected Routes */}
             <Route
