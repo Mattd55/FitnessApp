@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
 import { userApi } from '../../services/api';
 import { UserProgress } from '../../types/api';
 
@@ -77,52 +78,82 @@ const AddProgressModal: React.FC<AddProgressModalProps> = ({ onClose, onProgress
     }
   };
 
-  return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 9999,
-      }}
-      onClick={handleBackdropClick}
-    >
+  React.useEffect(() => {
+    document.body.style.overflow = 'hidden';
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.body.style.overflow = 'unset';
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, []);
+
+  const modalContent = (
+    <>
+      <style>
+        {`
+          .date-input-white-icon::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+          }
+        `}
+      </style>
       <div
         style={{
-          backgroundColor: 'white',
-          borderRadius: '12px',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999,
+        }}
+        onClick={handleBackdropClick}
+      >
+      <div
+        style={{
+          backgroundColor: 'var(--color-background-elevated)',
+          borderRadius: '8px',
           maxWidth: '800px',
           width: '90%',
           maxHeight: '90vh',
           overflow: 'auto',
+          position: 'relative',
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div style={{
           display: 'flex',
-          justifyContent: 'space-between',
+          justifyContent: 'center',
           alignItems: 'center',
           padding: '24px',
-          borderBottom: '1px solid #e5e7eb'
+          borderBottom: '1.5px solid rgba(178, 190, 195, 0.3)',
+          position: 'relative'
         }}>
-          <h2 className="text-h2 text-primary" style={{ margin: 0 }}>
+          <h2 style={{ fontSize: '24px', fontWeight: 'bold', margin: 0, color: '#000000' }}>
             Add Progress Entry
           </h2>
           <button
             onClick={onClose}
-            className="text-light hover:text-secondary"
             style={{
               background: 'none',
               border: 'none',
               fontSize: '24px',
               cursor: 'pointer',
+              color: '#6b7280',
+              position: 'absolute',
+              right: '24px'
             }}
           >
             ×
@@ -146,9 +177,14 @@ const AddProgressModal: React.FC<AddProgressModalProps> = ({ onClose, onProgress
 
           {/* Date */}
           <div style={{ marginBottom: '20px' }}>
-            <label className="text-sm font-semibold text-primary" style={{
+            <label style={{
               display: 'block',
-              marginBottom: '6px'
+              marginBottom: '6px',
+              fontSize: '12px',
+              fontWeight: '600',
+              color: '#000000',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px'
             }}>
               Measurement Date *
             </label>
@@ -158,26 +194,34 @@ const AddProgressModal: React.FC<AddProgressModalProps> = ({ onClose, onProgress
               value={formData.measurementDate}
               onChange={handleInputChange}
               required
+              className="date-input-white-icon"
               style={{
                 width: '100%',
                 padding: '10px 12px',
-                border: '1px solid #d1d5db',
+                border: '1.5px solid rgba(178, 190, 195, 0.5)',
                 borderRadius: '6px',
                 fontSize: '14px',
+                backgroundColor: 'var(--color-background-card)',
+                color: 'var(--color-text-white)',
               }}
             />
           </div>
 
           {/* Basic Measurements */}
           <div style={{ marginBottom: '24px' }}>
-            <h3 className="text-h4 text-primary" style={{ marginBottom: '16px' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#000000', margin: '0 0 16px 0' }}>
               Basic Measurements
             </h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
               <div>
-                <label className="text-sm font-medium text-primary" style={{
+                <label style={{
                   display: 'block',
-                  marginBottom: '4px'
+                  marginBottom: '4px',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  color: '#000000',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
                 }}>
                   Weight (kg)
                 </label>
@@ -191,17 +235,24 @@ const AddProgressModal: React.FC<AddProgressModalProps> = ({ onClose, onProgress
                   style={{
                     width: '100%',
                     padding: '8px 12px',
-                    border: '1px solid #d1d5db',
+                    border: '1.5px solid rgba(178, 190, 195, 0.5)',
                     borderRadius: '6px',
                     fontSize: '14px',
+                    backgroundColor: 'var(--color-background-card)',
+                    color: 'var(--color-text-white)',
                   }}
                   placeholder="e.g., 70.5"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-primary" style={{
+                <label style={{
                   display: 'block',
-                  marginBottom: '4px'
+                  marginBottom: '4px',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  color: '#000000',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
                 }}>
                   Height (cm)
                 </label>
@@ -215,17 +266,24 @@ const AddProgressModal: React.FC<AddProgressModalProps> = ({ onClose, onProgress
                   style={{
                     width: '100%',
                     padding: '8px 12px',
-                    border: '1px solid #d1d5db',
+                    border: '1.5px solid rgba(178, 190, 195, 0.5)',
                     borderRadius: '6px',
                     fontSize: '14px',
+                    backgroundColor: 'var(--color-background-card)',
+                    color: 'var(--color-text-white)',
                   }}
                   placeholder="e.g., 175"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-primary" style={{
+                <label style={{
                   display: 'block',
-                  marginBottom: '4px'
+                  marginBottom: '4px',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  color: '#000000',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
                 }}>
                   Body Fat (%)
                 </label>
@@ -240,17 +298,24 @@ const AddProgressModal: React.FC<AddProgressModalProps> = ({ onClose, onProgress
                   style={{
                     width: '100%',
                     padding: '8px 12px',
-                    border: '1px solid #d1d5db',
+                    border: '1.5px solid rgba(178, 190, 195, 0.5)',
                     borderRadius: '6px',
                     fontSize: '14px',
+                    backgroundColor: 'var(--color-background-card)',
+                    color: 'var(--color-text-white)',
                   }}
                   placeholder="e.g., 15.2"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-primary" style={{
+                <label style={{
                   display: 'block',
-                  marginBottom: '4px'
+                  marginBottom: '4px',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  color: '#000000',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
                 }}>
                   Muscle Mass (kg)
                 </label>
@@ -264,9 +329,11 @@ const AddProgressModal: React.FC<AddProgressModalProps> = ({ onClose, onProgress
                   style={{
                     width: '100%',
                     padding: '8px 12px',
-                    border: '1px solid #d1d5db',
+                    border: '1.5px solid rgba(178, 190, 195, 0.5)',
                     borderRadius: '6px',
                     fontSize: '14px',
+                    backgroundColor: 'var(--color-background-card)',
+                    color: 'var(--color-text-white)',
                   }}
                   placeholder="e.g., 35.8"
                 />
@@ -276,14 +343,19 @@ const AddProgressModal: React.FC<AddProgressModalProps> = ({ onClose, onProgress
 
           {/* Body Measurements */}
           <div style={{ marginBottom: '24px' }}>
-            <h3 className="text-h4 text-primary" style={{ marginBottom: '16px' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#000000', margin: '0 0 16px 0' }}>
               Body Measurements (cm)
             </h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
               <div>
-                <label className="text-sm font-medium text-primary" style={{
+                <label style={{
                   display: 'block',
-                  marginBottom: '4px'
+                  marginBottom: '4px',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  color: '#000000',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
                 }}>
                   Waist
                 </label>
@@ -297,16 +369,23 @@ const AddProgressModal: React.FC<AddProgressModalProps> = ({ onClose, onProgress
                   style={{
                     width: '100%',
                     padding: '8px 12px',
-                    border: '1px solid #d1d5db',
+                    border: '1.5px solid rgba(178, 190, 195, 0.5)',
                     borderRadius: '6px',
                     fontSize: '14px',
+                    backgroundColor: 'var(--color-background-card)',
+                    color: 'var(--color-text-white)',
                   }}
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-primary" style={{
+                <label style={{
                   display: 'block',
-                  marginBottom: '4px'
+                  marginBottom: '4px',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  color: '#000000',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
                 }}>
                   Chest
                 </label>
@@ -320,16 +399,23 @@ const AddProgressModal: React.FC<AddProgressModalProps> = ({ onClose, onProgress
                   style={{
                     width: '100%',
                     padding: '8px 12px',
-                    border: '1px solid #d1d5db',
+                    border: '1.5px solid rgba(178, 190, 195, 0.5)',
                     borderRadius: '6px',
                     fontSize: '14px',
+                    backgroundColor: 'var(--color-background-card)',
+                    color: 'var(--color-text-white)',
                   }}
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-primary" style={{
+                <label style={{
                   display: 'block',
-                  marginBottom: '4px'
+                  marginBottom: '4px',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  color: '#000000',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
                 }}>
                   Arm
                 </label>
@@ -343,16 +429,23 @@ const AddProgressModal: React.FC<AddProgressModalProps> = ({ onClose, onProgress
                   style={{
                     width: '100%',
                     padding: '8px 12px',
-                    border: '1px solid #d1d5db',
+                    border: '1.5px solid rgba(178, 190, 195, 0.5)',
                     borderRadius: '6px',
                     fontSize: '14px',
+                    backgroundColor: 'var(--color-background-card)',
+                    color: 'var(--color-text-white)',
                   }}
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-primary" style={{
+                <label style={{
                   display: 'block',
-                  marginBottom: '4px'
+                  marginBottom: '4px',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  color: '#000000',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
                 }}>
                   Thigh
                 </label>
@@ -366,16 +459,23 @@ const AddProgressModal: React.FC<AddProgressModalProps> = ({ onClose, onProgress
                   style={{
                     width: '100%',
                     padding: '8px 12px',
-                    border: '1px solid #d1d5db',
+                    border: '1.5px solid rgba(178, 190, 195, 0.5)',
                     borderRadius: '6px',
                     fontSize: '14px',
+                    backgroundColor: 'var(--color-background-card)',
+                    color: 'var(--color-text-white)',
                   }}
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-primary" style={{
+                <label style={{
                   display: 'block',
-                  marginBottom: '4px'
+                  marginBottom: '4px',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  color: '#000000',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
                 }}>
                   Hip
                 </label>
@@ -389,16 +489,23 @@ const AddProgressModal: React.FC<AddProgressModalProps> = ({ onClose, onProgress
                   style={{
                     width: '100%',
                     padding: '8px 12px',
-                    border: '1px solid #d1d5db',
+                    border: '1.5px solid rgba(178, 190, 195, 0.5)',
                     borderRadius: '6px',
                     fontSize: '14px',
+                    backgroundColor: 'var(--color-background-card)',
+                    color: 'var(--color-text-white)',
                   }}
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-primary" style={{
+                <label style={{
                   display: 'block',
-                  marginBottom: '4px'
+                  marginBottom: '4px',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  color: '#000000',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
                 }}>
                   Neck
                 </label>
@@ -412,9 +519,11 @@ const AddProgressModal: React.FC<AddProgressModalProps> = ({ onClose, onProgress
                   style={{
                     width: '100%',
                     padding: '8px 12px',
-                    border: '1px solid #d1d5db',
+                    border: '1.5px solid rgba(178, 190, 195, 0.5)',
                     borderRadius: '6px',
                     fontSize: '14px',
+                    backgroundColor: 'var(--color-background-card)',
+                    color: 'var(--color-text-white)',
                   }}
                 />
               </div>
@@ -423,14 +532,19 @@ const AddProgressModal: React.FC<AddProgressModalProps> = ({ onClose, onProgress
 
           {/* Health Metrics */}
           <div style={{ marginBottom: '24px' }}>
-            <h3 className="text-h4 text-primary" style={{ marginBottom: '16px' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#000000', margin: '0 0 16px 0' }}>
               Health Metrics
             </h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
               <div>
-                <label className="text-sm font-medium text-primary" style={{
+                <label style={{
                   display: 'block',
-                  marginBottom: '4px'
+                  marginBottom: '4px',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  color: '#000000',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
                 }}>
                   Resting Heart Rate (bpm)
                 </label>
@@ -443,17 +557,24 @@ const AddProgressModal: React.FC<AddProgressModalProps> = ({ onClose, onProgress
                   style={{
                     width: '100%',
                     padding: '8px 12px',
-                    border: '1px solid #d1d5db',
+                    border: '1.5px solid rgba(178, 190, 195, 0.5)',
                     borderRadius: '6px',
                     fontSize: '14px',
+                    backgroundColor: 'var(--color-background-card)',
+                    color: 'var(--color-text-white)',
                   }}
                   placeholder="e.g., 60"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-primary" style={{
+                <label style={{
                   display: 'block',
-                  marginBottom: '4px'
+                  marginBottom: '4px',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  color: '#000000',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
                 }}>
                   Systolic BP (mmHg)
                 </label>
@@ -466,17 +587,24 @@ const AddProgressModal: React.FC<AddProgressModalProps> = ({ onClose, onProgress
                   style={{
                     width: '100%',
                     padding: '8px 12px',
-                    border: '1px solid #d1d5db',
+                    border: '1.5px solid rgba(178, 190, 195, 0.5)',
                     borderRadius: '6px',
                     fontSize: '14px',
+                    backgroundColor: 'var(--color-background-card)',
+                    color: 'var(--color-text-white)',
                   }}
                   placeholder="e.g., 120"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-primary" style={{
+                <label style={{
                   display: 'block',
-                  marginBottom: '4px'
+                  marginBottom: '4px',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  color: '#000000',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
                 }}>
                   Diastolic BP (mmHg)
                 </label>
@@ -489,9 +617,11 @@ const AddProgressModal: React.FC<AddProgressModalProps> = ({ onClose, onProgress
                   style={{
                     width: '100%',
                     padding: '8px 12px',
-                    border: '1px solid #d1d5db',
+                    border: '1.5px solid rgba(178, 190, 195, 0.5)',
                     borderRadius: '6px',
                     fontSize: '14px',
+                    backgroundColor: 'var(--color-background-card)',
+                    color: 'var(--color-text-white)',
                   }}
                   placeholder="e.g., 80"
                 />
@@ -501,9 +631,14 @@ const AddProgressModal: React.FC<AddProgressModalProps> = ({ onClose, onProgress
 
           {/* Notes */}
           <div style={{ marginBottom: '24px' }}>
-            <label className="text-sm font-medium text-primary" style={{
+            <label style={{
               display: 'block',
-              marginBottom: '4px'
+              marginBottom: '4px',
+              fontSize: '12px',
+              fontWeight: '600',
+              color: '#000000',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px'
             }}>
               Notes
             </label>
@@ -515,10 +650,12 @@ const AddProgressModal: React.FC<AddProgressModalProps> = ({ onClose, onProgress
               style={{
                 width: '100%',
                 padding: '8px 12px',
-                border: '1px solid #d1d5db',
+                border: '1.5px solid rgba(178, 190, 195, 0.5)',
                 borderRadius: '6px',
                 fontSize: '14px',
                 resize: 'vertical',
+                backgroundColor: 'var(--color-background-card)',
+                color: 'var(--color-text-white)',
               }}
               placeholder="Any additional notes about your progress..."
             />
@@ -529,11 +666,15 @@ const AddProgressModal: React.FC<AddProgressModalProps> = ({ onClose, onProgress
             <button
               type="button"
               onClick={onClose}
-              className="btn btn-ghost text-primary"
               style={{
                 padding: '10px 20px',
                 fontSize: '14px',
                 fontWeight: '500',
+                border: '1.5px solid #FF6B6B',
+                borderRadius: '4px',
+                backgroundColor: 'transparent',
+                color: '#FF6B6B',
+                cursor: 'pointer',
               }}
             >
               Cancel
@@ -541,13 +682,16 @@ const AddProgressModal: React.FC<AddProgressModalProps> = ({ onClose, onProgress
             <button
               type="submit"
               disabled={loading}
-              className="btn btn-primary text-white"
               style={{
                 padding: '10px 20px',
                 fontSize: '14px',
                 fontWeight: '500',
-                opacity: loading ? 0.6 : 1,
+                border: 'none',
+                borderRadius: '4px',
+                backgroundColor: '#FF6B6B',
+                color: 'white',
                 cursor: loading ? 'not-allowed' : 'pointer',
+                opacity: loading ? 0.6 : 1,
               }}
             >
               {loading ? 'Saving...' : 'Save Progress'}
@@ -555,7 +699,13 @@ const AddProgressModal: React.FC<AddProgressModalProps> = ({ onClose, onProgress
           </div>
         </form>
       </div>
-    </div>
+      </div>
+    </>
+  );
+
+  return ReactDOM.createPortal(
+    modalContent,
+    document.body
   );
 };
 

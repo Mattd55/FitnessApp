@@ -280,9 +280,9 @@ const WorkoutAnalytics: React.FC<WorkoutAnalyticsProps> = ({
                 style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)', padding: 'var(--space-lg)' }}
               >
                 <div className="flex justify-between items-center">
-                  <div>
-                    <div className="text-body font-semibold text-white">{workout.name}</div>
-                    <div className="text-caption text-light">
+                  <div style={{ textAlign: 'left' }}>
+                    <div className="text-body font-semibold text-white" style={{ textAlign: 'left' }}>{workout.name}</div>
+                    <div className="text-caption text-light" style={{ textAlign: 'left' }}>
                       {formatDate(analytics.date)}
                     </div>
                   </div>

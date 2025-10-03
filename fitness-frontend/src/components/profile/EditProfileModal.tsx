@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { User } from '../../types/api';
 import { userApi } from '../../services/api';
 
@@ -60,6 +61,29 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
     }
   };
 
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.body.style.overflow = 'unset';
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [onClose]);
+
   const isFormValid = () => {
     return formData.firstName.trim() !== '' &&
            formData.lastName.trim() !== '' &&
@@ -68,38 +92,44 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
            formData.email.includes('@');
   };
 
-  return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 1000,
-      padding: '20px'
-    }}>
-      <div style={{
-        backgroundColor: 'white',
-        borderRadius: '12px',
-        boxShadow: '0 10px 25px rgba(0, 0, 0, 0.25)',
-        width: '100%',
-        maxWidth: '500px',
-        maxHeight: '90vh',
-        overflow: 'auto'
-      }}>
+  const modalContent = (
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 9999,
+      }}
+      onClick={handleBackdropClick}
+    >
+      <div
+        style={{
+          backgroundColor: 'var(--color-background-elevated)',
+          borderRadius: '8px',
+          maxWidth: '600px',
+          width: '90%',
+          maxHeight: '90vh',
+          overflow: 'auto',
+          position: 'relative',
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div style={{
-          padding: '24px',
-          borderBottom: '1px solid #e5e7eb',
           display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: '24px',
+          borderBottom: '1.5px solid rgba(178, 190, 195, 0.3)',
+          position: 'relative'
         }}>
-          <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '600', color: '#1f2937' }}>
+          <h2 style={{ fontSize: '24px', fontWeight: 'bold', margin: 0, color: '#000000' }}>
             Edit Profile
           </h2>
           <button
@@ -110,7 +140,8 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
               fontSize: '24px',
               cursor: 'pointer',
               color: '#6b7280',
-              padding: '4px'
+              position: 'absolute',
+              right: '24px'
             }}
           >
             ×
@@ -127,7 +158,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
               padding: '12px',
               borderRadius: '6px',
               marginBottom: '20px',
-              fontSize: '14px'
             }}>
               {error}
             </div>
@@ -138,10 +168,12 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
             <div>
               <label style={{
                 display: 'block',
-                fontSize: '14px',
+                marginBottom: '8px',
+                fontSize: '12px',
                 fontWeight: '600',
-                color: '#374151',
-                marginBottom: '6px'
+                color: '#000000',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px'
               }}>
                 First Name *
               </label>
@@ -153,11 +185,12 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 required
                 style={{
                   width: '100%',
-                  padding: '12px',
-                  border: '1px solid #d1d5db',
+                  padding: '10px 12px',
+                  border: '1.5px solid rgba(178, 190, 195, 0.5)',
                   borderRadius: '6px',
-                  fontSize: '16px',
-                  boxSizing: 'border-box'
+                  fontSize: '14px',
+                  backgroundColor: 'var(--color-background-card)',
+                  color: 'var(--color-text-white)',
                 }}
                 placeholder="Enter your first name"
               />
@@ -167,10 +200,12 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
             <div>
               <label style={{
                 display: 'block',
-                fontSize: '14px',
+                marginBottom: '8px',
+                fontSize: '12px',
                 fontWeight: '600',
-                color: '#374151',
-                marginBottom: '6px'
+                color: '#000000',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px'
               }}>
                 Last Name *
               </label>
@@ -182,11 +217,12 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 required
                 style={{
                   width: '100%',
-                  padding: '12px',
-                  border: '1px solid #d1d5db',
+                  padding: '10px 12px',
+                  border: '1.5px solid rgba(178, 190, 195, 0.5)',
                   borderRadius: '6px',
-                  fontSize: '16px',
-                  boxSizing: 'border-box'
+                  fontSize: '14px',
+                  backgroundColor: 'var(--color-background-card)',
+                  color: 'var(--color-text-white)',
                 }}
                 placeholder="Enter your last name"
               />
@@ -196,10 +232,12 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
             <div>
               <label style={{
                 display: 'block',
-                fontSize: '14px',
+                marginBottom: '8px',
+                fontSize: '12px',
                 fontWeight: '600',
-                color: '#374151',
-                marginBottom: '6px'
+                color: '#000000',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px'
               }}>
                 Username *
               </label>
@@ -211,11 +249,12 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 required
                 style={{
                   width: '100%',
-                  padding: '12px',
-                  border: '1px solid #d1d5db',
+                  padding: '10px 12px',
+                  border: '1.5px solid rgba(178, 190, 195, 0.5)',
                   borderRadius: '6px',
-                  fontSize: '16px',
-                  boxSizing: 'border-box'
+                  fontSize: '14px',
+                  backgroundColor: 'var(--color-background-card)',
+                  color: 'var(--color-text-white)',
                 }}
                 placeholder="Enter your username"
               />
@@ -225,10 +264,12 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
             <div>
               <label style={{
                 display: 'block',
-                fontSize: '14px',
+                marginBottom: '8px',
+                fontSize: '12px',
                 fontWeight: '600',
-                color: '#374151',
-                marginBottom: '6px'
+                color: '#000000',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px'
               }}>
                 Email *
               </label>
@@ -240,61 +281,32 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 required
                 style={{
                   width: '100%',
-                  padding: '12px',
-                  border: '1px solid #d1d5db',
+                  padding: '10px 12px',
+                  border: '1.5px solid rgba(178, 190, 195, 0.5)',
                   borderRadius: '6px',
-                  fontSize: '16px',
-                  boxSizing: 'border-box'
+                  fontSize: '14px',
+                  backgroundColor: 'var(--color-background-card)',
+                  color: 'var(--color-text-white)',
                 }}
                 placeholder="Enter your email"
               />
             </div>
-
-            {/* Role Display (Read-only) */}
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: '14px',
-                fontWeight: '600',
-                color: '#374151',
-                marginBottom: '6px'
-              }}>
-                Role
-              </label>
-              <div style={{
-                padding: '12px',
-                backgroundColor: '#f9fafb',
-                border: '1px solid #e5e7eb',
-                borderRadius: '6px',
-                fontSize: '16px',
-                color: '#6b7280'
-              }}>
-                {userProfile.role} (Cannot be changed)
-              </div>
-            </div>
           </div>
 
-          {/* Actions */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            gap: '12px',
-            marginTop: '24px',
-            paddingTop: '20px',
-            borderTop: '1px solid #e5e7eb'
-          }}>
+          {/* Action Buttons */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '24px' }}>
             <button
               type="button"
               onClick={onClose}
               disabled={loading}
               style={{
                 padding: '10px 20px',
-                backgroundColor: 'transparent',
-                border: '1px solid #d1d5db',
-                borderRadius: '6px',
                 fontSize: '14px',
-                fontWeight: '600',
-                color: '#374151',
+                fontWeight: '500',
+                border: '1.5px solid #FF6B6B',
+                borderRadius: '4px',
+                backgroundColor: 'transparent',
+                color: '#FF6B6B',
                 cursor: loading ? 'not-allowed' : 'pointer',
                 opacity: loading ? 0.5 : 1
               }}
@@ -306,13 +318,14 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
               disabled={loading || !isFormValid()}
               style={{
                 padding: '10px 20px',
-                backgroundColor: isFormValid() && !loading ? '#4f46e5' : '#9ca3af',
-                border: 'none',
-                borderRadius: '6px',
                 fontSize: '14px',
-                fontWeight: '600',
+                fontWeight: '500',
+                border: 'none',
+                borderRadius: '4px',
+                backgroundColor: '#FF6B6B',
                 color: 'white',
-                cursor: (isFormValid() && !loading) ? 'pointer' : 'not-allowed'
+                cursor: (isFormValid() && !loading) ? 'pointer' : 'not-allowed',
+                opacity: (isFormValid() && !loading) ? 1 : 0.6
               }}
             >
               {loading ? 'Saving...' : 'Save Changes'}
@@ -321,6 +334,11 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
         </form>
       </div>
     </div>
+  );
+
+  return ReactDOM.createPortal(
+    modalContent,
+    document.body
   );
 };
 

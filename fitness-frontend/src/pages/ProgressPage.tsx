@@ -6,8 +6,7 @@ import ProgressCharts from '../components/progress/ProgressCharts';
 import ProgressSummary from '../components/progress/ProgressSummary';
 import ProgressHistory from '../components/progress/ProgressHistory';
 import WorkoutAnalytics from '../components/progress/WorkoutAnalytics';
-import PersonalRecords from '../components/progress/PersonalRecords';
-import { Plus, TrendingUp, Target, Calculator, BarChart3, Award } from 'lucide-react';
+import { Plus, TrendingUp } from 'lucide-react';
 
 const ProgressPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -223,20 +222,6 @@ const ProgressPage: React.FC = () => {
             </h3>
           </div>
           <WorkoutAnalytics
-            workouts={workouts}
-            workoutExercises={workoutExercises}
-            exerciseSets={exerciseSets}
-          />
-        </div>
-
-        {/* Personal Records */}
-        <div className="card slide-in-right">
-          <div className="header-section">
-            <h3 className="text-h3 text-white">
-              Personal Records
-            </h3>
-          </div>
-          <PersonalRecords
             workouts={workouts}
             workoutExercises={workoutExercises}
             exerciseSets={exerciseSets}

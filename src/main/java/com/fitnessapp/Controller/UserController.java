@@ -1,11 +1,13 @@
 package com.fitnessapp.controller;
 
+import com.fitnessapp.dto.PersonalRecordDTO;
 import com.fitnessapp.dto.mapper.UserMapper;
 import com.fitnessapp.dto.response.user.UserResponse;
 import com.fitnessapp.entity.User;
 import com.fitnessapp.entity.UserProgress;
 import com.fitnessapp.service.UserService;
 import com.fitnessapp.service.UserProgressService;
+import com.fitnessapp.service.WorkoutService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,11 +25,13 @@ public class UserController {
     private final UserService userService;
     private final UserProgressService userProgressService;
     private final UserMapper userMapper;
+    private final WorkoutService workoutService;
 
-    public UserController(UserService userService, UserProgressService userProgressService, UserMapper userMapper) {
+    public UserController(UserService userService, UserProgressService userProgressService, UserMapper userMapper, WorkoutService workoutService) {
         this.userService = userService;
         this.userProgressService = userProgressService;
         this.userMapper = userMapper;
+        this.workoutService = workoutService;
     }
 
     @GetMapping("/profile")
@@ -83,5 +87,12 @@ public class UserController {
         String username = authentication.getName();
         userProgressService.deleteProgressEntry(username, id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/personal-records")
+    public ResponseEntity<java.util.List<PersonalRecordDTO>> getPersonalRecords(Authentication authentication) {
+        String username = authentication.getName();
+        java.util.List<PersonalRecordDTO> records = workoutService.getPersonalRecords(username);
+        return ResponseEntity.ok(records);
     }
 }

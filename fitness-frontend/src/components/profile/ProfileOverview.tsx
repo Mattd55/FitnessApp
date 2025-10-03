@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { User, UserProgress, Workout } from '../../types/api';
-import { userApi, workoutApi } from '../../services/api';
+import { User, UserProgress, Workout, Goal } from '../../types/api';
+import { userApi, workoutApi, goalApi } from '../../services/api';
 import { Calendar, Trophy, Activity, Target } from 'lucide-react';
 
 interface ProfileOverviewProps {
@@ -13,7 +13,11 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ userProfile }) => {
   const [stats, setStats] = useState({
     totalWorkouts: 0,
     completedWorkouts: 0,
-    currentStreak: 0
+    currentStreak: 0,
+    totalTrainingTime: 0,
+    activeGoals: 0,
+    weekWorkouts: 0,
+    avgWorkoutsPerWeek: 0
   });
 
   useEffect(() => {
@@ -25,17 +29,47 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ userProfile }) => {
       const progress = await userApi.getLatestProgress().catch(() => null);
       setLatestProgress(progress);
 
-      const workoutsResponse = await workoutApi.getWorkouts(0, 10);
+      // Load all workouts for calculations
+      const workoutsResponse = await workoutApi.getWorkouts(0, 1000);
       const workouts = workoutsResponse.content;
       setRecentWorkouts(workouts.slice(0, 5));
+
+      // Load goals
+      const goalsResponse = await goalApi.getGoals(0, 1000).catch(() => ({ content: [] }));
+      const activeGoalsCount = goalsResponse.content.filter((g: Goal) => g.status === 'ACTIVE').length;
 
       const completedWorkouts = workouts.filter(w => w.status === 'COMPLETED');
       const currentStreak = calculateWorkoutStreak(workouts);
 
+      // Calculate total training time (from completed workouts with duration)
+      const totalTrainingTime = completedWorkouts.reduce((total, w) =>
+        total + (w.durationMinutes || 0), 0
+      );
+
+      // Calculate workouts this week
+      const weekStart = new Date();
+      weekStart.setDate(weekStart.getDate() - weekStart.getDay()); // Start of week (Sunday)
+      weekStart.setHours(0, 0, 0, 0);
+      const weekWorkouts = completedWorkouts.filter(w => {
+        const completedDate = new Date(w.completedAt || w.createdAt);
+        return completedDate >= weekStart;
+      }).length;
+
+      // Calculate average workouts per week
+      const userCreatedDate = new Date(userProfile.createdAt);
+      const weeksActive = Math.max(1, Math.ceil((new Date().getTime() - userCreatedDate.getTime()) / (7 * 24 * 60 * 60 * 1000)));
+      const avgWorkoutsPerWeek = completedWorkouts.length > 0
+        ? Math.round((completedWorkouts.length / weeksActive) * 10) / 10
+        : 0;
+
       setStats({
         totalWorkouts: workouts.length,
         completedWorkouts: completedWorkouts.length,
-        currentStreak
+        currentStreak,
+        totalTrainingTime,
+        activeGoals: activeGoalsCount,
+        weekWorkouts,
+        avgWorkoutsPerWeek
       });
     } catch (err) {
       console.error('Error loading overview data:', err);
@@ -77,29 +111,63 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ userProfile }) => {
     });
   };
 
+  const formatTrainingTime = (minutes: number): string => {
+    if (minutes < 60) {
+      return `${minutes}m`;
+    }
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+  };
+
   return (
     <div className="space-y-6">
-      {/* Fitness Stats */}
+      {/* Workout Stats */}
       <div className="card card-compact hover-lift">
-        <h3 className="text-h4 text-white mb-4">Fitness Statistics</h3>
+        <h3 className="text-h4 text-white mb-4">Workout Activity</h3>
         <div className="grid grid-cols-4 gap-6">
-          <div className="card card-compact text-center" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)' }}>
-            <div className="text-h1 text-white mb-1">
-              {stats.totalWorkouts}
-            </div>
-            <div className="text-caption text-light">Total Workouts</div>
-          </div>
           <div className="card card-compact text-center" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)' }}>
             <div className="text-h1 text-white mb-1">
               {stats.completedWorkouts}
             </div>
-            <div className="text-caption text-light">Completed</div>
+            <div className="text-caption text-light">Total Completed</div>
+          </div>
+          <div className="card card-compact text-center" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)' }}>
+            <div className="text-h1 text-white mb-1">
+              {stats.weekWorkouts}
+            </div>
+            <div className="text-caption text-light">This Week</div>
+          </div>
+          <div className="card card-compact text-center" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)' }}>
+            <div className="text-h1 text-white mb-1">
+              {stats.avgWorkoutsPerWeek}
+            </div>
+            <div className="text-caption text-light">Weekly Average</div>
           </div>
           <div className="card card-compact text-center" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)' }}>
             <div className="text-h1 text-white mb-1">
               {stats.currentStreak}
             </div>
-            <div className="text-caption text-light">Current Streak</div>
+            <div className="text-caption text-light">Day Streak</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Performance Stats */}
+      <div className="card card-compact hover-lift">
+        <h3 className="text-h4 text-white mb-4">Performance Metrics</h3>
+        <div className="grid grid-cols-4 gap-6">
+          <div className="card card-compact text-center" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)' }}>
+            <div className="text-h1 text-white mb-1">
+              {formatTrainingTime(stats.totalTrainingTime)}
+            </div>
+            <div className="text-caption text-light">Total Time Trained</div>
+          </div>
+          <div className="card card-compact text-center" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)' }}>
+            <div className="text-h1 text-white mb-1">
+              {stats.activeGoals}
+            </div>
+            <div className="text-caption text-light">Active Goals</div>
           </div>
           {stats.totalWorkouts > 0 && (
             <div className="card card-compact text-center" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)' }}>
@@ -109,94 +177,13 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ userProfile }) => {
               <div className="text-caption text-light">Completion Rate</div>
             </div>
           )}
-        </div>
-      </div>
-
-      {/* Latest Progress */}
-      {latestProgress && (
-        <div className="card card-compact hover-lift">
-          <h3 className="text-h4 text-white mb-4">Latest Progress Entry</h3>
-          <div className="card card-compact" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)' }}>
-            <div className="text-body-sm text-light mb-4">
-              Recorded on {formatDate(latestProgress.measurementDate)}
+          <div className="card card-compact text-center" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)' }}>
+            <div className="text-h1 text-white mb-1">
+              {stats.totalWorkouts - stats.completedWorkouts}
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
-              {latestProgress.weightKg && (
-                <div>
-                  <div className="text-caption text-light mb-1">Weight</div>
-                  <div className="text-h3 text-white">{latestProgress.weightKg}kg</div>
-                </div>
-              )}
-              {latestProgress.bodyFatPercentage && (
-                <div>
-                  <div className="text-caption text-light mb-1">Body Fat</div>
-                  <div className="text-h3 text-white">{latestProgress.bodyFatPercentage}%</div>
-                </div>
-              )}
-              {latestProgress.muscleMassKg && (
-                <div>
-                  <div className="text-caption text-light mb-1">Muscle Mass</div>
-                  <div className="text-h3 text-white">{latestProgress.muscleMassKg}kg</div>
-                </div>
-              )}
-            </div>
+            <div className="text-caption text-light">Planned Workouts</div>
           </div>
         </div>
-      )}
-
-      {/* Recent Workouts */}
-      <div className="card card-compact hover-lift">
-        <h3 className="text-h4 text-white mb-4">Recent Workouts</h3>
-        {recentWorkouts.length > 0 ? (
-          <div className="space-y-4">
-            {recentWorkouts.map((workout, index) => (
-              <div
-                key={workout.id}
-                className="card hover-lift"
-                style={{
-                  animationDelay: `${index * 0.1}s`,
-                  opacity: 0,
-                  animation: 'fadeIn 0.5s forwards',
-                  border: '1.5px solid rgba(178, 190, 195, 0.3)'
-                }}
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h4 className="text-h4 text-white">{workout.name}</h4>
-                    <div className="flex items-center gap-md mt-2">
-                      {workout.scheduledDate && (
-                        <span className="text-body-sm text-light">
-                          {formatDate(workout.scheduledDate)}
-                        </span>
-                      )}
-                      {workout.durationMinutes && (
-                        <span className="text-body-sm text-light">
-                          {workout.durationMinutes} min
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <span className={`badge ${
-                    workout.status === 'COMPLETED' ? 'badge-success' :
-                    workout.status === 'IN_PROGRESS' ? 'badge-info' :
-                    'badge-warning'
-                  }`}>
-                    {workout.status.toLowerCase().replace('_', ' ')}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="flex-col-center py-12 fade-in">
-            <div className="bg-primary p-4 rounded-2xl w-16 h-16 mb-4 flex-center">
-              <Activity className="h-8 w-8 text-white" />
-            </div>
-            <p className="text-body text-secondary text-center">
-              No workouts yet. Create your first workout to get started!
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );

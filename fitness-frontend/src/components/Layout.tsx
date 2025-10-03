@@ -11,7 +11,8 @@ import {
   Home,
   Users,
   Shield,
-  Sparkles
+  Sparkles,
+  Target
 } from 'lucide-react';
 
 interface LayoutProps {
@@ -37,6 +38,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { path: '/exercises', icon: Dumbbell, label: 'Exercises' },
     { path: '/workouts', icon: Activity, label: 'Workouts' },
     { path: '/progress', icon: BarChart3, label: 'Progress' },
+    { path: '/goals', icon: Target, label: 'Goals' },
     { path: '/profile', icon: User, label: 'Profile' },
   ];
 

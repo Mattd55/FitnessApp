@@ -12,7 +12,7 @@ const ProfilePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [userProfile, setUserProfile] = useState<User | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [activeTab, setActiveTab] = useState<'overview' | 'settings'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'settings'>('settings');
   const { user: authUser, updateUser } = useAuth();
 
   const loadUserProfile = async () => {

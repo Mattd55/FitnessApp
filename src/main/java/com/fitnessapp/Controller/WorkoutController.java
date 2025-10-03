@@ -149,4 +149,13 @@ public class WorkoutController {
         workoutService.fixWorkoutStatusInconsistency(username, id);
         return ResponseEntity.ok("Workout status fixed");
     }
+
+    @DeleteMapping("/{workoutId}/exercises/{workoutExerciseId}")
+    public ResponseEntity<Void> deleteWorkoutExercise(@PathVariable Long workoutId,
+                                                       @PathVariable Long workoutExerciseId,
+                                                       Authentication authentication) {
+        String username = authentication.getName();
+        workoutService.deleteWorkoutExercise(username, workoutId, workoutExerciseId);
+        return ResponseEntity.noContent().build();
+    }
 }

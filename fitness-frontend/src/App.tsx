@@ -10,6 +10,7 @@ import ExerciseLibrary from './pages/ExerciseLibrary';
 import Workouts from './pages/Workouts';
 import ProgressPage from './pages/ProgressPage';
 import ProfilePage from './pages/ProfilePage';
+import GoalsPage from './pages/GoalsPage';
 import './App.css';
 
 function App() {
@@ -74,6 +75,17 @@ function App() {
                 <ProtectedRoute>
                   <Layout>
                     <ProfilePage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/goals"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <GoalsPage />
                   </Layout>
                 </ProtectedRoute>
               }

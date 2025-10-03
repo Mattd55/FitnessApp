@@ -9,6 +9,7 @@ import {
   WorkoutExercise,
   ExerciseSet,
   UserProgress,
+  Goal,
   PageResponse,
 } from '../types/api';
 
@@ -95,6 +96,11 @@ export const userApi = {
   getLatestProgress: async (): Promise<UserProgress> => {
     const response = await apiClient.get('/users/progress/latest');
     return response.data as UserProgress;
+  },
+
+  getPersonalRecords: async (): Promise<{ exerciseName: string; maxWeight: number; maxReps: number }[]> => {
+    const response = await apiClient.get<{ exerciseName: string; maxWeight: number; maxReps: number }[]>('/users/personal-records');
+    return response.data;
   },
 };
 
@@ -230,6 +236,10 @@ export const workoutApi = {
     return response.data as WorkoutExercise;
   },
 
+  deleteWorkoutExercise: async (workoutId: number, workoutExerciseId: number): Promise<void> => {
+    await apiClient.delete(`/workouts/${workoutId}/exercises/${workoutExerciseId}`);
+  },
+
   logSet: async (
     workoutExerciseId: number,
     setData: Omit<ExerciseSet, 'id' | 'createdAt' | 'workoutExercise' | 'status'>
@@ -249,6 +259,50 @@ export const workoutApi = {
   getExerciseSets: async (workoutExerciseId: number): Promise<ExerciseSet[]> => {
     const response = await apiClient.get(`/workouts/exercises/${workoutExerciseId}/sets`);
     return response.data as ExerciseSet[];
+  },
+};
+
+// Goal API
+export const goalApi = {
+  getGoals: async (page = 0, size = 10): Promise<PageResponse<Goal>> => {
+    const response = await apiClient.get(
+      `/goals?page=${page}&size=${size}`
+    );
+    return response.data as PageResponse<Goal>;
+  },
+
+  getActiveGoals: async (): Promise<Goal[]> => {
+    const response = await apiClient.get('/goals/active');
+    return response.data as Goal[];
+  },
+
+  getGoal: async (id: number): Promise<Goal> => {
+    const response = await apiClient.get(`/goals/${id}`);
+    return response.data as Goal;
+  },
+
+  createGoal: async (goalData: Omit<Goal, 'id' | 'createdAt' | 'updatedAt' | 'user'>): Promise<Goal> => {
+    const response = await apiClient.post('/goals', goalData);
+    return response.data as Goal;
+  },
+
+  updateGoal: async (id: number, goalData: Partial<Goal>): Promise<Goal> => {
+    const response = await apiClient.put(`/goals/${id}`, goalData);
+    return response.data as Goal;
+  },
+
+  deleteGoal: async (id: number): Promise<void> => {
+    await apiClient.delete(`/goals/${id}`);
+  },
+
+  getActiveGoalsCount: async (): Promise<number> => {
+    const response = await apiClient.get('/goals/stats/active');
+    return response.data as number;
+  },
+
+  getCompletedGoalsCount: async (): Promise<number> => {
+    const response = await apiClient.get('/goals/stats/completed');
+    return response.data as number;
   },
 };
 

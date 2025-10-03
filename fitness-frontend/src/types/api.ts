@@ -125,6 +125,37 @@ export interface UserProgress {
   user: User;
 }
 
+export type GoalType =
+  | 'WEIGHT_LOSS'
+  | 'WEIGHT_GAIN'
+  | 'MUSCLE_GAIN'
+  | 'BODY_FAT_REDUCTION'
+  | 'STRENGTH'
+  | 'ENDURANCE'
+  | 'FLEXIBILITY'
+  | 'WORKOUT_FREQUENCY'
+  | 'PERSONAL_RECORD'
+  | 'CUSTOM';
+
+export type GoalStatus = 'ACTIVE' | 'COMPLETED' | 'ABANDONED' | 'PAUSED';
+
+export interface Goal {
+  id: number;
+  title: string;
+  description?: string;
+  type: GoalType;
+  status: GoalStatus;
+  targetValue?: number;
+  currentValue?: number;
+  unit?: string;
+  targetDate?: string;
+  startedDate?: string;
+  completedDate?: string;
+  createdAt: string;
+  updatedAt: string;
+  user: User;
+}
+
 export interface ErrorResponse {
   errorCode: string;
   message: string;

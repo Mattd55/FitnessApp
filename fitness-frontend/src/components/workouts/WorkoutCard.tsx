@@ -69,9 +69,9 @@ const WorkoutCard: React.FC<WorkoutCardProps> = ({ workout, onClick }) => {
           </span>
         </div>
 
-        <div style={{ minHeight: '40px' }}>
+        <div style={{ minHeight: '40px', textAlign: 'left' }}>
           {workout.description && (
-            <p className="text-body-sm text-secondary line-clamp-2">
+            <p className="text-body-sm text-secondary line-clamp-2" style={{ textAlign: 'left' }}>
               {workout.description}
             </p>
           )}

@@ -103,7 +103,7 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ userProfile, onProfil
   return (
     <div className="space-y-6">
       {/* Account Security */}
-      <div className="card hover-lift" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)' }}>
+      <div className="card hover-lift">
         <h3 className="text-h4 text-white mb-4">
           Account Security
         </h3>
@@ -257,7 +257,7 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ userProfile, onProfil
       </div>
 
       {/* Privacy & Data */}
-      <div className="card hover-lift" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)' }}>
+      <div className="card hover-lift">
         <h3 className="text-h4 text-white mb-4">
           Privacy & Data
         </h3>

@@ -1,5 +1,6 @@
 package com.fitnessapp.service;
 
+import com.fitnessapp.dto.PersonalRecordDTO;
 import com.fitnessapp.entity.*;
 import com.fitnessapp.repository.*;
 import org.springframework.cache.annotation.CacheEvict;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -95,10 +97,11 @@ public class WorkoutService {
             throw new IllegalStateException("Workout is not in progress");
         }
 
-        // Complete all exercises in the workout that are still in progress
+        // Complete all exercises in the workout that are still in progress or pending
         List<WorkoutExercise> exercises = workoutExerciseRepository.findByWorkoutOrderByOrderIndexAsc(workout);
         for (WorkoutExercise exercise : exercises) {
-            if (exercise.getStatus() == WorkoutExercise.Status.IN_PROGRESS) {
+            if (exercise.getStatus() == WorkoutExercise.Status.IN_PROGRESS ||
+                exercise.getStatus() == WorkoutExercise.Status.PENDING) {
                 exercise.setStatus(WorkoutExercise.Status.COMPLETED);
                 exercise.setCompletedAt(LocalDateTime.now());
                 exercise.setUpdatedAt(LocalDateTime.now());
@@ -271,6 +274,32 @@ public class WorkoutService {
         workoutRepository.deleteById(workoutId);
     }
 
+    @CacheEvict(value = "userWorkouts", allEntries = true)
+    public void deleteWorkoutExercise(String username, Long workoutId, Long workoutExerciseId) {
+        Workout workout = getWorkoutById(username, workoutId)
+                .orElseThrow(() -> new IllegalArgumentException("Workout not found: " + workoutId));
+
+        WorkoutExercise workoutExercise = workoutExerciseRepository.findById(workoutExerciseId)
+                .orElseThrow(() -> new IllegalArgumentException("Workout exercise not found: " + workoutExerciseId));
+
+        // Verify the exercise belongs to the workout
+        if (!workoutExercise.getWorkout().getId().equals(workoutId)) {
+            throw new IllegalArgumentException("Exercise does not belong to this workout");
+        }
+
+        // Only allow deletion if exercise is PENDING (not started yet)
+        if (workoutExercise.getStatus() != WorkoutExercise.Status.PENDING) {
+            throw new IllegalStateException("Cannot delete exercise that has been started or completed");
+        }
+
+        // Only allow deletion if workout is not COMPLETED
+        if (workout.getStatus() == Workout.Status.COMPLETED) {
+            throw new IllegalStateException("Cannot delete exercises from completed workouts");
+        }
+
+        workoutExerciseRepository.delete(workoutExercise);
+    }
+
     // Method to fix data inconsistencies for existing workouts
     @CacheEvict(value = "userWorkouts", allEntries = true)
     public void fixWorkoutStatusInconsistency(String username, Long workoutId) {
@@ -295,15 +324,17 @@ public class WorkoutService {
             }
         }
 
-        // Fix if workout is COMPLETED but has IN_PROGRESS exercises
+        // Fix if workout is COMPLETED but has IN_PROGRESS or PENDING exercises
         if (workout.getStatus() == Workout.Status.COMPLETED) {
-            boolean hasInProgressExercises = exercises.stream()
-                    .anyMatch(ex -> ex.getStatus() == WorkoutExercise.Status.IN_PROGRESS);
+            boolean hasIncompleteExercises = exercises.stream()
+                    .anyMatch(ex -> ex.getStatus() == WorkoutExercise.Status.IN_PROGRESS ||
+                                   ex.getStatus() == WorkoutExercise.Status.PENDING);
 
-            if (hasInProgressExercises) {
-                // Complete all IN_PROGRESS exercises to match workout status
+            if (hasIncompleteExercises) {
+                // Complete all IN_PROGRESS and PENDING exercises to match workout status
                 for (WorkoutExercise exercise : exercises) {
-                    if (exercise.getStatus() == WorkoutExercise.Status.IN_PROGRESS) {
+                    if (exercise.getStatus() == WorkoutExercise.Status.IN_PROGRESS ||
+                        exercise.getStatus() == WorkoutExercise.Status.PENDING) {
                         exercise.setStatus(WorkoutExercise.Status.COMPLETED);
                         exercise.setCompletedAt(LocalDateTime.now());
                         exercise.setUpdatedAt(LocalDateTime.now());
@@ -312,5 +343,21 @@ public class WorkoutService {
                 }
             }
         }
+    }
+
+    public List<PersonalRecordDTO> getPersonalRecords(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
+
+        // Get max weight for each exercise from completed sets
+        List<Object[]> results = exerciseSetRepository.findPersonalRecordsByUser(user.getId());
+
+        return results.stream()
+                .map(record -> new PersonalRecordDTO(
+                    (String) record[0],  // exerciseName
+                    (Double) record[1],  // maxWeight
+                    (Integer) record[2]  // maxReps
+                ))
+                .collect(Collectors.toList());
     }
 }

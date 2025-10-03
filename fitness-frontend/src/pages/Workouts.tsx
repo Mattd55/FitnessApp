@@ -13,18 +13,12 @@ const Workouts: React.FC = () => {
   const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [activeTab, setActiveTab] = useState<'all' | 'planned' | 'in_progress' | 'completed'>('all');
-  const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
 
-  const pageSize = 12;
-
-  const loadWorkouts = async (page: number = 0) => {
+  const loadWorkouts = async () => {
     try {
       setLoading(true);
-      const response: PageResponse<Workout> = await workoutApi.getWorkouts(page, pageSize);
+      const response: PageResponse<Workout> = await workoutApi.getWorkouts(0, 1000);
       setWorkouts(response.content);
-      setTotalPages(response.totalPages);
-      setCurrentPage(page);
     } catch (err) {
       setError('Failed to load workouts. Please try again.');
       console.error('Error loading workouts:', err);
@@ -34,7 +28,7 @@ const Workouts: React.FC = () => {
   };
 
   useEffect(() => {
-    loadWorkouts(0);
+    loadWorkouts();
   }, []);
 
   const handleWorkoutClick = (workout: Workout) => {
@@ -95,10 +89,6 @@ const Workouts: React.FC = () => {
     };
   };
 
-  const handlePageChange = (page: number) => {
-    loadWorkouts(page);
-  };
-
   const filteredWorkouts = getFilteredWorkouts();
   const tabCounts = getTabCounts();
 
@@ -137,34 +127,34 @@ const Workouts: React.FC = () => {
           </div>
         </div>
 
-        {/* Filter Tabs */}
-        <div className="card slide-in-right">
-          <h3 className="text-h4 text-white mb-4">
-            Filter Workouts
-          </h3>
-          <nav className="grid grid-cols-4 gap-md">
-            {[
-              { id: 'all', label: 'All Workouts', count: tabCounts.all },
-              { id: 'planned', label: 'Planned', count: tabCounts.planned },
-              { id: 'in_progress', label: 'Active', count: tabCounts.in_progress },
-              { id: 'completed', label: 'Completed', count: tabCounts.completed },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`btn hover-lift ${
-                  activeTab === tab.id ? 'btn-primary' : 'btn-ghost'
-                } flex items-center justify-center gap-xs`}
-              >
-                <span>{tab.label}</span>
-                <span className={`badge ${
-                  activeTab === tab.id ? 'badge-secondary' : 'badge-primary'
-                }`}>
-                  {tab.count}
-                </span>
-              </button>
-            ))}
-          </nav>
+        {/* Filter Buttons */}
+        <div className="card">
+          <div className="flex gap-md justify-between">
+            <button
+              onClick={() => setActiveTab('all')}
+              className={`btn ${activeTab === 'all' ? 'btn-primary' : 'btn-outline'} flex-1`}
+            >
+              All Workouts
+            </button>
+            <button
+              onClick={() => setActiveTab('planned')}
+              className={`btn ${activeTab === 'planned' ? 'btn-primary' : 'btn-outline'} flex-1`}
+            >
+              Planned
+            </button>
+            <button
+              onClick={() => setActiveTab('in_progress')}
+              className={`btn ${activeTab === 'in_progress' ? 'btn-primary' : 'btn-outline'} flex-1`}
+            >
+              Active
+            </button>
+            <button
+              onClick={() => setActiveTab('completed')}
+              className={`btn ${activeTab === 'completed' ? 'btn-primary' : 'btn-outline'} flex-1`}
+            >
+              Completed
+            </button>
+          </div>
         </div>
 
         {error && (
@@ -176,59 +166,40 @@ const Workouts: React.FC = () => {
         )}
 
         {/* Workout Grid */}
-        {filteredWorkouts.length === 0 ? (
-          <div className="card card-large flex-col-center fade-in">
-            <h3 className="text-h3 text-white">
-              {activeTab === 'all' ? 'No workouts yet' : `No ${activeTab.replace('_', ' ')} workouts`}
-            </h3>
-            <p className="text-body text-secondary">
-              {activeTab === 'all'
-                ? 'Get started by creating your first workout plan!'
-                : `You don't have any ${activeTab.replace('_', ' ')} workouts.`
-              }
-            </p>
-            {activeTab === 'all' && (
-              <button
-                onClick={handleCreateWorkout}
-                className="btn btn-primary hover-glow mt-6"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Create Your First Workout
-              </button>
-            )}
-          </div>
-        ) : (
-          <div className="grid-auto-fit stagger-in">
-            {filteredWorkouts.map((workout) => (
-              <WorkoutCard
-                key={workout.id}
-                workout={workout}
-                onClick={handleWorkoutClick}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="card">
-            <div className="flex-center">
-              <nav className="flex gap-xs">
-                {Array.from({ length: totalPages }, (_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => handlePageChange(i)}
-                    className={`btn hover-lift ${
-                      currentPage === i ? 'btn-primary' : 'btn-ghost'
-                    }`}
-                  >
-                    {i + 1}
-                  </button>
-                ))}
-              </nav>
+        <div className="card" style={{ maxHeight: '800px', overflowY: 'auto', overflowX: 'hidden', padding: '0' }}>
+          {filteredWorkouts.length === 0 ? (
+            <div className="flex-col-center py-12 fade-in">
+              <h3 className="text-h3 text-white">
+                {activeTab === 'all' ? 'No workouts yet' : `No ${activeTab.replace('_', ' ')} workouts`}
+              </h3>
+              <p className="text-body text-secondary">
+                {activeTab === 'all'
+                  ? 'Get started by creating your first workout plan!'
+                  : `You don't have any ${activeTab.replace('_', ' ')} workouts.`
+                }
+              </p>
+              {activeTab === 'all' && (
+                <button
+                  onClick={handleCreateWorkout}
+                  className="btn btn-primary hover-glow mt-6"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Your First Workout
+                </button>
+              )}
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="grid-auto-fit stagger-in" style={{ padding: 'var(--space-lg)' }}>
+              {filteredWorkouts.map((workout) => (
+                <WorkoutCard
+                  key={workout.id}
+                  workout={workout}
+                  onClick={handleWorkoutClick}
+                />
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Modals */}
         {showCreateModal && (

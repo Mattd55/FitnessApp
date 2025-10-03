@@ -151,6 +151,26 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
     }));
   };
 
+  const handleDeleteExercise = async (exerciseId: number) => {
+    if (!window.confirm('Are you sure you want to remove this exercise from the workout?')) {
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      await workoutApi.deleteWorkoutExercise(workout.id, exerciseId);
+      // Remove the exercise from the local state
+      setExercises(prevExercises => prevExercises.filter(ex => ex.id !== exerciseId));
+    } catch (err: any) {
+      console.error('Error deleting exercise:', err);
+      setError(err.response?.data?.message || 'Failed to delete exercise');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleStartWorkout = async () => {
     if (workout.status !== 'PLANNED') return;
 
@@ -461,46 +481,47 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
                         backgroundColor: 'var(--color-background-card)',
                       }}
                     >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                          <div style={{ flex: 1 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                              <span style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                width: '24px',
-                                height: '24px',
-                                borderRadius: '50%',
-                                backgroundColor: '#4f46e5',
-                                color: 'white',
-                                fontSize: '12px',
-                                fontWeight: '600',
-                              }}>
-                                {index + 1}
-                              </span>
-                              <h5 style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: 'var(--color-text-white)' }}>
-                                {exercise.exercise.name}
-                              </h5>
-                              <span style={{
-                                padding: '2px 8px',
-                                backgroundColor: exercise.status === 'COMPLETED' ? '#dcfce7' :
-                                                exercise.status === 'IN_PROGRESS' ? '#fef3c7' : '#f3f4f6',
-                                color: exercise.status === 'COMPLETED' ? '#166534' :
-                                       exercise.status === 'IN_PROGRESS' ? '#92400e' : '#374151',
-                                borderRadius: '12px',
-                                fontSize: '10px',
-                                fontWeight: '500',
-                              }}>
-                                {exercise.status.charAt(0) + exercise.status.slice(1).toLowerCase().replace('_', ' ')}
-                              </span>
-                            </div>
+                        <div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <div style={{ flex: 1 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                                <span style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  width: '24px',
+                                  height: '24px',
+                                  borderRadius: '50%',
+                                  backgroundColor: '#FF6B6B',
+                                  color: 'white',
+                                  fontSize: '12px',
+                                  fontWeight: '600',
+                                }}>
+                                  {index + 1}
+                                </span>
+                                <h5 style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: 'var(--color-text-white)' }}>
+                                  {exercise.exercise.name}
+                                </h5>
+                                <span style={{
+                                  padding: '2px 8px',
+                                  backgroundColor: exercise.status === 'COMPLETED' ? '#dcfce7' :
+                                                  exercise.status === 'IN_PROGRESS' ? '#fef3c7' : '#f3f4f6',
+                                  color: exercise.status === 'COMPLETED' ? '#166534' :
+                                         exercise.status === 'IN_PROGRESS' ? '#92400e' : '#374151',
+                                  borderRadius: '12px',
+                                  fontSize: '10px',
+                                  fontWeight: '500',
+                                }}>
+                                  {exercise.status.charAt(0) + exercise.status.slice(1).toLowerCase().replace('_', ' ')}
+                                </span>
+                              </div>
 
                             {editingExerciseId === exercise.id ? (
                               // Edit form
                               <div style={{ marginBottom: '8px' }}>
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', marginBottom: '12px' }}>
                                   <div>
-                                    <label style={{ display: 'block', fontSize: '12px', color: '#000000', fontWeight: '500', marginBottom: '4px' }}>
+                                    <label style={{ display: 'block', fontSize: '12px', color: 'var(--color-text-white)', fontWeight: '500', marginBottom: '4px' }}>
                                       Sets:
                                     </label>
                                     <input
@@ -520,7 +541,7 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
                                     />
                                   </div>
                                   <div>
-                                    <label style={{ display: 'block', fontSize: '12px', color: '#000000', fontWeight: '500', marginBottom: '4px' }}>
+                                    <label style={{ display: 'block', fontSize: '12px', color: 'var(--color-text-white)', fontWeight: '500', marginBottom: '4px' }}>
                                       Reps:
                                     </label>
                                     <input
@@ -540,7 +561,7 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
                                     />
                                   </div>
                                   <div>
-                                    <label style={{ display: 'block', fontSize: '12px', color: '#000000', fontWeight: '500', marginBottom: '4px' }}>
+                                    <label style={{ display: 'block', fontSize: '12px', color: 'var(--color-text-white)', fontWeight: '500', marginBottom: '4px' }}>
                                       Weight (kg):
                                     </label>
                                     <input
@@ -561,7 +582,7 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
                                     />
                                   </div>
                                   <div>
-                                    <label style={{ display: 'block', fontSize: '12px', color: '#000000', fontWeight: '500', marginBottom: '4px' }}>
+                                    <label style={{ display: 'block', fontSize: '12px', color: 'var(--color-text-white)', fontWeight: '500', marginBottom: '4px' }}>
                                       Rest (seconds):
                                     </label>
                                     <input
@@ -583,7 +604,7 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
                                   </div>
                                 </div>
                                 <div style={{ marginBottom: '12px' }}>
-                                  <label style={{ display: 'block', fontSize: '12px', color: '#000000', fontWeight: '500', marginBottom: '4px' }}>
+                                  <label style={{ display: 'block', fontSize: '12px', color: 'var(--color-text-white)', fontWeight: '500', marginBottom: '4px' }}>
                                     Notes:
                                   </label>
                                   <textarea
@@ -670,13 +691,14 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
                             )}
                           </div>
 
+                          {/* Start Exercise button in top right */}
                           {workout.status === 'IN_PROGRESS' && exercise.status === 'PENDING' && (
                             <button
                               onClick={() => handleStartExercise(exercise.id)}
                               disabled={loading}
                               style={{
                                 padding: '6px 12px',
-                                backgroundColor: loading ? '#9ca3af' : '#FF6B6B',
+                                backgroundColor: loading ? '#9ca3af' : '#0D7377',
                                 color: 'white',
                                 border: 'none',
                                 borderRadius: '4px',
@@ -707,27 +729,45 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
                               Continue Exercise
                             </button>
                           )}
-
-                          {/* Edit button - show for all statuses except when editing */}
-                          {exercise.status === 'PENDING' && editingExerciseId !== exercise.id && (
-                            <button
-                              onClick={() => handleStartEdit(exercise)}
-                              style={{
-                                padding: '6px 12px',
-                                backgroundColor: 'white',
-                                color: '#FF6B6B',
-                                border: '1.5px solid #FF6B6B',
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                                fontSize: '12px',
-                                marginLeft: '12px',
-                              }}
-                            >
-                              Edit
-                            </button>
-                          )}
                         </div>
                       </div>
+
+                      {/* Edit and Delete buttons - show below, right-aligned */}
+                      {exercise.status === 'PENDING' && editingExerciseId !== exercise.id && workout.status !== 'COMPLETED' && (
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '8px' }}>
+                          <button
+                            onClick={() => handleStartEdit(exercise)}
+                            style={{
+                              padding: '6px 12px',
+                              backgroundColor: 'white',
+                              color: '#FF6B6B',
+                              border: '1.5px solid #FF6B6B',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                              fontSize: '12px',
+                            }}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteExercise(exercise.id)}
+                            disabled={loading}
+                            style={{
+                              padding: '6px 12px',
+                              backgroundColor: loading ? '#9ca3af' : '#FF6B6B',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: loading ? 'not-allowed' : 'pointer',
+                              fontSize: '12px',
+                              opacity: loading ? 0.5 : 1
+                            }}
+                          >
+                            {loading ? 'Deleting...' : 'Delete'}
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
