@@ -59,7 +59,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <div className="flex justify-between items-center h-16">
             <div className="flex">
               <div className="flex-shrink-0 flex items-center">
-                <span className="text-xl font-bold text-primary">FitnessApp</span>
+                <span className="text-2xl font-bold text-primary">RepBase</span>
               </div>
             </div>
             <div className="flex items-center space-x-4">
@@ -90,7 +90,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       <div className="flex">
         {/* Modern Sidebar */}
-        <div className="w-64 glass-effect min-h-screen border-r border-neutral-200">
+        <div className="w-56 glass-effect min-h-screen border-r border-neutral-200">
           <nav className="p-4">
             {/* Main Navigation */}
             <div className="space-y-2">
@@ -166,25 +166,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </div>
               </div>
             )}
-
-            {/* User Profile Section at Bottom */}
-            <div className="mt-8 pt-6 border-t border-neutral-200">
-              <div className="card p-3" style={{ backgroundColor: '#2D3436' }}>
-                <div className="flex items-center space-x-3">
-                  <div className="bg-primary p-2 rounded-full">
-                    <User className="h-4 w-4 text-white" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-white">
-                      {user?.firstName || user?.username || 'User'}
-                    </p>
-                    <p className="text-xs" style={{ color: '#B2BEC3' }}>
-                      Member since {new Date().getFullYear()}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
           </nav>
         </div>
 

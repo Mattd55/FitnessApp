@@ -40,6 +40,7 @@ CLAUDE.md
 application-local.properties
 .env
 .env.local
+.env.example
 logs/
 *.log
 *.tmp
@@ -60,3 +61,11 @@ fitness-frontend/.pnp.js
 fitness-frontend/npm-debug.log*
 fitness-frontend/yarn-debug.log*
 fitness-frontend/yarn-error.log*
+
+### Windows Reserved Names ###
+NUL
+CON
+PRN
+AUX
+COM*
+LPT*

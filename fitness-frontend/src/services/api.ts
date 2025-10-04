@@ -67,6 +67,16 @@ export const authApi = {
     const response = await apiClient.post('/auth/register', userData);
     return response.data as LoginResponse;
   },
+
+  forgotPassword: async (email: string): Promise<string> => {
+    const response = await apiClient.post<string>('/auth/forgot-password', { email });
+    return response.data;
+  },
+
+  resetPassword: async (token: string, newPassword: string): Promise<string> => {
+    const response = await apiClient.post<string>('/auth/reset-password', { token, newPassword });
+    return response.data;
+  },
 };
 
 // User API
@@ -100,6 +110,23 @@ export const userApi = {
 
   getPersonalRecords: async (): Promise<{ exerciseName: string; maxWeight: number; maxReps: number }[]> => {
     const response = await apiClient.get<{ exerciseName: string; maxWeight: number; maxReps: number }[]>('/users/personal-records');
+    return response.data;
+  },
+
+  changePassword: async (currentPassword: string, newPassword: string): Promise<string> => {
+    const response = await apiClient.put<string>('/users/change-password', {
+      currentPassword,
+      newPassword,
+    });
+    return response.data;
+  },
+
+  deleteAccount: async (): Promise<void> => {
+    await apiClient.delete('/users/account');
+  },
+
+  exportData: async (): Promise<any> => {
+    const response = await apiClient.get('/users/export-data');
     return response.data;
   },
 };

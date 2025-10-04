@@ -698,7 +698,7 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
                               disabled={loading}
                               style={{
                                 padding: '6px 12px',
-                                backgroundColor: loading ? '#9ca3af' : '#0D7377',
+                                backgroundColor: loading ? '#9ca3af' : 'var(--color-primary)',
                                 color: 'white',
                                 border: 'none',
                                 borderRadius: '4px',
@@ -754,16 +754,16 @@ const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
                             disabled={loading}
                             style={{
                               padding: '6px 12px',
-                              backgroundColor: loading ? '#9ca3af' : '#FF6B6B',
-                              color: 'white',
-                              border: 'none',
+                              backgroundColor: 'transparent',
+                              color: 'var(--color-error)',
+                              border: '1.5px solid var(--color-error)',
                               borderRadius: '4px',
                               cursor: loading ? 'not-allowed' : 'pointer',
                               fontSize: '12px',
                               opacity: loading ? 0.5 : 1
                             }}
                           >
-                            {loading ? 'Deleting...' : 'Delete'}
+                            Delete
                           </button>
                         </div>
                       )}

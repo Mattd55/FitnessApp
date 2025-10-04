@@ -13,7 +13,8 @@ import {
   Flame,
   Trophy,
   ArrowUp,
-  PlayCircle
+  PlayCircle,
+  ArrowRight
 } from 'lucide-react';
 
 const Dashboard: React.FC = () => {
@@ -105,7 +106,11 @@ const Dashboard: React.FC = () => {
                 Ready to crush your fitness goals today?
               </p>
               <div className="flex items-center justify-center gap-md mt-6">
-                <button className="btn btn-primary hover-glow" style={{ padding: 'var(--space-md) var(--space-xl)', fontSize: 'var(--font-size-md)' }}>
+                <button
+                  onClick={() => navigate('/workouts')}
+                  className="btn btn-primary hover-glow"
+                  style={{ padding: 'var(--space-md) var(--space-xl)', fontSize: 'var(--font-size-md)' }}
+                >
                   <PlayCircle className="h-5 w-5 mr-2" />
                   Start Workout
                 </button>
@@ -264,16 +269,16 @@ const Dashboard: React.FC = () => {
           </div>
 
           {recentWorkouts.length === 0 ? (
-            <div className="flex-col-center py-12 fade-in">
-              <div className="bg-primary p-4 rounded-2xl w-16 h-16 mb-4 flex-center">
-                <Activity className="h-8 w-8 text-white" />
-              </div>
+            <div className="flex-col-center fade-in" style={{ paddingTop: '1rem', paddingBottom: '1rem' }}>
               <h3 className="text-h4 text-primary">No workouts yet</h3>
               <p className="text-body text-secondary">
                 Get started by creating your first workout!
               </p>
-              <div className="mt-4">
-                <button className="btn btn-primary hover-glow">
+              <div style={{ marginTop: '1rem' }}>
+                <button
+                  onClick={() => navigate('/workouts')}
+                  className="btn btn-primary hover-glow"
+                >
                   <PlayCircle className="h-4 w-4 mr-2" />
                   Create Workout
                 </button>
@@ -281,71 +286,113 @@ const Dashboard: React.FC = () => {
             </div>
           ) : (
             <div className="grid-auto-fit stagger-in">
-              {recentWorkouts.map((workout) => (
-                <div
-                  key={workout.id}
-                  onClick={() => handleWorkoutClick(workout)}
-                  className="card cursor-pointer group"
-                  style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)', display: 'flex', flexDirection: 'column', minHeight: '200px' }}
-                >
-                  <div className="mb-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="text-h4 text-white group-hover:text-primary transition-colors">
-                        {workout.name}
-                      </h3>
-                      <span className={`badge ${
-                        workout.status === 'COMPLETED' ? 'badge-success' :
-                        workout.status === 'IN_PROGRESS' ? 'badge-info' :
-                        'badge-warning'
-                      }`}>
-                        {workout.status.charAt(0) + workout.status.slice(1).toLowerCase().replace('_', ' ')}
-                      </span>
+              {recentWorkouts.map((workout) => {
+                const formatDuration = (minutes?: number): string => {
+                  if (minutes === undefined || minutes === null) return '';
+                  const hours = Math.floor(minutes / 60);
+                  const mins = minutes % 60;
+                  if (hours > 0) {
+                    return `${hours}h ${mins}m`;
+                  }
+                  return `${mins}m`;
+                };
+
+                const formatStatus = (status: string): string => {
+                  return status.charAt(0) + status.slice(1).toLowerCase().replace('_', ' ');
+                };
+
+                return (
+                  <div
+                    key={workout.id}
+                    onClick={() => handleWorkoutClick(workout)}
+                    className="card cursor-pointer group"
+                    style={{
+                      border: '1.5px solid rgba(178, 190, 195, 0.3)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      padding: 'var(--space-md)',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    {/* Header */}
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1" style={{ paddingRight: '12px' }}>
+                        <h3 className="text-h4 text-white group-hover:text-primary transition-colors" style={{
+                          textAlign: 'left',
+                          marginBottom: '8px',
+                          lineHeight: '1.3'
+                        }}>
+                          {workout.name}
+                        </h3>
+                      </div>
+                      <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                        <span className="text-caption" style={{
+                          color: workout.status === 'COMPLETED' ? '#10b981' :
+                                 workout.status === 'IN_PROGRESS' ? '#3b82f6' :
+                                 workout.status === 'PLANNED' ? '#f59e0b' : '#6b7280',
+                          fontWeight: 500,
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em',
+                          fontSize: '0.7rem'
+                        }}>
+                          {formatStatus(workout.status)}
+                        </span>
+                      </div>
                     </div>
 
-                    <div style={{ minHeight: '40px', textAlign: 'left' }}>
-                      {workout.description && (
-                        <p className="text-body-sm text-secondary line-clamp-2" style={{ textAlign: 'left' }}>
-                          {workout.description}
-                        </p>
+                    {/* Description */}
+                    {workout.description && (
+                      <p className="text-body-sm" style={{
+                        textAlign: 'left',
+                        color: '#CBD5E0',
+                        marginBottom: '16px',
+                        lineHeight: '1.5'
+                      }}>
+                        {workout.description}
+                      </p>
+                    )}
+
+                    {/* Spacer */}
+                    <div style={{ flex: 1, minHeight: '12px' }}></div>
+
+                    {/* Stats Section */}
+                    <div style={{
+                      paddingTop: '12px',
+                      marginBottom: '16px',
+                      borderTop: '1px solid rgba(178, 190, 195, 0.15)'
+                    }}>
+                      {((workout.status === 'COMPLETED' && workout.durationMinutes !== undefined) || (workout.durationMinutes && workout.durationMinutes > 0) || (workout.caloriesBurned && workout.caloriesBurned > 0)) && (
+                        <div style={{ display: 'flex', gap: '16px' }}>
+                          {((workout.status === 'COMPLETED' && workout.durationMinutes !== undefined) || (workout.durationMinutes && workout.durationMinutes > 0)) && (
+                            <div className="flex items-center gap-xs">
+                              <Clock className="h-4 w-4" style={{ color: '#9CA3AF' }} />
+                              <span className="text-body-sm" style={{ color: '#9CA3AF' }}>{formatDuration(workout.durationMinutes)}</span>
+                            </div>
+                          )}
+
+                          {workout.caloriesBurned && workout.caloriesBurned > 0 && (
+                            <div className="flex items-center gap-xs">
+                              <Flame className="h-4 w-4" style={{ color: '#9CA3AF' }} />
+                              <span className="text-body-sm" style={{ color: '#9CA3AF' }}>{workout.caloriesBurned} cal</span>
+                            </div>
+                          )}
+                        </div>
                       )}
                     </div>
+
+                    {/* Footer */}
+                    <div className="flex items-center justify-between pt-3 border-t" style={{ borderColor: 'rgba(178, 190, 195, 0.2)' }}>
+                      <span className="text-body-sm" style={{ color: '#9CA3AF', fontSize: '0.8rem' }}>
+                        {workout.status === 'COMPLETED' && workout.completedAt && `Completed ${formatDate(workout.completedAt)}`}
+                        {workout.status === 'IN_PROGRESS' && workout.startedAt && `Started ${formatDate(workout.startedAt)}`}
+                        {workout.status === 'PLANNED' && workout.scheduledDate && `Scheduled for ${formatDate(workout.scheduledDate)}`}
+                        {workout.status === 'PLANNED' && !workout.scheduledDate && `Created ${formatDate(workout.createdAt)}`}
+                      </span>
+                      <ArrowRight className="h-4 w-4 group-hover:text-primary group-hover:translate-x-1 transition-all" style={{ color: '#9CA3AF' }} />
+                    </div>
                   </div>
-
-                  {/* Stats Grid */}
-                  <div className="grid grid-cols-2 gap-md mb-4" style={{ marginTop: 'auto' }}>
-                    {workout.scheduledDate && (
-                      <div className="flex items-center gap-xs">
-                        <Calendar className="h-4 w-4 text-light" />
-                        <span className="text-body-sm text-light">{formatDate(workout.scheduledDate)}</span>
-                      </div>
-                    )}
-
-                    {workout.durationMinutes && (
-                      <div className="flex items-center gap-xs">
-                        <Clock className="h-4 w-4 text-light" />
-                        <span className="text-body-sm text-light">{workout.durationMinutes}m</span>
-                      </div>
-                    )}
-
-                    {workout.caloriesBurned && workout.caloriesBurned > 0 && (
-                      <div className="flex items-center gap-xs">
-                        <Flame className="h-4 w-4 text-light" />
-                        <span className="text-body-sm text-light">{workout.caloriesBurned} cal</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Footer */}
-                  <div className="flex items-center justify-between pt-3 border-t" style={{ borderColor: 'rgba(45, 52, 54, 0.1)' }}>
-                    <span className="text-body-sm text-light">
-                      {workout.status === 'COMPLETED' && workout.completedAt && `Completed ${formatDate(workout.completedAt)}`}
-                      {workout.status === 'IN_PROGRESS' && workout.startedAt && `Started ${formatDate(workout.startedAt)}`}
-                      {workout.status === 'PLANNED' && !workout.scheduledDate && `Created ${formatDate(workout.createdAt)}`}
-                      {workout.status === 'PLANNED' && workout.scheduledDate && 'Scheduled'}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

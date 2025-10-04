@@ -59,6 +59,12 @@ public class User implements UserDetails {
     @Column(name = "credentials_non_expired")
     private boolean credentialsNonExpired = true;
 
+    @Column(name = "reset_token")
+    private String resetToken;
+
+    @Column(name = "reset_token_expiry")
+    private LocalDateTime resetTokenExpiry;
+
     // UserDetails interface methods
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

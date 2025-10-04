@@ -106,7 +106,14 @@ const GoalsPage: React.FC = () => {
     if (!goal.currentValue || !goal.targetValue || goal.targetValue === 0) {
       return 0;
     }
-    return Math.min((goal.currentValue / goal.targetValue) * 100, 100);
+    const progress = Math.min((goal.currentValue / goal.targetValue) * 100, 100);
+
+    // Auto-complete goal when it reaches 100%
+    if (progress >= 100 && goal.status === 'ACTIVE') {
+      handleCompleteGoal(goal);
+    }
+
+    return progress;
   };
 
   const formatDate = (dateString?: string) => {
@@ -185,7 +192,7 @@ const GoalsPage: React.FC = () => {
 
         {/* Stats Grid */}
         <div className="grid-3 stagger-in">
-          <div className="card hover-lift" style={{ display: 'flex', flexDirection: 'column', minHeight: '140px' }}>
+          <div className="card hover-lift" style={{ display: 'flex', flexDirection: 'column', minHeight: '160px' }}>
             <h3 className="text-caption text-light mb-4">
               Active Goals
             </h3>
@@ -194,7 +201,7 @@ const GoalsPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="card hover-lift" style={{ display: 'flex', flexDirection: 'column', minHeight: '140px' }}>
+          <div className="card hover-lift" style={{ display: 'flex', flexDirection: 'column', minHeight: '160px' }}>
             <h3 className="text-caption text-light mb-4">
               Completed
             </h3>
@@ -203,7 +210,7 @@ const GoalsPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="card hover-lift" style={{ display: 'flex', flexDirection: 'column', minHeight: '140px' }}>
+          <div className="card hover-lift" style={{ display: 'flex', flexDirection: 'column', minHeight: '160px' }}>
             <h3 className="text-caption text-light mb-4">
               Total Goals
             </h3>
@@ -220,19 +227,19 @@ const GoalsPage: React.FC = () => {
               onClick={() => setFilterStatus('ALL')}
               className={`btn ${filterStatus === 'ALL' ? 'btn-primary' : 'btn-outline'} flex-1`}
             >
-              All Goals
+              All Goals ({goals.length})
             </button>
             <button
               onClick={() => setFilterStatus('ACTIVE')}
               className={`btn ${filterStatus === 'ACTIVE' ? 'btn-primary' : 'btn-outline'} flex-1`}
             >
-              Active
+              Active ({activeGoals})
             </button>
             <button
               onClick={() => setFilterStatus('COMPLETED')}
               className={`btn ${filterStatus === 'COMPLETED' ? 'btn-primary' : 'btn-outline'} flex-1`}
             >
-              Completed
+              Completed ({completedGoals})
             </button>
           </div>
         </div>
@@ -261,103 +268,98 @@ const GoalsPage: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div className="grid-auto-fit stagger-in">
+          <div className="card" style={{ maxHeight: '800px', overflow: 'hidden', padding: '0' }}>
+            <div style={{ maxHeight: '800px', overflowY: 'auto', overflowX: 'hidden' }}>
+              <div className="grid-auto-fit stagger-in" style={{ padding: 'var(--space-lg)' }}>
             {filteredGoals.map((goal) => {
               const progress = calculateProgress(goal);
               return (
                 <div
                   key={goal.id}
                   className="card hover-lift"
-                  style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)', display: 'flex', flexDirection: 'column', minHeight: '250px' }}
+                  style={{ display: 'flex', flexDirection: 'column', padding: 'var(--space-md)', border: '1.5px solid rgba(178, 190, 195, 0.3)' }}
                 >
                   {/* Header */}
                   <div className="flex justify-between items-start mb-4">
-                    <div className="flex items-center gap-2">
-                      <span style={{ fontSize: '24px' }}>{getGoalTypeIcon(goal.type)}</span>
+                    <div className="flex-1" style={{ textAlign: 'left' }}>
+                      <h3 className="text-h4 text-white mb-2" style={{ textAlign: 'left' }}>{goal.title}</h3>
+                      {/* Description */}
+                      {goal.description && (
+                        <p className="text-body-sm" style={{ textAlign: 'left', color: '#CBD5E0' }}>
+                          {goal.description}
+                        </p>
+                      )}
+                    </div>
+                    {/* Target Date */}
+                    {goal.targetDate && (
                       <div>
-                        <h3 className="text-h4 text-white">{goal.title}</h3>
-                        <div className="flex items-center gap-2 mt-1">
-                          {getStatusIcon(goal.status)}
-                          <span className="text-caption text-light">
-                            {goal.status.charAt(0) + goal.status.slice(1).toLowerCase()}
+                        <span className="text-caption text-light">
+                          By: {formatDate(goal.targetDate)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Spacer for flex layout */}
+                  <div style={{ flex: 1, minHeight: '12px' }}></div>
+
+                  {/* Progress Section */}
+                  <div style={{
+                    paddingTop: '12px',
+                    marginBottom: '16px',
+                    borderTop: '1px solid rgba(178, 190, 195, 0.15)'
+                  }}>
+                    {goal.targetValue && (
+                      <div>
+                        <div className="flex justify-between mb-2">
+                          <span className="text-body-sm text-secondary font-medium">Progress</span>
+                          <span className="text-body-sm text-primary font-semibold">{progress.toFixed(0)}%</span>
+                        </div>
+                        <div className="progress-bar" style={{ border: '1px solid rgba(178, 190, 195, 0.3)' }}>
+                          <div
+                            className="progress-fill"
+                            style={{
+                              width: `${progress}%`,
+                              background: goal.status === 'COMPLETED'
+                                ? 'var(--color-success)'
+                                : 'linear-gradient(90deg, var(--color-primary), var(--color-accent))'
+                            }}
+                          />
+                        </div>
+                        <div className="flex justify-between mt-2">
+                          <span className="text-body-sm text-secondary">
+                            {goal.currentValue || 0} {goal.unit}
+                          </span>
+                          <span className="text-body-sm text-secondary">
+                            Target: {goal.targetValue} {goal.unit}
                           </span>
                         </div>
                       </div>
-                    </div>
+                    )}
                   </div>
 
-                  {/* Description */}
-                  {goal.description && (
-                    <p className="text-body-sm text-secondary mb-4" style={{ minHeight: '40px' }}>
-                      {goal.description}
-                    </p>
-                  )}
-
-                  {/* Progress */}
-                  {goal.targetValue && (
-                    <div className="mb-4">
-                      <div className="flex justify-between mb-2">
-                        <span className="text-caption text-light">Progress</span>
-                        <span className="text-caption text-white font-semibold">{progress.toFixed(0)}%</span>
-                      </div>
-                      <div style={{
-                        width: '100%',
-                        height: '8px',
-                        backgroundColor: 'rgba(178, 190, 195, 0.2)',
-                        borderRadius: '4px',
-                        overflow: 'hidden'
-                      }}>
-                        <div style={{
-                          width: `${progress}%`,
-                          height: '100%',
-                          backgroundColor: goal.status === 'COMPLETED' ? '#10b981' : '#3b82f6',
-                          transition: 'width 0.3s ease'
-                        }} />
-                      </div>
-                      <div className="flex justify-between mt-2">
-                        <span className="text-caption text-light">
-                          {goal.currentValue || 0} {goal.unit}
-                        </span>
-                        <span className="text-caption text-light">
-                          Target: {goal.targetValue} {goal.unit}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Target Date */}
-                  {goal.targetDate && (
-                    <div className="flex items-center gap-2 mb-4">
-                      <Calendar className="h-4 w-4 text-light" />
-                      <span className="text-caption text-light">
-                        Target: {formatDate(goal.targetDate)}
-                      </span>
-                    </div>
-                  )}
-
                   {/* Actions */}
-                  <div className="flex gap-2 mt-auto pt-4 border-t" style={{ borderColor: 'rgba(178, 190, 195, 0.1)' }}>
+                  <div className="flex gap-md pt-4 border-t" style={{ borderColor: 'var(--color-border-light)' }}>
                     {goal.status === 'ACTIVE' && (
                       <button
                         onClick={() => handleCompleteGoal(goal)}
-                        className="btn btn-outline flex-1"
-                        style={{ fontSize: '12px', padding: '6px 12px' }}
+                        className="btn btn-primary flex-1"
+                        style={{ fontSize: '13px', padding: '8px 12px' }}
                       >
-                        <Trophy className="h-4 w-4 mr-1" />
                         Complete
                       </button>
                     )}
                     <button
                       onClick={() => handleEditGoal(goal)}
-                      className="btn btn-outline flex-1"
-                      style={{ fontSize: '12px', padding: '6px 12px' }}
+                      className="btn btn-ghost flex-1"
+                      style={{ fontSize: '13px', padding: '8px 12px' }}
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => handleDeleteGoal(goal.id)}
-                      className="btn btn-outline flex-1"
-                      style={{ fontSize: '12px', padding: '6px 12px', borderColor: '#ef4444', color: '#ef4444' }}
+                      className="btn btn-ghost flex-1"
+                      style={{ fontSize: '13px', padding: '8px 12px', borderColor: 'var(--color-error)', color: 'var(--color-error)' }}
                     >
                       Delete
                     </button>
@@ -365,6 +367,8 @@ const GoalsPage: React.FC = () => {
                 </div>
               );
             })}
+              </div>
+            </div>
           </div>
         )}
 

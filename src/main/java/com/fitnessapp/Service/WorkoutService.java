@@ -37,6 +37,7 @@ public class WorkoutService {
         this.exerciseSetRepository = exerciseSetRepository;
     }
 
+    // Note: allEntries=true clears cache for all users. Consider user-specific cache regions for better performance.
     @CacheEvict(value = "userWorkouts", allEntries = true)
     public Workout createWorkout(String username, Workout workout) {
         User user = userRepository.findByUsername(username)
@@ -66,10 +67,14 @@ public class WorkoutService {
     }
 
     public List<WorkoutExercise> getWorkoutExercises(String username, Long workoutId) {
-        Workout workout = getWorkoutById(username, workoutId)
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
+
+        // Use JOIN FETCH to avoid N+1 query problem
+        Workout workout = workoutRepository.findByIdAndUserWithExercises(workoutId, user)
                 .orElseThrow(() -> new IllegalArgumentException("Workout not found: " + workoutId));
 
-        return workoutExerciseRepository.findByWorkoutOrderByOrderIndexAsc(workout);
+        return workout.getExercises();
     }
 
     @CacheEvict(value = "userWorkouts", allEntries = true)

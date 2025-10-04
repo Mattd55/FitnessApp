@@ -185,7 +185,7 @@ const SetTrackerModal: React.FC<SetTrackerModalProps> = ({
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: 'var(--color-background-overlay)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -195,13 +195,13 @@ const SetTrackerModal: React.FC<SetTrackerModalProps> = ({
     >
       <div
         style={{
-          backgroundColor: 'white',
-          borderRadius: '12px',
+          backgroundColor: 'var(--color-background-card)',
+          borderRadius: 'var(--radius-lg)',
           maxWidth: '500px',
           width: '90%',
           maxHeight: '80vh',
           overflow: 'auto',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+          boxShadow: 'var(--shadow-xl)',
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -210,14 +210,14 @@ const SetTrackerModal: React.FC<SetTrackerModalProps> = ({
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '20px 24px',
-          borderBottom: '1px solid #e5e7eb'
+          padding: 'var(--space-lg)',
+          borderBottom: '1.5px solid var(--color-border-medium)'
         }}>
           <div>
-            <h3 style={{ margin: '0 0 4px 0', fontSize: '20px', fontWeight: '700', color: '#111827' }}>
+            <h3 className="text-h4 text-white" style={{ margin: '0 0 var(--space-xs) 0' }}>
               {workoutExercise.exercise.name}
             </h3>
-            <div style={{ display: 'flex', gap: '16px', fontSize: '14px', color: '#6b7280' }}>
+            <div className="text-body-sm text-light" style={{ display: 'flex', gap: 'var(--space-md)' }}>
               <span>Target: {workoutExercise.plannedSets} sets × {workoutExercise.plannedReps} reps</span>
               {workoutExercise.plannedWeight && (
                 <span>@ {workoutExercise.plannedWeight}kg</span>
@@ -231,9 +231,9 @@ const SetTrackerModal: React.FC<SetTrackerModalProps> = ({
               border: 'none',
               fontSize: '24px',
               cursor: 'pointer',
-              color: '#6b7280',
-              padding: '4px',
-              borderRadius: '6px',
+              color: 'var(--color-text-secondary)',
+              padding: 'var(--space-xs)',
+              borderRadius: 'var(--radius-sm)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -244,61 +244,55 @@ const SetTrackerModal: React.FC<SetTrackerModalProps> = ({
         </div>
 
         {/* Content */}
-        <div style={{ padding: '24px' }}>
+        <div style={{ padding: 'var(--space-lg)' }}>
           {/* Progress Bar */}
-          <div style={{ marginBottom: '20px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-              <span style={{ fontSize: '14px', fontWeight: '600', color: '#374151' }}>
+          <div style={{ marginBottom: 'var(--space-lg)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-sm)' }}>
+              <span className="text-body font-semibold text-white">
                 Progress: {completedSets}/{workoutExercise.plannedSets} sets
               </span>
-              <span style={{ fontSize: '12px', color: '#6b7280' }}>
+              <span className="text-caption text-light">
                 {Math.round((completedSets / workoutExercise.plannedSets) * 100)}%
               </span>
             </div>
             <div style={{
               width: '100%',
               height: '8px',
-              backgroundColor: '#f3f4f6',
-              borderRadius: '4px',
+              backgroundColor: 'var(--color-border-light)',
+              borderRadius: 'var(--radius-sm)',
               overflow: 'hidden'
             }}>
               <div style={{
                 width: `${(completedSets / workoutExercise.plannedSets) * 100}%`,
                 height: '100%',
-                backgroundColor: '#10b981',
+                backgroundColor: 'var(--color-success)',
                 transition: 'width 0.3s ease'
               }} />
             </div>
           </div>
 
           {error && (
-            <div style={{
-              backgroundColor: '#fef2f2',
-              border: '1px solid #fecaca',
-              color: '#dc2626',
-              padding: '12px',
-              borderRadius: '8px',
-              marginBottom: '16px',
-              fontSize: '14px'
+            <div className="card card-compact" style={{
+              backgroundColor: 'var(--color-error-50)',
+              border: '1.5px solid var(--color-error)',
+              marginBottom: 'var(--space-md)'
             }}>
-              {error}
+              <p className="text-body" style={{ color: 'var(--color-error)' }}>{error}</p>
             </div>
           )}
 
           {/* Rest Timer */}
           {isResting && (
-            <div style={{
-              backgroundColor: '#fffbeb',
-              border: '1px solid #fcd34d',
-              padding: '16px',
-              borderRadius: '8px',
-              marginBottom: '20px',
+            <div className="card card-compact" style={{
+              backgroundColor: 'var(--color-warning-50)',
+              border: '1.5px solid var(--color-warning)',
+              marginBottom: 'var(--space-lg)',
               textAlign: 'center'
             }}>
-              <div style={{ fontSize: '24px', fontWeight: '700', color: '#d97706', marginBottom: '8px' }}>
+              <div className="text-h2" style={{ color: 'var(--color-warning-dark)', marginBottom: 'var(--space-sm)' }}>
                 {formatRestTime(restTimer)}
               </div>
-              <div style={{ fontSize: '14px', color: '#92400e', marginBottom: '8px' }}>
+              <div className="text-body" style={{ color: 'var(--color-warning-dark)', marginBottom: 'var(--space-sm)' }}>
                 Rest time remaining
               </div>
               <button
@@ -306,16 +300,8 @@ const SetTrackerModal: React.FC<SetTrackerModalProps> = ({
                   setIsResting(false);
                   setRestTimer(0);
                 }}
-                style={{
-                  padding: '6px 16px',
-                  backgroundColor: '#f59e0b',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontSize: '12px',
-                  fontWeight: '500'
-                }}
+                className="btn btn-ghost"
+                style={{ minWidth: '120px' }}
               >
                 Skip Rest
               </button>
@@ -324,52 +310,44 @@ const SetTrackerModal: React.FC<SetTrackerModalProps> = ({
 
           {/* Completed Sets */}
           {sets.length > 0 && (
-            <div style={{ marginBottom: '20px' }}>
-              <h4 style={{ margin: '0 0 12px 0', fontSize: '16px', fontWeight: '600', color: '#374151' }}>
+            <div style={{ marginBottom: 'var(--space-lg)' }}>
+              <h4 className="text-body-lg font-semibold text-primary" style={{ marginBottom: 'var(--space-md)' }}>
                 Completed Sets
               </h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
                 {sets.map((set) => (
                   <div
                     key={set.id}
+                    className="card card-compact"
                     style={{
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
-                      padding: '12px',
-                      backgroundColor: set.status === 'COMPLETED' ? '#f0fdf4' : '#f9fafb',
-                      border: '1px solid ' + (set.status === 'COMPLETED' ? '#bbf7d0' : '#e5e7eb'),
-                      borderRadius: '8px',
-                      fontSize: '14px'
+                      backgroundColor: set.status === 'COMPLETED' ? 'var(--color-success-50)' : 'var(--color-background-elevated)',
+                      border: '1.5px solid ' + (set.status === 'COMPLETED' ? 'var(--color-success)' : 'var(--color-border-medium)')
                     }}
                   >
-                    <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                      <span style={{
-                        fontWeight: '700',
-                        color: '#374151',
-                        minWidth: '40px'
-                      }}>
+                    <div style={{ display: 'flex', gap: 'var(--space-md)', alignItems: 'center' }}>
+                      <span className={`font-bold ${set.status === 'COMPLETED' ? 'text-white' : 'text-primary'}`} style={{ minWidth: '40px' }}>
                         Set {set.setNumber}
                       </span>
-                      <span style={{ color: '#6b7280' }}>{set.actualReps} reps</span>
-                      {set.actualWeight && <span style={{ color: '#6b7280' }}>{set.actualWeight}kg</span>}
+                      <span className="text-body-sm text-secondary">{set.actualReps} reps</span>
+                      {set.actualWeight && <span className="text-body-sm text-secondary">{set.actualWeight}kg</span>}
                       {set.rpeScore && (
-                        <span style={{
-                          color: '#6b7280',
-                          fontSize: '12px',
+                        <span className="text-caption" style={{
                           padding: '2px 6px',
-                          backgroundColor: '#f3f4f6',
-                          borderRadius: '4px'
+                          backgroundColor: 'var(--color-border-light)',
+                          borderRadius: 'var(--radius-sm)'
                         }}>
                           RPE {set.rpeScore}
                         </span>
                       )}
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
                       <span style={{
                         padding: '3px 8px',
-                        backgroundColor: set.status === 'COMPLETED' ? '#dcfce7' : '#f3f4f6',
-                        color: set.status === 'COMPLETED' ? '#166534' : '#374151',
+                        backgroundColor: set.status === 'COMPLETED' ? 'var(--color-success)' : 'var(--color-border-light)',
+                        color: set.status === 'COMPLETED' ? 'var(--color-text-white)' : 'var(--color-text-primary)',
                         borderRadius: '12px',
                         fontSize: '11px',
                         fontWeight: '600'
@@ -380,15 +358,11 @@ const SetTrackerModal: React.FC<SetTrackerModalProps> = ({
                         <button
                           onClick={() => handleCompleteSet(set.id)}
                           disabled={loading}
+                          className="btn btn-primary"
                           style={{
                             padding: '4px 8px',
-                            backgroundColor: '#10b981',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: loading ? 'not-allowed' : 'pointer',
                             fontSize: '11px',
-                            fontWeight: '500',
+                            minWidth: '80px',
                             opacity: loading ? 0.5 : 1
                           }}
                         >
@@ -404,52 +378,52 @@ const SetTrackerModal: React.FC<SetTrackerModalProps> = ({
 
           {/* Current Set Input */}
           {!isExerciseComplete && !isResting && (
-            <div style={{
-              padding: '20px',
-              backgroundColor: '#f8fafc',
-              borderRadius: '12px',
-              border: '1px solid #e2e8f0'
+            <div className="card" style={{
+              backgroundColor: 'var(--color-background-elevated)',
+              border: '1.5px solid var(--color-border-medium)'
             }}>
-              <h4 style={{ margin: '0 0 16px 0', fontSize: '16px', fontWeight: '600', color: '#374151' }}>
+              <h4 className="text-body-lg font-semibold" style={{ marginBottom: 'var(--space-md)', color: 'var(--color-text-primary)' }}>
                 Log Set {sets.length + 1}
               </h4>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', marginBottom: '16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 'var(--space-md)', marginBottom: 'var(--space-md)' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>
+                  <label className="text-body-sm font-semibold" style={{ display: 'block', marginBottom: 'var(--space-xs)', color: 'var(--color-text-primary)' }}>
                     Reps
                   </label>
                   <input
                     type="number"
                     value={currentSet.actualReps || ''}
                     onChange={(e) => setCurrentSet(prev => ({ ...prev, actualReps: parseInt(e.target.value) || 0 }))}
+                    className="w-full"
                     style={{
-                      width: '100%',
-                      padding: '10px 12px',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      fontWeight: '500'
+                      padding: 'var(--space-sm) var(--space-md)',
+                      border: '1.5px solid var(--color-border-medium)',
+                      borderRadius: 'var(--radius-md)',
+                      fontSize: 'var(--font-size-sm)',
+                      fontWeight: '500',
+                      color: 'var(--color-text-primary)'
                     }}
                     min="0"
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>
+                  <label className="text-body-sm font-semibold" style={{ display: 'block', marginBottom: 'var(--space-xs)', color: 'var(--color-text-primary)' }}>
                     Weight (kg)
                   </label>
                   <input
                     type="number"
                     value={currentSet.actualWeight || ''}
                     onChange={(e) => setCurrentSet(prev => ({ ...prev, actualWeight: parseFloat(e.target.value) || 0 }))}
+                    className="w-full"
                     style={{
-                      width: '100%',
-                      padding: '10px 12px',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      fontWeight: '500'
+                      padding: 'var(--space-sm) var(--space-md)',
+                      border: '1.5px solid var(--color-border-medium)',
+                      borderRadius: 'var(--radius-md)',
+                      fontSize: 'var(--font-size-sm)',
+                      fontWeight: '500',
+                      color: 'var(--color-text-primary)'
                     }}
                     min="0"
                     step="0.5"
@@ -457,8 +431,8 @@ const SetTrackerModal: React.FC<SetTrackerModalProps> = ({
                 </div>
               </div>
 
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>
+              <div style={{ marginBottom: 'var(--space-md)' }}>
+                <label className="text-body-sm font-semibold" style={{ display: 'block', marginBottom: 'var(--space-xs)', color: 'var(--color-text-primary)' }}>
                   RPE (Rate of Perceived Exertion) - {currentSet.rpeScore}/10
                 </label>
                 <input
@@ -470,32 +444,33 @@ const SetTrackerModal: React.FC<SetTrackerModalProps> = ({
                   style={{
                     width: '100%',
                     height: '6px',
-                    marginBottom: '8px'
+                    marginBottom: 'var(--space-sm)'
                   }}
                 />
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#6b7280' }}>
+                <div className="text-caption" style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--color-text-secondary)' }}>
                   <span>Very Easy</span>
                   <span>Moderate</span>
                   <span>Very Hard</span>
                 </div>
               </div>
 
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>
+              <div style={{ marginBottom: 'var(--space-md)' }}>
+                <label className="text-body-sm font-semibold" style={{ display: 'block', marginBottom: 'var(--space-xs)', color: 'var(--color-text-primary)' }}>
                   Notes (optional)
                 </label>
                 <textarea
                   value={currentSet.notes || ''}
                   onChange={(e) => setCurrentSet(prev => ({ ...prev, notes: e.target.value }))}
                   placeholder="How did this set feel? Any observations..."
+                  className="w-full"
                   style={{
-                    width: '100%',
-                    padding: '10px 12px',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '8px',
-                    fontSize: '14px',
+                    padding: 'var(--space-sm) var(--space-md)',
+                    border: '1.5px solid var(--color-border-medium)',
+                    borderRadius: 'var(--radius-md)',
+                    fontSize: 'var(--font-size-sm)',
                     resize: 'vertical',
-                    minHeight: '60px'
+                    minHeight: '60px',
+                    color: 'var(--color-text-primary)'
                   }}
                 />
               </div>
@@ -503,18 +478,7 @@ const SetTrackerModal: React.FC<SetTrackerModalProps> = ({
               <button
                 onClick={handleLogSet}
                 disabled={loading || !currentSet.actualReps}
-                style={{
-                  width: '100%',
-                  padding: '14px',
-                  backgroundColor: loading || !currentSet.actualReps ? '#9ca3af' : '#4f46e5',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: loading || !currentSet.actualReps ? 'not-allowed' : 'pointer',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  transition: 'background-color 0.2s'
-                }}
+                className="btn btn-primary w-full"
               >
                 {loading ? 'Logging Set...' : `Log Set ${sets.length + 1}`}
               </button>
@@ -523,31 +487,20 @@ const SetTrackerModal: React.FC<SetTrackerModalProps> = ({
 
           {/* Exercise Complete */}
           {isExerciseComplete && (
-            <div style={{
-              padding: '20px',
-              backgroundColor: '#f0fdf4',
-              border: '1px solid #bbf7d0',
-              borderRadius: '12px',
+            <div className="card" style={{
+              backgroundColor: 'var(--color-success-50)',
+              border: '1.5px solid var(--color-success)',
               textAlign: 'center'
             }}>
-              <div style={{ fontSize: '20px', fontWeight: '700', color: '#166534', marginBottom: '8px' }}>
+              <div className="text-h3" style={{ color: 'var(--color-success-dark)', marginBottom: 'var(--space-sm)' }}>
                 Exercise Complete! 🎉
               </div>
-              <div style={{ fontSize: '14px', color: '#16a34a', marginBottom: '16px' }}>
+              <div className="text-body" style={{ color: 'var(--color-success-dark)', marginBottom: 'var(--space-md)' }}>
                 You completed all {workoutExercise.plannedSets} sets
               </div>
               <button
                 onClick={onClose}
-                style={{
-                  padding: '10px 20px',
-                  backgroundColor: '#10b981',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: '600'
-                }}
+                className="btn btn-primary"
               >
                 Continue Workout
               </button>

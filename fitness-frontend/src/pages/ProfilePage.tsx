@@ -151,7 +151,7 @@ const ProfilePage: React.FC = () => {
             <div className="card card-compact" style={{ border: '1.5px solid rgba(178, 190, 195, 0.3)', padding: 'var(--space-md)', textAlign: 'center' }}>
               <div className="text-caption text-light mb-2">Account Status</div>
               <div className="text-body font-semibold text-white">
-                ✅ Active
+                Active
               </div>
             </div>
           </div>

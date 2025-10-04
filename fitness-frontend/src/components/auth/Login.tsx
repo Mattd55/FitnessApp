@@ -83,7 +83,7 @@ const Login: React.FC = () => {
       }}>
         <div style={{ maxWidth: '480px', textAlign: 'center' }}>
           <h1 className="text-display" style={{ marginBottom: 'var(--space-md)', color: '#ffffff', fontWeight: 800 }}>
-            FitnessApp
+            RepBase
           </h1>
           <p className="text-body-lg" style={{ marginBottom: 'var(--space-2xl)', color: '#a0aec0', fontSize: '1.125rem' }}>
             Your personal fitness journey starts here. Track workouts, monitor progress, and achieve your goals.
@@ -196,20 +196,33 @@ const Login: React.FC = () => {
                   borderRadius: 'var(--radius-md)',
                   fontSize: 'var(--font-size-base)',
                   transition: 'all var(--transition-base)',
-                  outline: 'none'
+                  outline: 'none',
+                  color: '#1a202c'
                 }}
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="text-body-sm" style={{
-                display: 'block',
-                marginBottom: 'var(--space-xs)',
-                fontWeight: 600,
-                color: '#2d3748'
-              }}>
-                Password
-              </label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-xs)' }}>
+                <label htmlFor="password" className="text-body-sm" style={{
+                  fontWeight: 600,
+                  color: '#2d3748'
+                }}>
+                  Password
+                </label>
+                <Link
+                  to="/forgot-password"
+                  className="text-body-sm"
+                  style={{
+                    fontWeight: 500,
+                    textDecoration: 'none',
+                    color: 'var(--color-primary)',
+                    transition: 'all var(--transition-base)'
+                  }}
+                >
+                  Forgot Password?
+                </Link>
+              </div>
               <input
                 id="password"
                 name="password"
@@ -226,7 +239,8 @@ const Login: React.FC = () => {
                   borderRadius: 'var(--radius-md)',
                   fontSize: 'var(--font-size-base)',
                   transition: 'all var(--transition-base)',
-                  outline: 'none'
+                  outline: 'none',
+                  color: '#1a202c'
                 }}
               />
             </div>

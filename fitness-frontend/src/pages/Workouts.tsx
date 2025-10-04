@@ -17,7 +17,7 @@ const Workouts: React.FC = () => {
   const loadWorkouts = async () => {
     try {
       setLoading(true);
-      const response: PageResponse<Workout> = await workoutApi.getWorkouts(0, 1000);
+      const response: PageResponse<Workout> = await workoutApi.getWorkouts(0, 50);
       setWorkouts(response.content);
     } catch (err) {
       setError('Failed to load workouts. Please try again.');
@@ -134,25 +134,25 @@ const Workouts: React.FC = () => {
               onClick={() => setActiveTab('all')}
               className={`btn ${activeTab === 'all' ? 'btn-primary' : 'btn-outline'} flex-1`}
             >
-              All Workouts
+              All Workouts ({tabCounts.all})
             </button>
             <button
               onClick={() => setActiveTab('planned')}
               className={`btn ${activeTab === 'planned' ? 'btn-primary' : 'btn-outline'} flex-1`}
             >
-              Planned
+              Planned ({tabCounts.planned})
             </button>
             <button
               onClick={() => setActiveTab('in_progress')}
               className={`btn ${activeTab === 'in_progress' ? 'btn-primary' : 'btn-outline'} flex-1`}
             >
-              Active
+              Active ({tabCounts.in_progress})
             </button>
             <button
               onClick={() => setActiveTab('completed')}
               className={`btn ${activeTab === 'completed' ? 'btn-primary' : 'btn-outline'} flex-1`}
             >
-              Completed
+              Completed ({tabCounts.completed})
             </button>
           </div>
         </div>
@@ -166,8 +166,9 @@ const Workouts: React.FC = () => {
         )}
 
         {/* Workout Grid */}
-        <div className="card" style={{ maxHeight: '800px', overflowY: 'auto', overflowX: 'hidden', padding: '0' }}>
-          {filteredWorkouts.length === 0 ? (
+        <div className="card" style={{ maxHeight: '800px', overflow: 'hidden', padding: '0' }}>
+          <div style={{ maxHeight: '800px', overflowY: 'auto', overflowX: 'hidden' }}>
+            {filteredWorkouts.length === 0 ? (
             <div className="flex-col-center py-12 fade-in">
               <h3 className="text-h3 text-white">
                 {activeTab === 'all' ? 'No workouts yet' : `No ${activeTab.replace('_', ' ')} workouts`}
@@ -199,6 +200,7 @@ const Workouts: React.FC = () => {
               ))}
             </div>
           )}
+          </div>
         </div>
 
         {/* Modals */}

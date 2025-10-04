@@ -108,7 +108,7 @@ const RegisterNew: React.FC = () => {
       }}>
         <div style={{ maxWidth: '480px', textAlign: 'center' }}>
           <h1 className="text-display" style={{ marginBottom: 'var(--space-md)', color: '#ffffff', fontWeight: 800 }}>
-            Join FitnessApp
+            Join RepBase
           </h1>
           <p className="text-body-lg" style={{ marginBottom: 'var(--space-2xl)', color: '#a0aec0', fontSize: '1.125rem' }}>
             Start your transformation today. Track your progress, build healthy habits, and achieve your fitness goals.
@@ -240,7 +240,8 @@ const RegisterNew: React.FC = () => {
                     border: '2px solid rgba(45, 52, 54, 0.1)',
                     borderRadius: 'var(--radius-md)',
                     fontSize: 'var(--font-size-base)',
-                    outline: 'none'
+                    outline: 'none',
+                    color: '#1a202c'
                   }}
                 />
               </div>
@@ -268,7 +269,8 @@ const RegisterNew: React.FC = () => {
                     border: '2px solid rgba(45, 52, 54, 0.1)',
                     borderRadius: 'var(--radius-md)',
                     fontSize: 'var(--font-size-base)',
-                    outline: 'none'
+                    outline: 'none',
+                    color: '#1a202c'
                   }}
                 />
               </div>
@@ -298,7 +300,8 @@ const RegisterNew: React.FC = () => {
                   border: '2px solid rgba(45, 52, 54, 0.1)',
                   borderRadius: 'var(--radius-md)',
                   fontSize: 'var(--font-size-base)',
-                  outline: 'none'
+                  outline: 'none',
+                  color: '#1a202c'
                 }}
               />
             </div>
@@ -327,7 +330,8 @@ const RegisterNew: React.FC = () => {
                   border: '2px solid rgba(45, 52, 54, 0.1)',
                   borderRadius: 'var(--radius-md)',
                   fontSize: 'var(--font-size-base)',
-                  outline: 'none'
+                  outline: 'none',
+                  color: '#1a202c'
                 }}
               />
             </div>
@@ -356,7 +360,8 @@ const RegisterNew: React.FC = () => {
                   border: '2px solid rgba(45, 52, 54, 0.1)',
                   borderRadius: 'var(--radius-md)',
                   fontSize: 'var(--font-size-base)',
-                  outline: 'none'
+                  outline: 'none',
+                  color: '#1a202c'
                 }}
               />
               <p className="text-body-sm text-light" style={{ marginTop: 'var(--space-xs)', fontSize: 'var(--font-size-xs)' }}>
@@ -388,7 +393,8 @@ const RegisterNew: React.FC = () => {
                   border: '2px solid rgba(45, 52, 54, 0.1)',
                   borderRadius: 'var(--radius-md)',
                   fontSize: 'var(--font-size-base)',
-                  outline: 'none'
+                  outline: 'none',
+                  color: '#1a202c'
                 }}
               />
             </div>

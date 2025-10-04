@@ -14,14 +14,17 @@ public interface ExerciseSetRepository extends JpaRepository<ExerciseSet, Long> 
 
     List<ExerciseSet> findByWorkoutExerciseOrderBySetNumberAsc(WorkoutExercise workoutExercise);
 
-    @Query("SELECT e.name, MAX(es.actualWeight), MAX(es.actualReps) " +
-           "FROM ExerciseSet es " +
-           "JOIN es.workoutExercise we " +
+    @Query("SELECT e.name, " +
+           "COALESCE(MAX(es.actualWeight), MAX(we.plannedWeight)), " +
+           "COALESCE(MAX(es.actualReps), MAX(we.plannedReps)) " +
+           "FROM WorkoutExercise we " +
            "JOIN we.exercise e " +
            "JOIN we.workout w " +
+           "LEFT JOIN we.actualSets es " +
            "WHERE w.user.id = :userId " +
-           "AND es.actualWeight IS NOT NULL " +
+           "AND w.status = 'COMPLETED' " +
+           "AND (es.actualWeight IS NOT NULL OR we.plannedWeight IS NOT NULL) " +
            "GROUP BY e.id, e.name " +
-           "ORDER BY MAX(es.actualWeight) DESC")
+           "ORDER BY COALESCE(MAX(es.actualWeight), MAX(we.plannedWeight)) DESC")
     List<Object[]> findPersonalRecordsByUser(@Param("userId") Long userId);
 }

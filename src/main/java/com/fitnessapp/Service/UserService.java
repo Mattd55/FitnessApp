@@ -2,6 +2,9 @@ package com.fitnessapp.service;
 
 import com.fitnessapp.entity.User;
 import com.fitnessapp.repository.UserRepository;
+import com.fitnessapp.repository.WorkoutRepository;
+import com.fitnessapp.repository.UserProgressRepository;
+import com.fitnessapp.repository.GoalRepository;
 import com.fitnessapp.dto.request.auth.LoginRequest;
 import com.fitnessapp.dto.response.auth.LoginResponse;
 import com.fitnessapp.dto.request.auth.RegisterRequest;
@@ -23,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -33,17 +37,26 @@ public class UserService {
     private final JwtService jwtService;
     private final AuthenticationManager authManager;
     private final ApplicationEventPublisher eventPublisher;
+    private final WorkoutRepository workoutRepository;
+    private final UserProgressRepository userProgressRepository;
+    private final GoalRepository goalRepository;
 
     public UserService(UserRepository userRepository,
                       PasswordEncoder passwordEncoder,
                       JwtService jwtService,
                       AuthenticationManager authManager,
-                      ApplicationEventPublisher eventPublisher) {
+                      ApplicationEventPublisher eventPublisher,
+                      WorkoutRepository workoutRepository,
+                      UserProgressRepository userProgressRepository,
+                      GoalRepository goalRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.authManager = authManager;
         this.eventPublisher = eventPublisher;
+        this.workoutRepository = workoutRepository;
+        this.userProgressRepository = userProgressRepository;
+        this.goalRepository = goalRepository;
     }
 
     public LoginResponse registerUser(RegisterRequest request) {
@@ -144,6 +157,64 @@ public class UserService {
         userRepository.deleteById(userId);
     }
 
+    @CacheEvict(value = "users", key = "#username")
+    public void changePassword(String username, String currentPassword, String newPassword) {
+        User user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
+
+        // Verify current password
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new IllegalArgumentException("Current password is incorrect");
+        }
+
+        // Update password
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setUpdatedAt(LocalDateTime.now());
+        userRepository.save(user);
+    }
+
+    public String generatePasswordResetToken(String email) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new IllegalArgumentException("No user found with email: " + email));
+
+        // Generate reset token (UUID)
+        String resetToken = UUID.randomUUID().toString();
+
+        // Set token expiry (1 hour from now)
+        LocalDateTime expiry = LocalDateTime.now().plusHours(1);
+
+        user.setResetToken(resetToken);
+        user.setResetTokenExpiry(expiry);
+        user.setUpdatedAt(LocalDateTime.now());
+        userRepository.save(user);
+
+        // TODO: Send email with reset link
+        // For now, we'll just return the token (in production, this should be sent via email)
+        return resetToken;
+    }
+
+    public void resetPassword(String token, String newPassword) {
+        User user = userRepository.findAll().stream()
+            .filter(u -> token.equals(u.getResetToken()))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Invalid or expired reset token"));
+
+        // Check if token is expired
+        if (user.getResetTokenExpiry() == null || user.getResetTokenExpiry().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Reset token has expired");
+        }
+
+        // Update password
+        user.setPassword(passwordEncoder.encode(newPassword));
+
+        // Clear reset token
+        user.setResetToken(null);
+        user.setResetTokenExpiry(null);
+        user.setUpdatedAt(LocalDateTime.now());
+
+        userRepository.save(user);
+    }
+
     private void validateUserDoesNotExist(String username, String email) {
         if (userRepository.findByUsername(username).isPresent()) {
             throw new UserAlreadyExistsException("Username already exists: " + username);
@@ -164,5 +235,49 @@ public class UserService {
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
         return user;
+    }
+
+    public void deleteAccount(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
+
+        // All related entities (workouts, progress, goals) will be cascade-deleted via JPA
+        userRepository.delete(user);
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.Map<String, Object> exportUserData(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
+
+        java.util.Map<String, Object> exportData = new java.util.HashMap<>();
+
+        // User profile information
+        java.util.Map<String, Object> profile = new java.util.HashMap<>();
+        profile.put("username", user.getUsername());
+        profile.put("email", user.getEmail());
+        profile.put("firstName", user.getFirstName());
+        profile.put("lastName", user.getLastName());
+        profile.put("role", user.getRole());
+        profile.put("createdAt", user.getCreatedAt());
+        profile.put("updatedAt", user.getUpdatedAt());
+        exportData.put("profile", profile);
+
+        // Workouts - fetch all workouts for user
+        exportData.put("workouts", workoutRepository.findByUserOrderByCreatedAtDesc(user, Pageable.unpaged()).getContent());
+
+        // Progress entries - fetch all progress entries for user
+        exportData.put("progressHistory", userProgressRepository.findByUserOrderByMeasurementDateDesc(user, Pageable.unpaged()).getContent());
+
+        // Goals - fetch all goals for user
+        exportData.put("goals", goalRepository.findByUserId(user.getId(), Pageable.unpaged()).getContent());
+
+        // Export metadata
+        java.util.Map<String, Object> metadata = new java.util.HashMap<>();
+        metadata.put("exportDate", LocalDateTime.now());
+        metadata.put("version", "1.0");
+        exportData.put("metadata", metadata);
+
+        return exportData;
     }
 }

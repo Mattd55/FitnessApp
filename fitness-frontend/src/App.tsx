@@ -3,8 +3,11 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
+import ErrorBoundary from './components/ErrorBoundary';
 import Login from './components/auth/Login';
 import Register from './components/auth/RegisterNew';
+import ForgotPassword from './components/auth/ForgotPassword';
+import ResetPassword from './components/auth/ResetPassword';
 import Dashboard from './pages/Dashboard';
 import ExerciseLibrary from './pages/ExerciseLibrary';
 import Workouts from './pages/Workouts';
@@ -15,13 +18,16 @@ import './App.css';
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <div className="App">
+    <ErrorBoundary>
+      <AuthProvider>
+        <Router>
+          <div className="App">
           <Routes>
             {/* Public Routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
 
             {/* Protected Routes */}
             <Route
@@ -139,8 +145,9 @@ function App() {
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </div>
-      </Router>
-    </AuthProvider>
+          </Router>
+        </AuthProvider>
+      </ErrorBoundary>
   );
 }
 

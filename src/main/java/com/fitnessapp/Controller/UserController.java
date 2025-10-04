@@ -2,6 +2,7 @@ package com.fitnessapp.controller;
 
 import com.fitnessapp.dto.PersonalRecordDTO;
 import com.fitnessapp.dto.mapper.UserMapper;
+import com.fitnessapp.dto.request.auth.ChangePasswordRequest;
 import com.fitnessapp.dto.response.user.UserResponse;
 import com.fitnessapp.entity.User;
 import com.fitnessapp.entity.UserProgress;
@@ -94,5 +95,31 @@ public class UserController {
         String username = authentication.getName();
         java.util.List<PersonalRecordDTO> records = workoutService.getPersonalRecords(username);
         return ResponseEntity.ok(records);
+    }
+
+    @PutMapping("/change-password")
+    public ResponseEntity<String> changePassword(@Valid @RequestBody ChangePasswordRequest request,
+                                                 Authentication authentication) {
+        String username = authentication.getName();
+        try {
+            userService.changePassword(username, request.getCurrentPassword(), request.getNewPassword());
+            return ResponseEntity.ok("Password changed successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/account")
+    public ResponseEntity<Void> deleteAccount(Authentication authentication) {
+        String username = authentication.getName();
+        userService.deleteAccount(username);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/export-data")
+    public ResponseEntity<java.util.Map<String, Object>> exportUserData(Authentication authentication) {
+        String username = authentication.getName();
+        java.util.Map<String, Object> exportData = userService.exportUserData(username);
+        return ResponseEntity.ok(exportData);
     }
 }

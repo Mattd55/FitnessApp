@@ -39,6 +39,15 @@ class UserServiceTest {
     @Mock
     private ApplicationEventPublisher eventPublisher;
 
+    @Mock
+    private com.fitnessapp.repository.WorkoutRepository workoutRepository;
+
+    @Mock
+    private com.fitnessapp.repository.UserProgressRepository userProgressRepository;
+
+    @Mock
+    private com.fitnessapp.repository.GoalRepository goalRepository;
+
     private UserService userService;
 
     @BeforeEach
@@ -48,7 +57,10 @@ class UserServiceTest {
             passwordEncoder,
             jwtService,
             authManager,
-            eventPublisher
+            eventPublisher,
+            workoutRepository,
+            userProgressRepository,
+            goalRepository
         );
     }
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { User } from '../../types/api';
 import { useAuth } from '../../contexts/AuthContext';
+import { userApi } from '../../services/api';
 
 interface AccountSettingsProps {
   userProfile: User;
@@ -50,11 +51,10 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ userProfile, onProfil
     }
 
     try {
-      // TODO: Implement password change API call
-      // await userApi.changePassword({
-      //   currentPassword: passwordForm.currentPassword,
-      //   newPassword: passwordForm.newPassword
-      // });
+      await userApi.changePassword(
+        passwordForm.currentPassword,
+        passwordForm.newPassword
+      );
 
       setPasswordSuccess(true);
       setPasswordForm({
@@ -67,13 +67,41 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ userProfile, onProfil
       // Auto-hide success message after 3 seconds
       setTimeout(() => setPasswordSuccess(false), 3000);
     } catch (err: any) {
-      setPasswordError(err.response?.data?.message || 'Failed to change password');
+      setPasswordError(err.response?.data || err.message || 'Failed to change password');
     } finally {
       setPasswordLoading(false);
     }
   };
 
-  const handleDeleteAccount = () => {
+  const handleExportData = async () => {
+    try {
+      const exportData = await userApi.exportData();
+
+      // Create a JSON blob
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `fitness-data-export-${new Date().toISOString().split('T')[0]}.json`;
+
+      // Trigger download
+      document.body.appendChild(link);
+      link.click();
+
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      alert('Your data has been exported successfully!');
+    } catch (error: any) {
+      console.error('Error exporting data:', error);
+      alert(error.response?.data?.message || 'Failed to export data. Please try again.');
+    }
+  };
+
+  const handleDeleteAccount = async () => {
     const confirmed = window.confirm(
       'Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently lost.'
     );
@@ -84,8 +112,14 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ userProfile, onProfil
       );
 
       if (doubleConfirmed) {
-        // TODO: Implement account deletion API call
-        alert('Account deletion feature will be implemented soon. Please contact support for now.');
+        try {
+          await userApi.deleteAccount();
+          alert('Your account has been successfully deleted.');
+          logout(); // Log out user after account deletion
+        } catch (error: any) {
+          console.error('Error deleting account:', error);
+          alert(error.response?.data?.message || 'Failed to delete account. Please try again or contact support.');
+        }
       }
     }
   };
@@ -277,7 +311,7 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ userProfile, onProfil
               </div>
             </div>
             <button
-              onClick={() => alert('Data export feature will be implemented soon')}
+              onClick={handleExportData}
               className="btn btn-primary"
               style={{ whiteSpace: 'nowrap', width: '160px' }}
             >

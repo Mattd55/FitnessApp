@@ -379,7 +379,7 @@ body {
 }
 
 .form-input::placeholder {
-  color: var(--color-text-lighter);
+  color: #9CA3AF;
 }
 
 /* Navigation Enhancements */
