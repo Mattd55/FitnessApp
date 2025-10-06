@@ -12,7 +12,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
+public interface
+ExerciseRepository extends JpaRepository<Exercise, Long> {
 
     Page<Exercise> findByActiveTrue(Pageable pageable);
 

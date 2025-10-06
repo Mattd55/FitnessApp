@@ -21,7 +21,7 @@ const ExerciseLibrary: React.FC = () => {
   const [selectedEquipment, setSelectedEquipment] = useState('');
   const [selectedDifficulty, setSelectedDifficulty] = useState('');
 
-  const pageSize = 12;
+  const pageSize = 18;
 
   const loadExercises = useCallback(async (page: number = 0) => {
     try {
@@ -121,27 +121,14 @@ const ExerciseLibrary: React.FC = () => {
           </div>
         )}
 
-        {/* Results count */}
-        <div className="slide-in-left">
+        {/* Results count and Pagination at top - centered */}
+        <div className="slide-in-left flex flex-col items-center gap-sm">
           <p className="text-body-sm text-light">
             Showing {exercises.length} of {totalElements} exercises
           </p>
-        </div>
 
-        {/* Exercise Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 stagger-in">
-          {exercises.map((exercise) => (
-            <ExerciseCard
-              key={exercise.id}
-              exercise={exercise}
-              onClick={handleExerciseClick}
-            />
-          ))}
-        </div>
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex justify-center fade-in">
+          {/* Pagination */}
+          {totalPages > 1 && (
             <nav className="flex gap-sm">
               {Array.from({ length: totalPages }, (_, i) => (
                 <button
@@ -157,8 +144,23 @@ const ExerciseLibrary: React.FC = () => {
                 </button>
               ))}
             </nav>
-          </div>
-        )}
+          )}
+        </div>
+
+        {/* Exercise Grid - 3 columns */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: 'var(--space-lg)'
+        }} className="stagger-in">
+          {exercises.map((exercise) => (
+            <ExerciseCard
+              key={exercise.id}
+              exercise={exercise}
+              onClick={handleExerciseClick}
+            />
+          ))}
+        </div>
       </div>
 
       {selectedExercise && (

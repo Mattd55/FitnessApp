@@ -8,6 +8,7 @@ import com.fitnessapp.enums.ExerciseDifficulty;
 import com.fitnessapp.enums.MuscleGroup;
 import com.fitnessapp.repository.ExerciseRepository;
 import com.fitnessapp.repository.UserRepository;
+import com.fitnessapp.repository.WorkoutExerciseRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -24,16 +25,21 @@ public class DataSeedingService implements CommandLineRunner {
 
     private final ExerciseRepository exerciseRepository;
     private final UserRepository userRepository;
+    private final WorkoutExerciseRepository workoutExerciseRepository;
 
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        if (exerciseRepository.count() == 0) {
-            log.info("Database is empty. Seeding sample exercises...");
+        long currentCount = exerciseRepository.count();
+        if (currentCount < 49) {
+            log.info("Database contains {} exercises. Clearing and reseeding with 49 exercises...", currentCount);
+            // Delete workout exercises first to avoid foreign key constraint violations
+            workoutExerciseRepository.deleteAll();
+            exerciseRepository.deleteAll();
             seedExercises();
-            log.info("Sample exercises seeded successfully!");
+            log.info("49 sample exercises seeded successfully!");
         } else {
-            log.info("Database already contains {} exercises. Skipping seeding.", exerciseRepository.count());
+            log.info("Database already contains {} exercises. Skipping seeding.", currentCount);
         }
     }
 
@@ -288,6 +294,363 @@ public class DataSeedingService implements CommandLineRunner {
                 ExerciseDifficulty.BEGINNER,
                 Arrays.asList(MuscleGroup.CORE),
                 Arrays.asList(MuscleGroup.SHOULDERS, MuscleGroup.GLUTES),
+                systemUser
+            ),
+
+            // ADDITIONAL STRENGTH EXERCISES - BODYWEIGHT
+            createExercise(
+                "Lunges",
+                "Lower body exercise targeting legs and glutes.",
+                "1. Stand tall with feet hip-width apart. 2. Step forward with one leg, lowering hips until both knees are at 90 degrees. 3. Push back to starting position. 4. Alternate legs.",
+                ExerciseCategory.STRENGTH,
+                ExerciseEquipment.NONE,
+                ExerciseDifficulty.BEGINNER,
+                Arrays.asList(MuscleGroup.QUADRICEPS, MuscleGroup.GLUTES),
+                Arrays.asList(MuscleGroup.HAMSTRINGS, MuscleGroup.CORE),
+                systemUser
+            ),
+
+            createExercise(
+                "Dips",
+                "Bodyweight exercise for triceps and chest using parallel bars or bench.",
+                "1. Support yourself on parallel bars or bench edge. 2. Lower body by bending elbows to 90 degrees. 3. Push back up to starting position. 4. Keep core tight throughout.",
+                ExerciseCategory.STRENGTH,
+                ExerciseEquipment.NONE,
+                ExerciseDifficulty.INTERMEDIATE,
+                Arrays.asList(MuscleGroup.TRICEPS, MuscleGroup.CHEST),
+                Arrays.asList(MuscleGroup.SHOULDERS),
+                systemUser
+            ),
+
+            createExercise(
+                "Bicycle Crunches",
+                "Dynamic core exercise targeting obliques and abs.",
+                "1. Lie on back with hands behind head. 2. Bring opposite elbow to opposite knee while extending other leg. 3. Alternate sides in a pedaling motion. 4. Keep lower back pressed to floor.",
+                ExerciseCategory.STRENGTH,
+                ExerciseEquipment.NONE,
+                ExerciseDifficulty.BEGINNER,
+                Arrays.asList(MuscleGroup.CORE),
+                Arrays.asList(),
+                systemUser
+            ),
+
+            // ADDITIONAL DUMBBELL EXERCISES
+            createExercise(
+                "Dumbbell Shoulder Press",
+                "Overhead pressing exercise targeting shoulders.",
+                "1. Sit or stand with dumbbell in each hand at shoulder height. 2. Press weights overhead until arms are extended. 3. Lower back to shoulder level with control. 4. Keep core engaged.",
+                ExerciseCategory.STRENGTH,
+                ExerciseEquipment.DUMBBELL,
+                ExerciseDifficulty.BEGINNER,
+                Arrays.asList(MuscleGroup.SHOULDERS, MuscleGroup.TRICEPS),
+                Arrays.asList(MuscleGroup.CORE),
+                systemUser
+            ),
+
+            createExercise(
+                "Dumbbell Bicep Curls",
+                "Classic arm exercise targeting biceps.",
+                "1. Stand with dumbbell in each hand, arms fully extended. 2. Curl weights up toward shoulders. 3. Squeeze biceps at top. 4. Lower back down with control.",
+                ExerciseCategory.STRENGTH,
+                ExerciseEquipment.DUMBBELL,
+                ExerciseDifficulty.BEGINNER,
+                Arrays.asList(MuscleGroup.BICEPS),
+                Arrays.asList(MuscleGroup.SHOULDERS),
+                systemUser
+            ),
+
+            createExercise(
+                "Dumbbell Lateral Raises",
+                "Isolation exercise for shoulder development.",
+                "1. Stand with dumbbell in each hand at sides. 2. Raise arms out to sides until parallel to floor. 3. Pause at top, then lower with control. 4. Keep slight bend in elbows.",
+                ExerciseCategory.STRENGTH,
+                ExerciseEquipment.DUMBBELL,
+                ExerciseDifficulty.BEGINNER,
+                Arrays.asList(MuscleGroup.SHOULDERS),
+                Arrays.asList(),
+                systemUser
+            ),
+
+            createExercise(
+                "Dumbbell Lunges",
+                "Weighted variation of lunges for increased difficulty.",
+                "1. Hold dumbbell in each hand at sides. 2. Step forward into lunge position. 3. Lower until both knees at 90 degrees. 4. Push back to start and alternate legs.",
+                ExerciseCategory.STRENGTH,
+                ExerciseEquipment.DUMBBELL,
+                ExerciseDifficulty.INTERMEDIATE,
+                Arrays.asList(MuscleGroup.QUADRICEPS, MuscleGroup.GLUTES),
+                Arrays.asList(MuscleGroup.HAMSTRINGS, MuscleGroup.CORE),
+                systemUser
+            ),
+
+            // ADDITIONAL BARBELL EXERCISES
+            createExercise(
+                "Barbell Bench Press",
+                "Classic chest exercise performed with barbell.",
+                "1. Lie on bench with feet flat on floor. 2. Grip barbell slightly wider than shoulder-width. 3. Lower bar to mid-chest. 4. Press back up to starting position.",
+                ExerciseCategory.STRENGTH,
+                ExerciseEquipment.BARBELL,
+                ExerciseDifficulty.INTERMEDIATE,
+                Arrays.asList(MuscleGroup.CHEST, MuscleGroup.TRICEPS),
+                Arrays.asList(MuscleGroup.SHOULDERS),
+                systemUser
+            ),
+
+            createExercise(
+                "Barbell Row",
+                "Compound back exercise with barbell.",
+                "1. Hinge at hips with barbell in hands, back straight. 2. Pull barbell to lower ribcage. 3. Squeeze shoulder blades together. 4. Lower with control.",
+                ExerciseCategory.STRENGTH,
+                ExerciseEquipment.BARBELL,
+                ExerciseDifficulty.INTERMEDIATE,
+                Arrays.asList(MuscleGroup.BACK, MuscleGroup.BICEPS),
+                Arrays.asList(MuscleGroup.SHOULDERS, MuscleGroup.CORE),
+                systemUser
+            ),
+
+            createExercise(
+                "Overhead Press",
+                "Barbell shoulder press performed standing or seated.",
+                "1. Start with barbell at shoulder level. 2. Press overhead until arms are fully extended. 3. Lower back to shoulders with control. 4. Keep core tight throughout.",
+                ExerciseCategory.STRENGTH,
+                ExerciseEquipment.BARBELL,
+                ExerciseDifficulty.INTERMEDIATE,
+                Arrays.asList(MuscleGroup.SHOULDERS, MuscleGroup.TRICEPS),
+                Arrays.asList(MuscleGroup.CORE),
+                systemUser
+            ),
+
+            createExercise(
+                "Romanian Deadlift",
+                "Hip-hinge movement targeting hamstrings and glutes.",
+                "1. Hold barbell with overhand grip. 2. Hinge at hips, lowering bar along legs. 3. Keep back straight and knees slightly bent. 4. Drive hips forward to return to standing.",
+                ExerciseCategory.STRENGTH,
+                ExerciseEquipment.BARBELL,
+                ExerciseDifficulty.INTERMEDIATE,
+                Arrays.asList(MuscleGroup.HAMSTRINGS, MuscleGroup.GLUTES),
+                Arrays.asList(MuscleGroup.BACK, MuscleGroup.CORE),
+                systemUser
+            ),
+
+            // ADDITIONAL CARDIO EXERCISES
+            createExercise(
+                "Running",
+                "Classic cardiovascular exercise for endurance.",
+                "1. Maintain upright posture with relaxed shoulders. 2. Land midfoot and roll through to toes. 3. Swing arms naturally at sides. 4. Keep steady breathing rhythm.",
+                ExerciseCategory.CARDIO,
+                ExerciseEquipment.NONE,
+                ExerciseDifficulty.BEGINNER,
+                Arrays.asList(MuscleGroup.CARDIO, MuscleGroup.QUADRICEPS),
+                Arrays.asList(MuscleGroup.HAMSTRINGS, MuscleGroup.CALVES),
+                systemUser
+            ),
+
+            createExercise(
+                "High Knees",
+                "Dynamic cardio exercise elevating heart rate.",
+                "1. Stand with feet hip-width apart. 2. Quickly drive one knee up to hip level. 3. Alternate legs in rapid succession. 4. Pump arms in running motion.",
+                ExerciseCategory.CARDIO,
+                ExerciseEquipment.NONE,
+                ExerciseDifficulty.BEGINNER,
+                Arrays.asList(MuscleGroup.CARDIO, MuscleGroup.QUADRICEPS),
+                Arrays.asList(MuscleGroup.CORE, MuscleGroup.CALVES),
+                systemUser
+            ),
+
+            createExercise(
+                "Rowing Machine",
+                "Full-body cardio using rowing machine.",
+                "1. Sit on rower with feet secured. 2. Push with legs while pulling handle to chest. 3. Extend arms, then hinge at hips, then bend knees. 4. Maintain strong core throughout.",
+                ExerciseCategory.CARDIO,
+                ExerciseEquipment.MACHINE,
+                ExerciseDifficulty.BEGINNER,
+                Arrays.asList(MuscleGroup.CARDIO, MuscleGroup.BACK),
+                Arrays.asList(MuscleGroup.QUADRICEPS, MuscleGroup.CORE),
+                systemUser
+            ),
+
+            createExercise(
+                "Box Jumps",
+                "Plyometric exercise for power and explosiveness.",
+                "1. Stand facing sturdy box or platform. 2. Swing arms and jump onto box. 3. Land softly with bent knees. 4. Step down and repeat.",
+                ExerciseCategory.CARDIO,
+                ExerciseEquipment.NONE,
+                ExerciseDifficulty.INTERMEDIATE,
+                Arrays.asList(MuscleGroup.QUADRICEPS, MuscleGroup.GLUTES),
+                Arrays.asList(MuscleGroup.CALVES, MuscleGroup.CORE),
+                systemUser
+            ),
+
+            // ADDITIONAL FLEXIBILITY EXERCISES
+            createExercise(
+                "Cat-Cow Stretch",
+                "Spinal mobility exercise from yoga.",
+                "1. Start on hands and knees. 2. Arch back, lifting chest and tailbone (cow). 3. Round spine, tucking chin and tailbone (cat). 4. Alternate slowly with breathing.",
+                ExerciseCategory.FLEXIBILITY,
+                ExerciseEquipment.NONE,
+                ExerciseDifficulty.BEGINNER,
+                Arrays.asList(MuscleGroup.BACK, MuscleGroup.CORE),
+                Arrays.asList(),
+                systemUser
+            ),
+
+            createExercise(
+                "Hamstring Stretch",
+                "Static stretch for hamstring flexibility.",
+                "1. Sit with one leg extended, other bent. 2. Reach toward toes of extended leg. 3. Hold stretch without bouncing. 4. Switch legs and repeat.",
+                ExerciseCategory.FLEXIBILITY,
+                ExerciseEquipment.NONE,
+                ExerciseDifficulty.BEGINNER,
+                Arrays.asList(MuscleGroup.HAMSTRINGS),
+                Arrays.asList(MuscleGroup.BACK),
+                systemUser
+            ),
+
+            createExercise(
+                "Child's Pose",
+                "Resting yoga pose that stretches back and hips.",
+                "1. Kneel on floor with big toes touching. 2. Sit back on heels and extend arms forward. 3. Lower forehead to ground. 4. Breathe deeply and relax.",
+                ExerciseCategory.FLEXIBILITY,
+                ExerciseEquipment.NONE,
+                ExerciseDifficulty.BEGINNER,
+                Arrays.asList(MuscleGroup.BACK),
+                Arrays.asList(MuscleGroup.SHOULDERS, MuscleGroup.GLUTES),
+                systemUser
+            ),
+
+            // ADDITIONAL MACHINE EXERCISES
+            createExercise(
+                "Cable Chest Fly",
+                "Isolation exercise for chest using cable machine.",
+                "1. Set cables to chest height, grip handles. 2. Step forward with slight lean. 3. Bring hands together in front of chest. 4. Return to starting position with control.",
+                ExerciseCategory.STRENGTH,
+                ExerciseEquipment.MACHINE,
+                ExerciseDifficulty.BEGINNER,
+                Arrays.asList(MuscleGroup.CHEST),
+                Arrays.asList(MuscleGroup.SHOULDERS),
+                systemUser
+            ),
+
+            createExercise(
+                "Leg Curl",
+                "Machine exercise isolating hamstrings.",
+                "1. Lie face down on leg curl machine. 2. Curl legs up toward glutes. 3. Squeeze hamstrings at top. 4. Lower with control.",
+                ExerciseCategory.STRENGTH,
+                ExerciseEquipment.MACHINE,
+                ExerciseDifficulty.BEGINNER,
+                Arrays.asList(MuscleGroup.HAMSTRINGS),
+                Arrays.asList(MuscleGroup.CALVES),
+                systemUser
+            ),
+
+            createExercise(
+                "Leg Extension",
+                "Machine exercise for quadriceps isolation.",
+                "1. Sit in leg extension machine with ankles under pad. 2. Extend legs until straight. 3. Pause and squeeze quads. 4. Lower back down with control.",
+                ExerciseCategory.STRENGTH,
+                ExerciseEquipment.MACHINE,
+                ExerciseDifficulty.BEGINNER,
+                Arrays.asList(MuscleGroup.QUADRICEPS),
+                Arrays.asList(),
+                systemUser
+            ),
+
+            // CORE-SPECIFIC EXERCISES
+            createExercise(
+                "Russian Twists",
+                "Rotational core exercise targeting obliques.",
+                "1. Sit on floor with knees bent, feet lifted. 2. Lean back slightly, holding weight or medicine ball. 3. Rotate torso side to side. 4. Keep core engaged throughout.",
+                ExerciseCategory.STRENGTH,
+                ExerciseEquipment.MEDICINE_BALL,
+                ExerciseDifficulty.INTERMEDIATE,
+                Arrays.asList(MuscleGroup.CORE),
+                Arrays.asList(),
+                systemUser
+            ),
+
+            createExercise(
+                "Hanging Leg Raises",
+                "Advanced core exercise using pull-up bar.",
+                "1. Hang from pull-up bar with straight arms. 2. Keep legs together, raise them to 90 degrees. 3. Lower with control without swinging. 4. Keep core tight throughout.",
+                ExerciseCategory.STRENGTH,
+                ExerciseEquipment.PULL_UP_BAR,
+                ExerciseDifficulty.ADVANCED,
+                Arrays.asList(MuscleGroup.CORE),
+                Arrays.asList(MuscleGroup.SHOULDERS),
+                systemUser
+            ),
+
+            createExercise(
+                "Cable Woodchoppers",
+                "Rotational core exercise using cable machine.",
+                "1. Set cable to high position, stand sideways. 2. Pull cable diagonally across body. 3. Rotate through core, not just arms. 4. Return to start and repeat both sides.",
+                ExerciseCategory.STRENGTH,
+                ExerciseEquipment.MACHINE,
+                ExerciseDifficulty.INTERMEDIATE,
+                Arrays.asList(MuscleGroup.CORE),
+                Arrays.asList(MuscleGroup.SHOULDERS),
+                systemUser
+            ),
+
+            // PLYOMETRIC EXERCISES
+            createExercise(
+                "Jump Squats",
+                "Explosive lower body plyometric exercise.",
+                "1. Start in squat position. 2. Explode up into a jump. 3. Land softly and immediately lower into next squat. 4. Keep chest up throughout.",
+                ExerciseCategory.CARDIO,
+                ExerciseEquipment.NONE,
+                ExerciseDifficulty.INTERMEDIATE,
+                Arrays.asList(MuscleGroup.QUADRICEPS, MuscleGroup.GLUTES),
+                Arrays.asList(MuscleGroup.CALVES, MuscleGroup.CORE),
+                systemUser
+            ),
+
+            createExercise(
+                "Clapping Push-ups",
+                "Explosive upper body plyometric exercise.",
+                "1. Start in push-up position. 2. Lower down, then explosively push up. 3. Clap hands while airborne. 4. Land with control and repeat.",
+                ExerciseCategory.STRENGTH,
+                ExerciseEquipment.NONE,
+                ExerciseDifficulty.ADVANCED,
+                Arrays.asList(MuscleGroup.CHEST, MuscleGroup.TRICEPS),
+                Arrays.asList(MuscleGroup.SHOULDERS, MuscleGroup.CORE),
+                systemUser
+            ),
+
+            // FUNCTIONAL TRAINING
+            createExercise(
+                "Farmer's Walk",
+                "Full-body functional exercise carrying heavy weights.",
+                "1. Hold heavy dumbbell or kettlebell in each hand. 2. Walk forward with upright posture. 3. Keep shoulders back and core engaged. 4. Maintain controlled breathing.",
+                ExerciseCategory.STRENGTH,
+                ExerciseEquipment.DUMBBELL,
+                ExerciseDifficulty.INTERMEDIATE,
+                Arrays.asList(MuscleGroup.FULL_BODY, MuscleGroup.CORE),
+                Arrays.asList(MuscleGroup.SHOULDERS, MuscleGroup.BACK),
+                systemUser
+            ),
+
+            createExercise(
+                "Wall Sit",
+                "Isometric leg exercise building endurance.",
+                "1. Stand with back against wall. 2. Slide down until knees at 90 degrees. 3. Hold position with thighs parallel to floor. 4. Keep core engaged and breathe steadily.",
+                ExerciseCategory.STRENGTH,
+                ExerciseEquipment.NONE,
+                ExerciseDifficulty.BEGINNER,
+                Arrays.asList(MuscleGroup.QUADRICEPS, MuscleGroup.GLUTES),
+                Arrays.asList(MuscleGroup.CORE),
+                systemUser
+            ),
+
+            createExercise(
+                "Face Pulls",
+                "Upper back and rear deltoid exercise using cable.",
+                "1. Set cable at upper chest height with rope attachment. 2. Pull rope toward face, separating hands. 3. Squeeze shoulder blades together. 4. Return to start with control.",
+                ExerciseCategory.STRENGTH,
+                ExerciseEquipment.MACHINE,
+                ExerciseDifficulty.BEGINNER,
+                Arrays.asList(MuscleGroup.SHOULDERS, MuscleGroup.BACK),
+                Arrays.asList(MuscleGroup.BICEPS),
                 systemUser
             )
         );
