@@ -48,6 +48,9 @@ class UserServiceTest {
     @Mock
     private com.fitnessapp.repository.GoalRepository goalRepository;
 
+    @Mock
+    private EmailService emailService;
+
     private UserService userService;
 
     @BeforeEach
@@ -60,7 +63,8 @@ class UserServiceTest {
             eventPublisher,
             workoutRepository,
             userProgressRepository,
-            goalRepository
+            goalRepository,
+            emailService
         );
     }
 

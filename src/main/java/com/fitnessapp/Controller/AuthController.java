@@ -41,10 +41,8 @@ public class AuthController {
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
         try {
-            String resetToken = userService.generatePasswordResetToken(request.getEmail());
-            // In production, the token should be sent via email
-            // For development/testing, we return it in the response
-            return ResponseEntity.ok("Password reset link has been sent to your email. (Token: " + resetToken + ")");
+            userService.generatePasswordResetToken(request.getEmail());
+            return ResponseEntity.ok("Password reset link has been sent to your email.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

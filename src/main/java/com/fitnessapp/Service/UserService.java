@@ -40,6 +40,7 @@ public class UserService {
     private final WorkoutRepository workoutRepository;
     private final UserProgressRepository userProgressRepository;
     private final GoalRepository goalRepository;
+    private final EmailService emailService;
 
     public UserService(UserRepository userRepository,
                       PasswordEncoder passwordEncoder,
@@ -48,7 +49,8 @@ public class UserService {
                       ApplicationEventPublisher eventPublisher,
                       WorkoutRepository workoutRepository,
                       UserProgressRepository userProgressRepository,
-                      GoalRepository goalRepository) {
+                      GoalRepository goalRepository,
+                      EmailService emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
@@ -57,6 +59,7 @@ public class UserService {
         this.workoutRepository = workoutRepository;
         this.userProgressRepository = userProgressRepository;
         this.goalRepository = goalRepository;
+        this.emailService = emailService;
     }
 
     public LoginResponse registerUser(RegisterRequest request) {
@@ -188,8 +191,9 @@ public class UserService {
         user.setUpdatedAt(LocalDateTime.now());
         userRepository.save(user);
 
-        // TODO: Send email with reset link
-        // For now, we'll just return the token (in production, this should be sent via email)
+        // Send password reset email
+        emailService.sendPasswordResetEmail(email, resetToken);
+
         return resetToken;
     }
 
