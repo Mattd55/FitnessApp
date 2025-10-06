@@ -63,9 +63,9 @@ fitness-frontend/yarn-debug.log*
 fitness-frontend/yarn-error.log*
 
 ### Windows Reserved Names ###
-NUL
-CON
-PRN
-AUX
-COM*
-LPT*
+/NUL
+/CON
+/PRN
+/AUX
+/COM[0-9]
+/LPT[0-9]
