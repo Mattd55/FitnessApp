@@ -61,6 +61,7 @@ fitness-frontend/.pnp.js
 fitness-frontend/npm-debug.log*
 fitness-frontend/yarn-debug.log*
 fitness-frontend/yarn-error.log*
+fitness-frontend/.env
 
 ### Windows Reserved Names ###
 /NUL
