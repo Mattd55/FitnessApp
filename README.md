@@ -4,21 +4,21 @@ A comprehensive full-stack fitness tracking application that helps users manage 
 
 ## Features
 
-### 🏋️ Core Functionality
+### Core Functionality
 - **Exercise Library**: Browse 49+ exercises with detailed instructions, muscle groups, and difficulty levels
 - **Workout Management**: Create, track, and complete custom workouts with real-time progress monitoring
 - **Set Tracking**: Log actual reps, weight, and RPE (Rate of Perceived Exertion) for each exercise
 - **Progress Tracking**: Monitor your fitness journey with comprehensive progress analytics
 - **User Profiles**: Manage personal information and view fitness statistics
 
-### 🔐 Security Features
+### Security Features
 - JWT-based authentication with secure token management
 - Role-based access control (USER, ADMIN, TRAINER)
 - Password reset functionality via email
 - BCrypt password encryption
 - Account deletion and data export capabilities
 
-### 📧 Email Integration
+### Email Integration
 - Password reset emails via SendGrid
 - Beautifully designed HTML email templates
 - Responsive email layout
@@ -249,9 +249,3 @@ This project is licensed under the MIT License.
 ## Contact
 
 Project Link: [https://github.com/yourusername/FitnessApp](https://github.com/yourusername/FitnessApp)
-
-## Acknowledgments
-
-- Exercise data curated for comprehensive fitness coverage
-- SendGrid for email delivery services
-- Spring Boot and React communities for excellent documentation
