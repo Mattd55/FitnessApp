@@ -69,25 +69,25 @@ FitnessApp/
 ![REGISTER](https://github.com/user-attachments/assets/075e4421-e473-4620-9ba4-4dd23772a4a0)
 
 ### Dashboard
-![Dashboard](Screenshots/DASHBOARD.JPG)
+![DASHBOARD](https://github.com/user-attachments/assets/d424a92b-e783-49ce-bfb8-5572e02674d4)
 
 ### Exercises
-![Exercises](Screenshots/EXERCISES.JPG)
+![EXERCISES](https://github.com/user-attachments/assets/fbbad95e-fb24-4a61-b835-7a13b8d2d331)
 
 ### Workouts
-![Workouts](Screenshots/WORKOUTS.JPG)
+![WORKOUTS](https://github.com/user-attachments/assets/6f0c9aeb-e7bf-4044-9e4c-5f90a090d1bc)
 
-### Exercise Details
-![Exercise Details](Screenshots/EXERCISE_DETAILS.JPG)
+### Exercise Details Modal
+![EXERCISE DETAILS](https://github.com/user-attachments/assets/4a8ab150-2cce-4506-954f-8555c3a6e971)
 
-### Workout Details
-![Workout Details](Screenshots/WORKOUT_DETAILS.JPG)
+### Workout Details Modal
+![WORKOUT DETAILS](https://github.com/user-attachments/assets/841883f2-87b6-429d-840e-ce951e58c381)
 
-### Set Logging
-![Set Logging](Screenshots/SET_LOGGING.JPG)
+### Set Logging Modal
+![SET LOGGING](https://github.com/user-attachments/assets/4a5f4dc0-e107-438d-aebb-655e9de6a5b1)
 
 ### Statistics Overview
-![Statistics Overview](Screenshots/STATISTICS_OVERVIEW.JPG)
+![STATS OVERVIEW](https://github.com/user-attachments/assets/45b2015d-08e9-44d1-b824-a3d0719b647e)
 
 
 ## Getting Started
