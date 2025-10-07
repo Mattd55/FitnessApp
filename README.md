@@ -65,6 +65,30 @@ FitnessApp/
 │   └── public/
 └── src/test/             # Unit and integration tests
 ```
+### Register
+![Register](Screenshots/REGISTER.JPG)
+
+### Dashboard
+![Dashboard](Screenshots/DASHBOARD.JPG)
+
+### Exercises
+![Exercises](Screenshots/EXERCISES.JPG)
+
+### Workouts
+![Workouts](Screenshots/WORKOUTS.JPG)
+
+### Exercise Details
+![Exercise Details](Screenshots/EXERCISE_DETAILS.JPG)
+
+### Workout Details
+![Workout Details](Screenshots/WORKOUT_DETAILS.JPG)
+
+### Set Logging
+![Set Logging](Screenshots/SET_LOGGING.JPG)
+
+### Statistics Overview
+![Statistics Overview](Screenshots/STATISTICS_OVERVIEW.JPG)
+
 
 ## Getting Started
 
