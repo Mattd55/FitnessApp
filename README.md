@@ -17,8 +17,6 @@ A comprehensive full-stack fitness tracking application that helps users manage 
 - Password reset functionality via email
 - BCrypt password encryption
 - Account deletion and data export capabilities
-- <img width="1917" height="968" alt="image" src="https://github.com/user-attachments/assets/01eb11bc-283e-483e-ab03-862be9bc3a93" />
-
 
 ### Email Integration
 - Password reset emails via SendGrid
@@ -68,7 +66,7 @@ FitnessApp/
 └── src/test/             # Unit and integration tests
 ```
 ### Register
-![Register](Screenshots/REGISTER.JPG)
+![REGISTER](https://github.com/user-attachments/assets/075e4421-e473-4620-9ba4-4dd23772a4a0)
 
 ### Dashboard
 ![Dashboard](Screenshots/DASHBOARD.JPG)
